@@ -1,0 +1,39 @@
+{% extends "_base.html" %}
+
+{% block content %}
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      locale: 'pt-br',
+      initialView: 'dayGridMonth',
+      timeZone: 'local',
+      nowIndicator: true,
+      headerToolbar: {
+        right: 'timeGridDay,dayGridMonth'
+      },
+      buttonText: {
+        day: 'Hoje',
+        month: 'Mês'
+      },
+      eventTimeFormat: {
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit'
+      },
+      dateClick: function(info){
+        console.log(info.date)
+      }
+    });
+    calendar.render();
+  });
+  </script>
+  <style>
+    #calendar {
+      text-transform: capitalize;
+    }
+  </style>
+  <div class="container">
+    <div id="calendar"></div>
+  </div>
+{% endblock content %}

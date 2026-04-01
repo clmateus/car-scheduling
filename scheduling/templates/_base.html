@@ -11,7 +11,9 @@
 
 <body class="d-flex flex-column vh-100 overflow-hidden">
     <div class="d-flex flex-nowrap flex-grow-1">
+        {% if user.is_authenticated %}
         {% include 'partials/sidebar.html' %}
+        {% endif %}
         {% block content %}
         {% endblock content %}
         {% comment %} <button class="badge border rounded-pill position-absolute bottom-0 end-0 mb-4 me-4 py-3"

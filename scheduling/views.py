@@ -1,7 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
 from django.utils import timezone
 from django.db import transaction
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
@@ -12,7 +11,7 @@ import json
 @login_required
 def index(request):
     return render(request, 'index.html')
-    
+
 @login_required
 def agendar(request):
     if request.method == 'POST':

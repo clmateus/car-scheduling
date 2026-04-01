@@ -9,11 +9,11 @@ class Veiculo(models.Model):
         return f'{self.modelo} - {self.marca} - {self.placa}'    
 
 class Agendamento(models.Model):
-    veiculo = models.ForeignKey(Veiculo, on_delete=models.CASCADE, related_name='agendamentos')
+    # veiculo = models.ForeignKey(Veiculo, on_delete=models.CASCADE, related_name='agendamentos')
     motorista = models.CharField(max_length=100)
     dataPartida = models.DateTimeField()
     dataChegada = models.DateTimeField()
     destino = models.TextField(blank=True)
 
     def __str__(self):
-        return f'{self.veiculo} - {self.motorista} - {self.dataPartida.date()}'
+        return f'{self.destino} - {self.motorista} - {self.dataPartida} - {self.dataChegada}'

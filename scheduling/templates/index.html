@@ -3,29 +3,64 @@
 {% block content %}
   <script>
   document.addEventListener('DOMContentLoaded', function() {
+    var modalEvento = new bootstrap.Modal(document.getElementById('modal_evento'));
+    var modalInsercao = new bootstrap.Modal(document.getElementById('modal_insercao'));
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
+      themeSystem: 'bootstrap5',
+      height: 800,
       locale: 'pt-br',
       initialView: 'dayGridMonth',
       timeZone: 'local',
       nowIndicator: true,
+      selectable: true,
+      navLinks: true,
+      editable: true,
       headerToolbar: {
-        right: 'timeGridDay,dayGridMonth'
-      },
+        left: 'prev,next today',
+        center: '',
+        right: ''
+    },
       buttonText: {
         day: 'Hoje',
-        month: 'Mês'
+        month: 'Mês',
+        today: 'Hoje',
       },
       eventTimeFormat: {
         hour12: false,
         hour: '2-digit',
         minute: '2-digit'
       },
+      events: 'api/eventos',
       dateClick: function(info){
-        console.log(info.date)
+        let dataFormatada = info.dateStr;
+
+        if (dataFormatada.length === 10) {
+          dataFormatada += 'T08:00:00';
+        } else {
+          dataFormatada += dataFormatada.substring(0, 16);
+        }
+        document.getElementById('dataHoraPartida').value = dataFormatada;
+        document.getElementById('dataHoraChegada').value = '';
+        modalInsercao.show()
+      },
+      eventClick: function(info){
+        const titulo = info.event.title
+        const inicio = info.event.start.toLocaleString()
+        const fim = info.event.end.toLocaleString()
+
+        document.getElementById('tituloEvento').innerHTML = titulo
+        document.getElementById('inicioEvento').innerHTML = inicio
+        document.getElementById('fimEvento').innerHTML = fim
+
+        modalEvento.show()
       }
     });
     calendar.render();
+
+    document.body.addEventListener('atualizarCalendario', function() {
+      calendar.refetchEvents();
+    })
   });
   </script>
   <style>
@@ -34,6 +69,62 @@
     }
   </style>
   <div class="container">
-    <div id="calendar"></div>
+    <h2>Faça o agendamento abaixo</h2>
+    <div id="calendar">
+    </div>
   </div>
+  
+  <!-- Modal do Evento -->
+   <div class="modal fade" id="modal_evento">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="tituloEvento"></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="text">
+              <span id="inicioEvento"></span>
+            </p>
+            <p class="text">
+              <span id="fimEvento"></span>
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Editar</button>
+          </div>
+        </div>
+      </div>
+   </div>
+
+   <!-- Modal de Inserção -->
+    <div class="modal fade" id="modal_insercao">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="tituloEvento">Criar nova viagem</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form hx-post="{% url 'agendar' %}" hx-target="#resultadoModal" hx-swap="innerHTML" class="form-control">
+              {% csrf_token %}
+              <label for="dataHoraPartida" class="form-label">Nome do motorista</label>
+              <input type="text" class="form-control" name="motorista" id="motorista">
+              <label for="dataHoraPartida" class="form-label">Data e hora de Partida</label>
+              <input type="datetime-local" class="form-control" name="dataHoraPartida" id="dataHoraPartida">
+              <label for="dataHoraChegada" class="form-label">Data e hora da Volta</label>
+              <input type="datetime-local" class="form-control" name="dataHoraChegada" id="dataHoraChegada">
+              <label for="destino" class="form-label">Destino</label>
+              <input type="text" class="form-control" name="destino" id="destino">
+              <div id="resultadoModal" class="mt-3"></div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button class="btn btn-primary" type="submit">Salvar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+   </div>
 {% endblock content %}

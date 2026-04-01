@@ -1,0 +1,217 @@
+/*Light Mode*/
+:root {
+    --bg-color: #F8F8FF;
+    --text-color: #333333;
+    --card-bg: #f5f5f5;
+    --border-color: #dddddd;
+
+    /* Tabela - Light */
+    --table-bg: #F8F8FF;
+    --table-header-bg: #f0f0f0;
+    --table-header-text: #333333;
+    --table-row-bg: #F8F8FF;
+    --table-row-alt-bg: #F8F8FF;
+    --table-row-text: #333333;
+    --table-border: #dddddd;
+
+    /* Formulário - Light */
+    --input-bg: #ffffff;
+    --input-text: #333333;
+    --input-border: #cccccc;
+    --input-disabled-bg: #e9ecef;
+    --form-card-bg: #ffffff;
+    --form-card-border: #dddddd;
+    --label-text: #333333;
+    
+}
+
+/*Dark Mode*/
+[data-theme='dark'] {
+    --bg-color: #1C1C1C;
+    --text-color: #e0e0e0;
+    --card-bg: #1C1C1C;
+    --border-color: #444444;
+
+    /* Tabela - Dark */
+    --table-bg: #363636;
+    --table-header-bg: #363636;
+    --table-header-text: #e0e0e0;
+    --table-row-bg: #363636;
+    --table-row-alt-bg: #363636;
+    --table-row-text: #e0e0e0;
+    --table-border: #444444;
+
+    /* Formulário - Dark */
+    --input-bg: #4F4F4F;
+    --input-text: #e0e0e0;
+    --input-border: #4F4F4F;
+    --input-disabled-bg: #363636;
+    --form-card-bg: #363636;
+    --form-card-border: #444444;
+    --label-text: #e0e0e0;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+    transform: scale(1.0);
+    transform-origin: top left;
+    width: 100%;
+    max-width: 1200;
+}
+
+/* ===== FORMULÁRIOS ===== */
+.form-control,
+.form-select,
+input[type="text"],
+input[type="date"],
+input[type="email"],
+input[type="password"],
+select,
+textarea {
+    background-color: var(--input-bg) !important;
+    color: var(--input-text) !important;
+    border-color: var(--input-border) !important;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.form-control:disabled,
+input:disabled {
+    background-color: var(--input-disabled-bg) !important;
+    color: var(--input-text) !important;
+}
+
+.form-control::placeholder,
+input::placeholder {
+    color: var(--input-text) !important;
+    opacity: 0.6;
+}
+
+/* Labels do formulário */
+label,
+p label {
+    color: var(--label-text) !important;
+}
+
+/* Card/container do formulário (form-control usado como wrapper) */
+.form-control.border-none,
+form.form-control {
+    background-color: var(--form-card-bg) !important;
+    border-color: var(--form-card-border) !important;
+    color: var(--text-color) !important;
+}
+
+/* ===== TABELAS RESPONSIVAS AO TEMA ===== */
+table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    background-color: var(--table-bg) !important;
+    color: var(--table-row-text) !important;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+table thead th,
+table tr th {
+    background-color: var(--table-header-bg) !important;
+    color: var(--table-header-text) !important;
+    border: 1px solid var(--table-border) !important;
+    padding: 12px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+table tbody tr td,
+table tr td {
+    background-color: var(--table-row-bg) !important;
+    color: var(--table-row-text) !important;
+    border: 1px solid var(--table-border) !important;
+    padding: 12px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    --bs-table-bg: var(--table-row-bg) !important;
+    --bs-table-striped-bg: var(--table-row-alt-bg) !important;
+    --bs-table-color: var(--table-row-text) !important;
+    --bs-table-striped-color: var(--table-row-text) !important;
+}
+
+/* Linhas alternadas (zebra) */
+table tbody tr:nth-child(even) td {
+    background-color: var(--table-row-alt-bg) !important;
+}
+
+/* Hover nas linhas */
+table tbody tr:hover td {
+    filter: brightness(1.1);
+    transition: filter 0.2s;
+}
+
+/* Forçar a tabela do Bootstrap a aceitar suas variáveis */
+[data-theme='dark'] .table {
+    --bs-table-bg: var(--table-row-bg) !important;
+    --bs-table-color: var(--table-row-text) !important;
+    --bs-table-border-color: var(--table-border) !important;
+    color: var(--table-row-text) !important;
+}
+
+/* Ajuste para os Cards da página de veículos */
+[data-theme='dark'] .card {
+    background-color: #363636 !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+
+[data-theme='dark'] .card-body {
+    color: var(--text-color) !important;
+}
+/* ===== MODAIS RESPONSIVOS AO TEMA ===== */
+
+/* Quando o tema for dark, altera o corpo do modal */
+[data-theme='dark'] .modal-content {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+/* Ajusta as linhas divisórias internas do modal */
+[data-theme='dark'] .modal-header,
+[data-theme='dark'] .modal-footer {
+    border-color: var(--border-color) !important;
+}
+
+/* Ajusta o botão de fechar (X) para ficar visível no fundo escuro */
+[data-theme='dark'] .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Garante que os formulários dentro do modal fiquem legíveis */
+[data-theme='dark'] .modal-body .form-control,
+[data-theme='dark'] .modal-body .form-select {
+    background-color: var(--input-bg) !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+/* Garante que o modal acompanhe o tema dark */
+[data-theme='dark'] .modal-content {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+[data-theme='dark'] .modal-header, 
+[data-theme='dark'] .modal-footer {
+    border-color: var(--border-color) !important;
+}
+
+/* Deixa o 'X' de fechar branco no modo dark */
+[data-theme='dark'] .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Ajusta os inputs dentro do modal */
+[data-theme='dark'] .modal-body .form-control,
+[data-theme='dark'] .modal-body .form-select {
+    background-color: #363636 !important; /* Cor de fundo para contraste nos campos */
+    color: #ffffff !important;
+    border-color: var(--border-color) !important;
+}

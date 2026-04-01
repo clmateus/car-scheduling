@@ -1,0 +1,51 @@
+#theme-toggle {
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.container-fluid {
+    background-color: #F5F5F5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; 
+    width: 100%;
+}
+
+#calendar a {
+    text-decoration: none;
+}
+
+.login-form {
+    background-color: #D3D3D3;
+    color: #212529;
+    padding: .75rem .75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #F5F5F5;
+    max-width: 480px;
+    margin: 0 auto;
+    
+}
+
+.login-form .form-control {
+    background-color: #F5F5F5 !important;
+    color: #212529 !important;
+    border-color: #ced4da !important;
+}
+
+.login-form .form-label {
+    color: #212529;
+}
+
+.login-form .form-control::placeholder {
+    color: #6c757d;
+}
+
+.container .modal-body {
+    color: #453345;
+}
+
+.form-floating justify-content-center {
+    position: relative;
+
+}

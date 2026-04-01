@@ -1,0 +1,98 @@
+{% extends '_base.html' %}
+{% block content %}
+    <div class="container">
+        <h2 class="mt-3">Veículos</h2>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_insercao">
+            Adicionar um carro
+        </button>
+        <h3 class="mt-3">Todos os carros</h3>
+        
+        {% for veiculo in veiculos %}
+        <div class="card mb-3" id="card_{{ veiculo.id }}" style="max-width: 540px;">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    {% if veiculo.foto %}
+                        <img src="..." class="img-fluid rounded-start" alt="...">
+                    {% else %}
+                        <svg aria-label="Placeholder: Image" class="bd-placeholder-img img-fluid rounded-start" preserveAspectRatio="xMidYMid slice" role="img" width="100%" xmlns="http://www.w3.org/2000/svg"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="15%" y="50%" fill="#dee2e6" dy=".3em">Image Not Found</text></svg>
+                    {% endif %}
+                </div>
+                <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">{{ veiculo.marca }} - {{ veiculo.modelo }}</h5>
+                    <p class="card-text">Placa: {{ veiculo.placa }}</p>
+                    <p class="card-text"><small class="text-body-secondary">algum texto aqui</small></p>
+                </div>
+                </div>
+            </div>
+            <div class="position-absolute bottom-0 end-0 mb-2 me-2">
+                <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal_editar_{{ veiculo.id }}">
+                    <i class="bi bi-pen"></i>
+                </button>
+                <form 
+                    hx-post="{% url 'remover_veiculo' veiculo.id %}" 
+                    hx-confirm="Tem certeza que deseja remover esse veículo?" 
+                    hx-target="closest .card" 
+                    hx-swap="outerHTML" 
+                    style="display: inline;">
+                    
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary">
+                        <i class="bi bi-trash3"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modal_editar_{{ veiculo.id }}">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="tituloEvento">Editar {{ veiculo.modelo }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form 
+                    hx-post="{% url 'editar_veiculo' veiculo.id %}" 
+                    hx-target="#card_{{ veiculo.id }}" 
+                    hx-swap="outerHTML"
+                    class="form-control"
+                >
+                    {% csrf_token %}
+                    <label class="form-label">Modelo</label>
+                    <input type="text" name="modelo" value="{{ veiculo.modelo }}" class="form-control" required>
+                    <label class="form-label">Marca</label>
+                    <input type="text" name="modelo" value="{{ veiculo.marca }}" class="form-control" required>
+                    <label class="form-label">Placa</label>
+                    <input type="text" name="modelo" value="{{ veiculo.placa }}" class="form-control" required>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                    </div>
+                </form>
+              </div>
+            </div>
+          </div>
+       </div>
+       {% endfor %}
+       <div class="modal fade" id="modal_insercao">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tituloEvento">Adicionar um carro</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" class="form-control">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Confirmar</button>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

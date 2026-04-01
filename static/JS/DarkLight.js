@@ -1,51 +1,38 @@
-function toggleTheme() {
-    const html = document.documentElement;
+const THEMES = {
+    dark: {
+        css: 'https://cdn.jsdelivr.net/npm/bootswatch@5.3.0/dist/darkly/bootstrap.min.css',
+        btnClass: 'bg-dark-subtle border-dark-subtle text-dark-emphasis',
+        btnText: '🔆 Light Mode',
+        bodyClass: 'theme-dark',
+    },
+    light: {
+        css: 'https://cdn.jsdelivr.net/npm/bootswatch@5.3.0/dist/flatly/bootstrap.min.css',
+        btnClass: 'bg-light border-secondary text-dark',
+        btnText: '🌑 Dark Mode',
+        bodyClass: 'theme-light',
+    }
+};
+
+function applyTheme(mode) {
+    const theme = THEMES[mode];
+    const themeLink = document.getElementById('bootswatch-theme');
     const btn = document.getElementById('theme-toggle');
 
-    if (html.getAttribute('data-theme') === 'dark') {
-        // --- SAINDO DO DARK / ENTRANDO NO LIGHT ---
-        html.removeAttribute('data-theme');
-        localStorage.setItem('theme', 'light');
-        
-        if (btn) {
-            btn.textContent = '🌑 Dark Mode';
-            // No site LIGHT, o botão deve ser DARK (contraste)
-            btn.classList.remove('btn-light');
-            btn.classList.add('btn-secondary');
-        }
-    } else {
-        // --- SAINDO DO LIGHT / ENTRANDO NO DARK ---
-        html.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
-        
-        if (btn) {
-            btn.textContent = '☀️ Light Mode';
-            // No site DARK, o botão deve ser LIGHT (contraste)
-            btn.classList.remove('btn-dark');
-            btn.classList.add('btn-light');
-        }
-    }
+    themeLink.href = theme.css;
+
+    btn.className = `badge border rounded-pill position-absolute bottom-0 end-0 mb-4 me-4 py-3 ${theme.btnClass}`;
+    btn.textContent = theme.btnText;
+
+    document.body.classList.remove('theme-dark', 'theme-light');
+    document.body.classList.add(theme.bodyClass);
+
+    localStorage.setItem('theme', mode);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const saved = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const btn = document.getElementById('theme-toggle');
+function toggleTheme() {
+    const current = localStorage.getItem('theme') || 'dark';
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+}
 
-    if (saved === 'dark' || (!saved && prefersDark)) {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        if (btn) {
-            btn.textContent = '☀️ Light Mode';
-            // Estado Dark: Botão Light
-            btn.classList.remove('btn-dark');
-            btn.classList.add('btn-light');
-        }
-    } else {
-        if (btn) {
-            btn.textContent = '🌑 Dark Mode';
-            // Estado Light: Botão Dark
-            btn.classList.remove('btn-light');
-            btn.classList.add('btn-dark');
-        }
-    }
-});
+const savedTheme = localStorage.getItem('theme') || 'dark';
+applyTheme(savedTheme);

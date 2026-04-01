@@ -1,11 +1,19 @@
 {% extends '_base.html' %}
 {% block content %}
-    <form method="post" class="form-control mt-3">
+<div class="container-fluid">
+    <main class="form-signin w-100 m-auto">
+    <form method="post" class="login-form mt-4">
         {% csrf_token %}
-        <label for="user" class="form-label">Usuário</label>
+        <div class="form-floating justify-content-center">
         <input type="text" id="user" name="username" class="form-control mb-3" placeholder="Seu usuário" required />
-        <label for="password" class="form-label">Senha</label>
+        <label for="user" class="form-label"></label>
+        </div>
+        <div class="form-floating justify-content-center">
+        <label for="password" class="form-label"></label>
         <input type="password" id="password" name="password" class="form-control mb-3" placeholder="••••••••" required />
+        </div>
         <button type="submit" class="btn btn-primary">Entrar</button>
     </form>
+</main>
+</div>
 {% endblock %}

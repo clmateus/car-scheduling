@@ -123,11 +123,6 @@
     .navbar-nav.side-nav:hover {
         left:0;
     }
-    nav-link {
-        color: #fff;
-        text-decoration: none;
-        background: 0 0;
-    }
     .side-nav li a {
         padding: 20px
     }

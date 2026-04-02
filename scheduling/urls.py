@@ -15,5 +15,7 @@ urlpatterns = [
     path('editar_veiculo/<int:pk>/', views.editar_veiculo, name='editar_veiculo'), # Existing
     path('editar_agendamento/<int:pk>/', views.editar_agendamento, name='editar_agendamento'), # New
     path('viagens/', views.viagens, name='viagens'),
-    path('historico/', views.historico, name='historico')
+    path('historico/', views.historico, name='historico'),
+    path('sideBarTEST', views.sideBarTEST, name='sideBarTEST')
+
 ]

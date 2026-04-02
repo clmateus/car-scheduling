@@ -1,12 +1,20 @@
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from django.shortcuts import render, redirect, get_object_or_404
+from django.core.files.base import ContentFile
 from django.utils import timezone
 from django.db import transaction
+from django.utils.dateparse import parse_datetime
 from django.http import JsonResponse, HttpResponse
 from .models import Agendamento, Veiculo
 from .forms import CadastroVeiculo, EdicaoForm
+from PIL import Image
 import json
+import io
+import random
+
+def sideBarTEST(request):
+    return render(request, 'sideBarTEST.html')
 
 @login_required
 def index(request):
@@ -23,18 +31,36 @@ def agendar(request):
         # Verifica se todos os campos vieram preenchidos
         if all([motorista, dataHoraPartida, dataHoraChegada, destino]):
             
+            partida_dt = parse_datetime(dataHoraPartida)
+            chegada_dt = parse_datetime(dataHoraChegada)
+
+            # Converte a data do HTML (sem fuso) para uma data compatível com o Banco de Dados (com fuso)
+            if partida_dt and timezone.is_naive(partida_dt):
+                partida_dt = timezone.make_aware(partida_dt)
+                
+            if chegada_dt and timezone.is_naive(chegada_dt):
+                chegada_dt = timezone.make_aware(chegada_dt)
+
+            if partida_dt and chegada_dt and partida_dt >= chegada_dt:
+                erro = 'A data da volta deve ser posterior à data de partida.'
+                return render(request, 'partials/error.html', {'erro': erro})
+
             # Inicia o bloco seguro para o banco de dados
             with transaction.atomic():
-                # 1. Busca os IDs dos veículos ocupados nesse horário
-                agendamentos_conflitantes = Agendamento.objects.filter(
-                    dataPartida__lt=dataHoraChegada,
-                    dataChegada__gt=dataHoraPartida
-                ).values('veiculo_id')
+                # 1. Busca os agendamentos conflitantes diretamente
+                conflitos = Agendamento.objects.filter(
+                    dataPartida__lt=chegada_dt,
+                    dataChegada__gt=partida_dt
+                )
 
-                # 2. Sorteia um veículo livre e bloqueia a linha no banco (evita double-booking)
-                veiculo_escolhido = Veiculo.objects.exclude(
-                    id__in=agendamentos_conflitantes
-                ).select_for_update(skip_locked=True).order_by('?').first()
+                # Extrai os IDs dos carros ocupados de forma limpa pelo Python
+                ids_ocupados = [ag.veiculo_id for ag in conflitos if ag.veiculo_id]
+
+                # 2. Resgata todos os veículos e retira os ocupados via Python (foge de bugs do SQLite)
+                todos_veiculos = Veiculo.objects.all()
+                veiculos_livres = [v for v in todos_veiculos if v.id not in ids_ocupados]
+                
+                veiculo_escolhido = random.choice(veiculos_livres) if veiculos_livres else None
 
                 # 3. Se não achar nenhum veículo, devolve o partial de erro
                 if not veiculo_escolhido:
@@ -45,8 +71,8 @@ def agendar(request):
                 agendamento = Agendamento.objects.create(
                     veiculo=veiculo_escolhido,
                     motorista=motorista, 
-                    dataPartida=dataHoraPartida, 
-                    dataChegada=dataHoraChegada, 
+                    dataPartida=partida_dt, 
+                    dataChegada=chegada_dt, 
                     destino=destino
                 )
 
@@ -68,8 +94,26 @@ def mudar_dia_agendamento(request):
         dados = json.loads(request.body)
         try:
             agendamento = Agendamento.objects.get(id=dados.get('id'))
-            agendamento.dataPartida = dados.get('start')
-            agendamento.dataChegada = dados.get('end')
+            
+            novo_inicio = parse_datetime(dados.get('start'))
+            novo_fim = parse_datetime(dados.get('end')) if dados.get('end') else None
+
+            if not novo_fim:
+                duracao = agendamento.dataChegada - agendamento.dataPartida
+                novo_fim = novo_inicio + duracao
+
+            if agendamento.veiculo:
+                conflitos = Agendamento.objects.filter(
+                    veiculo=agendamento.veiculo,
+                    dataPartida__lt=novo_fim,
+                    dataChegada__gt=novo_inicio
+                ).exclude(id=agendamento.id)
+                
+                if conflitos.exists():
+                    return JsonResponse({'status': 'erro', 'mensagem': 'O veículo já possui agendamento neste horário.'}, status=400)
+
+            agendamento.dataPartida = novo_inicio
+            agendamento.dataChegada = novo_fim
             agendamento.save()
             return JsonResponse({'status': 'sucesso'})
         except Agendamento.DoesNotExist:
@@ -95,9 +139,9 @@ def listar_agendamentos(request):
 @login_required
 def remover_agendamento(request, pk):
     agendamento = get_object_or_404(Agendamento, pk=pk)
-    agendamento.delete() # Isso irá deletar o evento
+    agendamento.delete()
     response = HttpResponse('')
-    response['HX-Trigger'] = 'atualizarCalendario' # Dispara a atualização do calendário
+    response['HX-Trigger'] = 'atualizarCalendario'
     return response
 
 @login_required
@@ -106,19 +150,26 @@ def editar_agendamento(request, pk):
 
     if request.method == 'POST':
         form = EdicaoForm(request.POST, instance=agendamento)
+        
         if form.is_valid():
             dataPartida = form.cleaned_data['dataPartida']
             dataChegada = form.cleaned_data['dataChegada']
-            
-            # Verifica se o novo horário ou novo veículo conflita com outro agendamento já existente
-            conflitos = Agendamento.objects.filter(
-                dataPartida__lt=dataChegada,
-                dataChegada__gt=dataPartida
-            ).exclude(pk=pk) # Exclui a verificação de conflito consigo mesmo
-            
-            if conflitos.exists():
-                form.add_error(None, 'O veículo selecionado já possui agendamento neste horário.')
+
+            if dataPartida >= dataChegada:
+                form.add_error(None, 'A data de partida deve ser menor que a data de chegada.')
                 return render(request, 'edicao_form.html', {'form': form, 'agendamento_id': pk})
+
+            # Verifica se o novo horário ou novo veículo conflita com outro agendamento já existente
+            if agendamento.veiculo:
+                conflitos = Agendamento.objects.filter(
+                    veiculo=agendamento.veiculo,
+                    dataPartida__lt=dataChegada,
+                    dataChegada__gt=dataPartida
+                ).exclude(pk=pk) # Exclui a verificação de conflito consigo mesmo
+            
+                if conflitos.exists():
+                    form.add_error(None, 'O veículo já possui agendamento neste horário.')
+                    return render(request, 'edicao_form.html', {'form': form, 'agendamento_id': pk})
             
             form.save()
             response = HttpResponse()
@@ -133,19 +184,36 @@ def editar_agendamento(request, pk):
 
 @login_required
 def veiculos(request):
-    veiculos = Veiculo.objects.all()
+    todos_veiculos = Veiculo.objects.all()
 
     if request.method == 'POST':
         form = CadastroVeiculo(request.POST, request.FILES)
         
         if form.is_valid():
-            form.save()
+            novo_veiculo = form.save(commit=False)
+            
+            foto_enviada = request.FILES.get('foto')
+            
+            if foto_enviada:
+                img = Image.open(foto_enviada)
+                
+                img = img.convert('RGB')                
+                img = img.resize((180, 130), Image.LANCZOS)
+                
+                temp_thumb = io.BytesIO()
+                img.save(temp_thumb, format='JPEG', quality=90)
+                temp_thumb.seek(0)
+
+                novo_veiculo.foto.save(foto_enviada.name, ContentFile(temp_thumb.read()), save=False)
+            
+
+            novo_veiculo.save()
             return redirect('veiculos')
 
     else:
         form = CadastroVeiculo()
 
-    return render(request, 'veiculos.html', {'veiculos': veiculos, 'form': form})
+    return render(request, 'veiculos.html', {'veiculos': todos_veiculos, 'form': form})
 
 @login_required
 @require_POST

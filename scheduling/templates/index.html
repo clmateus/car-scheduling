@@ -37,9 +37,9 @@
         let dataFormatada = info.dateStr;
 
         if (dataFormatada.length === 10) {
-          dataFormatada += 'T08:00:00';
+          dataFormatada += 'T08:00';
         } else {
-          dataFormatada += dataFormatada.substring(0, 16);
+          dataFormatada = dataFormatada.substring(0, 16);
         }
         document.getElementById('dataHoraPartida').value = dataFormatada;
         document.getElementById('dataHoraChegada').value = '';
@@ -162,7 +162,7 @@
             
             <form id="formRemoverAgendamento" {# Adicionado ID para JS #}
                     hx-post="" {# Será preenchido pelo JS #}
-                    hx-swap="outerHTML"
+                    hx-swap="none"
                 >
                 {% csrf_token %}
                 <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Excluir</button>

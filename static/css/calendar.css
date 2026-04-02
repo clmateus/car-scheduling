@@ -77,3 +77,27 @@
     border-color: #b3d7ff; /* Cor azul do seu print */
     box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
 }
+
+.navbar-toggler {
+    width: 80px;
+    padding: 0.3rem 0.5rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    white-space: nowrap; /* garante que não quebra */
+
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 25px;
+}
+
+/* Centraliza o conteúdo gerado */
+.navbar-toggler::before {
+
+    white-space: nowrap;   /* impede quebra */
+    text-align: center;
+    margin: 0;       /* remove qualquer margem */
+    padding: 0;   
+}

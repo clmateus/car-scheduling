@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.db import transaction
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
 from .models import Agendamento, Veiculo
-from .forms import CadastroVeiculo, AgendamentoForm # Import AgendamentoForm
+from .forms import CadastroVeiculo, AgendamentoForm, EdicaoForm
 import json
 
 @login_required
@@ -100,29 +100,38 @@ def remover_agendamento(request, pk):
     response['HX-Trigger'] = 'atualizarCalendario' # Dispara a atualização do calendário
     return response
 
-# Nova view para editar agendamento
 @login_required
 def editar_agendamento(request, pk):
     agendamento = get_object_or_404(Agendamento, pk=pk)
 
     if request.method == 'POST':
-        form = AgendamentoForm(request.POST, instance=agendamento)
+        form = EdicaoForm(request.POST, instance=agendamento)
         if form.is_valid():
-            # Lógica para verificar disponibilidade do veículo pode ser adicionada aqui
-            # Se as datas forem alteradas, seria ideal re-verificar se o veículo escolhido
-            # ou um novo veículo está disponível. Por simplicidade, estamos apenas salvando.
+            dataPartida = form.cleaned_data['dataPartida']
+            dataChegada = form.cleaned_data['dataChegada']
+            veiculo = form.cleaned_data['veiculo']
+            
+            # Verifica se o novo horário ou novo veículo conflita com outro agendamento já existente
+            conflitos = Agendamento.objects.filter(
+                veiculo=veiculo,
+                dataPartida__lt=dataChegada,
+                dataChegada__gt=dataPartida
+            ).exclude(pk=pk) # Exclui a verificação de conflito consigo mesmo
+            
+            if conflitos.exists():
+                form.add_error(None, 'O veículo selecionado já possui agendamento neste horário.')
+                return render(request, 'edicao_form.html', {'form': form, 'agendamento_id': pk})
+            
             form.save()
             response = HttpResponse()
-            # Dispara a atualização do calendário e um evento para fechar o modal de edição
             response['HX-Trigger'] = 'atualizarCalendario, closeModalEdicao' 
             return response
         else:
-            # Se o formulário for inválido, renderiza o formulário novamente com erros
-            return render(request, 'partials/agendamento_form.html', {'form': form, 'agendamento_id': pk})
+            return render(request, 'edicao_form.html', {'form': form, 'agendamento_id': pk})
     else:
-        form = AgendamentoForm(instance=agendamento)
+        form = EdicaoForm(instance=agendamento)
     
-    return render(request, 'partials/agendamento_form.html', {'form': form, 'agendamento_id': pk})
+    return render(request, 'edicao_form.html', {'form': form, 'agendamento_id': pk})
 
 @login_required
 def veiculos(request):

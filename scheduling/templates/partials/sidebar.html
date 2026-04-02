@@ -1,29 +1,43 @@
 <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark">
   <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
     <!-- Colocar ícone svg aqui depois -->
+  </a>      
+    <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsAgenda" 
+        aria-controls="navbarsAgenda" aria-expanded="true" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>☰ Menu</button>
     <span class="fs-4">Agenda de Carros</span>
-  </a>
-  <hr>
+<hr>
+    {% comment %} <div class="container-fluid"> {% endcomment %}
+
+    {% comment %} <div class="navbar-collapse justify-content-md-center collapse" id="navbarsAgenda" style> {% endcomment %}
+
   {% if user.is_authenticated %}
   <ul class="nav nav-pills flex-column mb-auto">
+    
     <li class="nav-item">
+      
         <a href="{% url 'index' %}" 
-          class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+          class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}"><i class="bi bi-house-door"></i>
             Início
         </a>
     </li>
     <li class="nav-item">
-        <a href="{% url 'veiculos' %}" 
-          class="nav-link {% if request.resolver_match.url_name == 'veiculos' %}active{% endif %}">
+        <a href="{% url 'veiculos' %}" class="nav-link {% if request.resolver_match.url_name == 'veiculos' %}active{% endif %}"><i class="bi bi-car-front"></i>
             Veículos
         </a>
     </li>
     <li class="nav-item">
         <a href="{% url 'viagens' %}" 
-          class="nav-link {% if request.resolver_match.url_name == 'viagens' %}active{% endif %}">
+          class="nav-link {% if request.resolver_match.url_name == 'viagens' %}active{% endif %}"><i class="fa-solid fa-car-side"></i>
             Viagens
         </a>
     </li>
+    {% comment %} <li class="nav-item">
+        <a href="{% url 'historico' %}" 
+          class="nav-link {% if request.resolver_match.url_name == 'historico' %}active{% endif %}"><i class="fa-solid fa-clock-rotate-left"></i>
+            Histórico
+        </a>
+    </li> {% endcomment %}
   </ul>
   <hr>
   {% else %}

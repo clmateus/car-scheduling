@@ -42,3 +42,22 @@ class AgendamentoForm(forms.ModelForm):
             'destino': 'Destino',
             'veiculo': 'Veículo',
         }
+
+class EdicaoForm(forms.ModelForm):
+    class Meta:
+        model = Agendamento
+        fields = ['motorista', 'dataPartida', 'dataChegada', 'destino', 'veiculo']    
+        widgets = {
+            'motorista': forms.TextInput(attrs={'class': 'form-control'}),
+            'dataPartida': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
+            'dataChegada': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
+            'destino': forms.TextInput(attrs={'class': 'form-control'}),
+            'veiculo': forms.Select(attrs={'class': 'form-select'}),
+        }
+        labels = {
+            'motorista': 'Nome do motorista',
+            'dataPartida': 'Data e hora de Partida',
+            'dataChegada': 'Data e hora da Volta',
+            'destino': 'Destino',
+            'veiculo': 'Veículo',
+        }

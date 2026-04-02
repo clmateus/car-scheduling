@@ -47,30 +47,22 @@
       },
       eventClick: function(info){
         const titulo = info.event.title
-        const inicio = info.event.start.toLocaleString()
-        const fim = info.event.end ? info.event.end.toLocaleString() : 'Não definida'
+        const inicio = info.event.start ? info.event.start.toLocaleString() : ''
+        const fim = info.event.end ? info.event.end.toLocaleString() : 'Não especificado'
         const eventId = info.event.id;
-        const veiculo = info.event.extendedProps.veiculo;
 
         document.getElementById('tituloEvento').innerHTML = titulo
-        document.getElementById('inicioEvento').innerHTML = inicio
-        document.getElementById('fimEvento').innerHTML = fim
-        document.getElementById('carroAtribuido').innerHTML = "Veículo: " + veiculo;
+        document.getElementById('inicioEvento').innerHTML = `<strong>Partida:</strong> ${inicio}`
+        document.getElementById('fimEvento').innerHTML = `<strong>Volta:</strong> ${fim}`
 
-        document.getElementById('btnEditarEvento').onclick = function() {
-          htmx.ajax('GET', `{% url 'editar_agendamento' 0 %}`.replace('0', eventId), {
-            target: '#modalEdicaoBody',
-            swap: 'innerHTML'
-          });
-        };
+        // Atualiza o action do formulário de remoção com o ID do evento
+        const formRemover = document.getElementById('formRemoverAgendamento');
+        formRemover.setAttribute('hx-post', `{% url 'remover_agendamento' 0 %}`.replace('0', eventId));
+        if (typeof htmx !== 'undefined') htmx.process(formRemover);
 
-        document.getElementById('formRemoverAgendamento').onsubmit = function(e) {
-          e.preventDefault();
-          htmx.ajax('POST', `{% url 'remover_agendamento' 0 %}`.replace('0', eventId), {
-            source: this,
-            swap: 'none'
-          });
-        };
+        const btnEditar = document.getElementById('btnEditarEvento');
+        btnEditar.setAttribute('hx-get', `{% url 'editar_agendamento' 0 %}`.replace('0', eventId));
+        if (typeof htmx !== 'undefined') htmx.process(btnEditar);
 
         modalEvento.show()
       },
@@ -88,10 +80,9 @@
             'X-CSRFToken': '{{csrf_token}}'
           },
           body: JSON.stringify(dados)
-        }).then(async function(response) {
+        }).then(function(response) {
           if (!response.ok) {
-              const resData = await response.json();
-              alert(resData.mensagem || 'Erro ao mudar o dia do evento!');
+              alert('Erro ao mudar o dia do evento!')
               info.revert()
             }
           })
@@ -105,15 +96,18 @@
 
     document.body.addEventListener('atualizarCalendario', function() {
       calendar.refetchEvents();
-    });
-
-    document.body.addEventListener('closeModalEdicao', function() {
-      var modalEdicaoEl = document.getElementById('modal_edicao');
-      var modalEdicao = bootstrap.Modal.getInstance(modalEdicaoEl);
-      if (modalEdicao) {
-          modalEdicao.hide();
-      }
-    });
+      
+      // Fechar todos os modais abertos após uma inserção, edição ou exclusão com sucesso
+      ['modal_insercao', 'modal_edicao', 'modal_evento'].forEach(function(modalId) {
+        var modalEl = document.getElementById(modalId);
+        if (modalEl) {
+          var modalInstance = bootstrap.Modal.getInstance(modalEl);
+          if (modalInstance) {
+            modalInstance.hide();
+          }
+        }
+      });
+    })
 
     setInterval(function() {
       calendar.refetchEvents();
@@ -130,7 +124,7 @@
     }
   </style>
   <div class="container">
-    <h2 class="mt-3">Faça o agendamento abaixo</h2>
+    <h2 class="mt-3">Agende uma viagem clicando em um dia</h2>
     <div id="calendar"></div>
   </div>
   
@@ -155,16 +149,21 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-            <!-- Botão Editar -->
             <button type="button" class="btn btn-primary" 
                     id="btnEditarEvento"
                     data-bs-toggle="modal" 
                     data-bs-target="#modal_edicao"
-                    data-bs-dismiss="modal">
+                    data-bs-dismiss="modal" {# Fecha o modal_evento ao abrir o modal_edicao #}
+                    hx-get="{% url 'editar_agendamento' 0 %}" {# Placeholder para o ID, será atualizado pelo JS #}
+                    hx-target="#modalEdicaoBody"
+                    hx-swap="innerHTML">
                 Editar
             </button>
             
-            <form id="formRemoverAgendamento">
+            <form id="formRemoverAgendamento" {# Adicionado ID para JS #}
+                    hx-post="" {# Será preenchido pelo JS #}
+                    hx-swap="outerHTML"
+                >
                 {% csrf_token %}
                 <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Excluir</button>
             </form>
@@ -212,10 +211,8 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" id="modalEdicaoBody">
-          <!-- O formulário de edição será carregado aqui via HTMX -->
-          <p>Carregando formulário...</p>
+
         </div>
-        {# Os botões do rodapé do modal são parte do conteúdo carregado via HTMX #}
       </div>
     </div>
    </div>

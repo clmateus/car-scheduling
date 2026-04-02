@@ -4,7 +4,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.db import transaction
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
-from django.utils.dateparse import parse_datetime
 from .models import Agendamento, Veiculo
 from .forms import CadastroVeiculo, AgendamentoForm, EdicaoForm
 import json
@@ -24,10 +23,6 @@ def agendar(request):
         # Verifica se todos os campos vieram preenchidos
         if all([motorista, dataHoraPartida, dataHoraChegada, destino]):
             
-            if dataHoraPartida >= dataHoraChegada:
-                erro = 'A data de partida deve ser anterior à data da volta.'
-                return render(request, 'partials/error.html', {'erro': erro})
-
             # Inicia o bloco seguro para o banco de dados
             with transaction.atomic():
                 # 1. Busca os IDs dos veículos ocupados nesse horário
@@ -73,26 +68,8 @@ def mudar_dia_agendamento(request):
         dados = json.loads(request.body)
         try:
             agendamento = Agendamento.objects.get(id=dados.get('id'))
-            
-            nova_partida = parse_datetime(dados.get('start'))
-            if dados.get('end'):
-                nova_chegada = parse_datetime(dados.get('end'))
-            else:
-                duracao = agendamento.dataChegada - agendamento.dataPartida
-                nova_chegada = nova_partida + duracao
-
-            if agendamento.veiculo:
-                conflitos = Agendamento.objects.filter(
-                    veiculo=agendamento.veiculo,
-                    dataPartida__lt=nova_chegada,
-                    dataChegada__gt=nova_partida
-                ).exclude(pk=agendamento.id)
-                
-                if conflitos.exists():
-                    return JsonResponse({'status': 'erro', 'mensagem': 'O veículo já possui agendamento neste horário.'}, status=400)
-
-            agendamento.dataPartida = nova_partida
-            agendamento.dataChegada = nova_chegada
+            agendamento.dataPartida = dados.get('start')
+            agendamento.dataChegada = dados.get('end')
             agendamento.save()
             return JsonResponse({'status': 'sucesso'})
         except Agendamento.DoesNotExist:
@@ -111,7 +88,6 @@ def listar_agendamentos(request):
             'title': agendamento.motorista + ' -> ' + agendamento.destino,
             'start': agendamento.dataPartida.isoformat() if agendamento.dataPartida else None,
             'end': agendamento.dataChegada.isoformat() if agendamento.dataChegada else None,
-            'veiculo': str(agendamento.veiculo) if agendamento.veiculo else 'Sem veículo atribuído',
         })
 
     return JsonResponse(eventos, safe=False)
@@ -133,13 +109,12 @@ def editar_agendamento(request, pk):
         if form.is_valid():
             dataPartida = form.cleaned_data['dataPartida']
             dataChegada = form.cleaned_data['dataChegada']
-            veiculo = form.cleaned_data['veiculo']
             
+            # Verifica se o novo horário ou novo veículo conflita com outro agendamento já existente
             conflitos = Agendamento.objects.filter(
-                veiculo=veiculo,
                 dataPartida__lt=dataChegada,
                 dataChegada__gt=dataPartida
-            ).exclude(pk=pk)
+            ).exclude(pk=pk) # Exclui a verificação de conflito consigo mesmo
             
             if conflitos.exists():
                 form.add_error(None, 'O veículo selecionado já possui agendamento neste horário.')
@@ -197,3 +172,9 @@ def editar_veiculo(request, pk):
 def viagens(request):
     proximas_viagens = Agendamento.objects.filter(dataPartida__gt=timezone.now()).order_by('dataPartida')
     return render(request, 'viagens.html', {'proximas_viagens': proximas_viagens})
+
+@login_required
+def historico(request):
+    todas_as_viagens = Agendamento.objects.all().order_by('dataPartida')
+
+    return render(request, 'historico.html', {'todas_as_viagens': todas_as_viagens})

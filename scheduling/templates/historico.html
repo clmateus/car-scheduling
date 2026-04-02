@@ -1,0 +1,27 @@
+{% extends '_base.html' %}
+{% block content %}
+    <div class="container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Motorista</th>
+                    <th scope="col">Veículo</th>
+                    <th scope="col">Data/Hora de Partida</th>
+                    <th scope="col">Data/Hora de Chegada</th>
+                    <th scope="col">Destino</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for viagem in todas_as_viagens %}
+                <tr>
+                    <td>{{ viagem.motorista }}</td>
+                    <td>{{ viagem.veiculo.modelo }}</td>
+                    <td>{{ viagem.dataPartida }}</td>
+                    <td>{{ viagem.dataChegada }}</td>
+                    <td>{{ viagem.destino }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

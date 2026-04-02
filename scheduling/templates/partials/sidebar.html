@@ -1,12 +1,10 @@
-<div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark">
-  <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-    <!-- Colocar ícone svg aqui depois -->
-  </a>      
-    <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsAgenda" 
-        aria-controls="navbarsAgenda" aria-expanded="true" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>☰ Menu</button>
+<div id="sidebar" class="sidebar d-flex flex-column flex-shrink-0 p-3 text-bg-dark vh-100">
+    <button class="menu-btn navbar-toggler mb-3" id="menu-toggle" type="button">
+      ☰ Menu
+    </button>
+
     <span class="fs-4">Agenda de Carros</span>
-<hr>
+    <hr>
     {% comment %} <div class="container-fluid"> {% endcomment %}
 
     {% comment %} <div class="navbar-collapse justify-content-md-center collapse" id="navbarsAgenda" style> {% endcomment %}
@@ -15,7 +13,6 @@
   <ul class="nav nav-pills flex-column mb-auto">
     
     <li class="nav-item">
-      
         <a href="{% url 'index' %}" 
           class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}"><i class="bi bi-house-door"></i>
             Início

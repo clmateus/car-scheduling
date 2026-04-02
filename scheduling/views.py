@@ -3,9 +3,9 @@ from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.db import transaction
-from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponse
 from .models import Agendamento, Veiculo
-from .forms import CadastroVeiculo, AgendamentoForm, EdicaoForm
+from .forms import CadastroVeiculo, EdicaoForm
 import json
 
 @login_required
@@ -136,7 +136,7 @@ def veiculos(request):
     veiculos = Veiculo.objects.all()
 
     if request.method == 'POST':
-        form = CadastroVeiculo(request.POST)
+        form = CadastroVeiculo(request.POST, request.FILES)
         
         if form.is_valid():
             form.save()
@@ -158,7 +158,7 @@ def remover_veiculo(request, pk):
 @require_POST
 def editar_veiculo(request, pk):
     veiculo = get_object_or_404(Veiculo, pk=pk)
-    form = CadastroVeiculo(request.POST, instance=veiculo)
+    form = CadastroVeiculo(request.POST, request.FILES, instance=veiculo)
 
     if form.is_valid():
         form.save()

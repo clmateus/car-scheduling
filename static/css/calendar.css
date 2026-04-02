@@ -41,8 +41,8 @@
     color: #6c757d;
 }
 
-.container .modal-body {
-    color: #453345;
+body {
+    background-color: #FFFAF0 ;
 }
 
 .form-floating justify-content-center {
@@ -78,6 +78,23 @@
     box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
 }
 
+input.form-control {
+    padding-top: 10px !important;    /* Ajuste conforme a altura do campo */
+    padding-bottom: 10px !important;
+    line-height: normal !important;  /* Evita que o texto flutue na vertical */
+}
+/* Faz o texto sumir instantaneamente no foco, evitando que o cursor "brigue" com ele */
+input:focus::placeholder {
+    color: transparent;
+}
+.form-floating > .form-control {
+    padding-top: 0.625rem !important; /* Padding normal de um input */
+}
+
+.form-floating > label {
+    display: none; /* Se você quer apenas o placeholder fixo */
+}
+
 .navbar-toggler {
     width: 80px;
     padding: 0.3rem 0.5rem;
@@ -100,4 +117,45 @@
     text-align: center;
     margin: 0;       /* remove qualquer margem */
     padding: 0;   
+}
+.nav-link{
+    color: #fff;
+}
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+    background-color: #87CEFA;
+}
+/* Ajuste na sidebar para não quebrar o layout flex */
+/* Sidebar Estática e Fixa na lateral esquerda */
+/* Sidebar principal */
+.sidebar {
+    width: 280px;
+    min-width: 280px;
+    height: 100vh;
+    transition: all 0.3s ease-in-out;
+    background-color: #212529;
+    z-index: 1000;
+}
+
+/* Quando estiver fechada, ela fica fininha (largura do botão) */
+.sidebar.closed {
+    width: 80px; /* Largura suficiente apenas para o botão */
+    min-width: 80px;
+}
+
+/* Conteúdo interno que deve sumir */
+.sidebar-content {
+    transition: opacity 0.2s ease;
+    opacity: 1;
+}
+
+/* Esconde o conteúdo quando a sidebar estiver fechada */
+.sidebar.closed .sidebar-content {
+    display: none; /* Remove do layout */
+    opacity: 0;
+}
+
+/* Ajuste do botão para não sumir */
+.menu-btn {
+    width: 100%;
+    cursor: pointer;
 }

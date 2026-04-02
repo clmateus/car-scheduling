@@ -12,7 +12,7 @@
             <div class="row g-0">
                 <div class="col-md-4">
                     {% if veiculo.foto %}
-                        <img src="..." class="img-fluid rounded-start" alt="...">
+                        <img src="{{ veiculo.foto.url }}" class="img-fluid rounded-start" width="100%" height="100%" alt="...">
                     {% else %}
                         <svg aria-label="Placeholder: Image" class="bd-placeholder-img img-fluid rounded-start" preserveAspectRatio="xMidYMid slice" role="img" width="100%" xmlns="http://www.w3.org/2000/svg"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="15%" y="50%" fill="#dee2e6" dy=".3em">Image Not Found</text></svg>
                     {% endif %}
@@ -34,7 +34,8 @@
                     hx-confirm="Tem certeza que deseja remover esse veículo?" 
                     hx-target="closest .card" 
                     hx-swap="outerHTML" 
-                    style="display: inline;">
+                    style="display: inline;"
+                    >
                     
                     {% csrf_token %}
                     <button type="submit" class="btn btn-outline-danger">
@@ -57,14 +58,17 @@
                     hx-target="#card_{{ veiculo.id }}" 
                     hx-swap="outerHTML"
                     class="form-control"
+                    enctype="multipart/form-data"
                 >
                     {% csrf_token %}
                     <label class="form-label">Modelo</label>
                     <input type="text" name="modelo" value="{{ veiculo.modelo }}" class="form-control" required>
                     <label class="form-label">Marca</label>
-                    <input type="text" name="modelo" value="{{ veiculo.marca }}" class="form-control" required>
+                    <input type="text" name="marca" value="{{ veiculo.marca }}" class="form-control" required>
                     <label class="form-label">Placa</label>
-                    <input type="text" name="modelo" value="{{ veiculo.placa }}" class="form-control" required>
+                    <input type="text" name="placa" value="{{ veiculo.placa }}" class="form-control" required>
+                    <label class="form-label">Foto</label>
+                    <input type="file" name="foto" value="{{ veiculo.foto }}" class="form-control">
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-success">Salvar Alterações</button>
@@ -83,7 +87,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="post" class="form-control">
+                <form method="post" class="form-control" enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <div class="modal-footer">

@@ -12,11 +12,13 @@
 <body class="d-flex flex-column vh-100 overflow-hidden">
     <div class="d-flex flex-nowrap flex-grow-1">
         {% if user.is_authenticated %}
-        {% include 'partials/sidebar.html' %}
+            {% include 'partials/sidebar.html' %}
         {% endif %}
-        {% block content %}
-        {% endblock content %}
-
+        
+        <main class="flex-grow-1 p-4 overflow-auto">
+            {% block content %}
+            {% endblock content %}
+        </main>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js"></script>
@@ -25,6 +27,6 @@
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz" crossorigin="anonymous"></script>
 
    <link rel="stylesheet" href="{% static 'css/calendar.css' %}">
-  
+  <script src="{% static 'JS/sideBar.js' %}"></script>
 </body>
 </html>

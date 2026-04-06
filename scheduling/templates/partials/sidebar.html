@@ -1,5 +1,5 @@
 {% load authenticate_user %}
-<div id="wrapper" class="animate">
+<div id="wrapper" class="animate mobile-menu">
   <nav class="navbar header-top fixed-top navbar-expand-lg navbar-dark bg-dark">
       <a class="navbar-brand" href="/#">
         <i class="fa fa-book" aria-hidden="true"></i> Agenda de Carros</a>
@@ -48,63 +48,40 @@
           <i class="fas fa-sign-out-alt shortmenu animate"></i>
         </a>
       </li>
-
-       <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
       </ul>
     </div>
   </nav>
 </div>
+  <!-- Menu Bottom Mobile/Tablet -->
+   
+<nav class="bottom-nav">
+  <a href="/#" class="bottom-nav__item">
+    <i class="fas fa-home"></i>
+    <span>Início</span>
+  </a>
 
- 
-{% comment %}
-  {% if user.is_authenticated %}
-  <ul class="nav nav-pills flex-column mb-auto">
-    
-    <li class="nav-item">
-        <a href="{% url 'index' %}" 
-          class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}"><i class="bi bi-house-door"></i>
-            Início
-        </a>
-    </li>
-    <li class="nav-item">
-        <a href="{% url 'veiculos' %}" class="nav-link {% if request.resolver_match.url_name == 'veiculos' %}active{% endif %}"><i class="bi bi-car-front"></i>
-            Veículos
-        </a>
-    </li>
-    <li class="nav-item">
-        <a href="{% url 'viagens' %}" 
-          class="nav-link {% if request.resolver_match.url_name == 'viagens' %}active{% endif %}"><i class="fa-solid fa-car-side"></i>
-            Viagens
-        </a>
-    </li>
-    <li class="nav-item">
-        <a href="{% url 'historico' %}" 
-          class="nav-link {% if request.resolver_match.url_name == 'historico' %}active{% endif %}"><i class="fa-solid fa-clock-rotate-left"></i>
-            Histórico
-        </a>
-    </li>
-  </ul>
-  <hr>
-  {% else %}
+  {% if user|has_group:'Gestores' %}
+  <a href="/veiculos" class="bottom-nav__item">
+    <i class="fas fa-car"></i>
+    <span>Veículos</span>
+  </a>
   {% endif %}
-  <div class="flex-grow-5 p-3">
-    {% if user.is_authenticated %}
-      <a href="" class="d-flex align-items-center text-white text-decoration-none">
-        <strong>{{ user.first_name }} {{ user.last_name }}</strong>
-      </a>
-        <p>{{ user.groups.first.name }}</p>
-      <form action="{% url 'logout' %}" method="post" style="display:inline;">
-          {% csrf_token %}
-          <button class="btn btn-danger" type="submit" >Sair</button>
-      </form>
-    {% else %}
-      <a href="{% url 'login' %}" class="text-light text-decoration-none"> 
-        Entrar
-        <svg class="" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="none" viewBox="0 0 24 24">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12H4m12 0-4 4m4-4-4-4m3-4h2a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-2"/>
-        </svg>
-      </a>
-    {% endif %}
-  </div>
-</div>
-{% endcomment %}
+
+  <a href="/viagens" class="bottom-nav__item">
+    <i class="fa fa-map"></i>
+    <span>Viagens</span>
+  </a>
+
+  {% if user|has_group:'Gestores' %}
+  <a href="/historico" class="bottom-nav__item">
+    <i class="fas fa-history"></i>
+    <span>Histórico</span>
+  </a>
+  {% endif %}
+
+  <a href="#" class="bottom-nav__item" onclick="document.getElementById('logout-form').submit()">
+    <i class="fas fa-sign-out-alt"></i>
+    <span>Sair</span>
+  </a>
+</nav>
+  <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>

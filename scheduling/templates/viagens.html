@@ -15,7 +15,7 @@
                 <p class="card-text"><i class="bi bi-pin-map"></i>{{ viagem.destino }}</p>
                 <p class="card-text"><i class="bi bi-arrow-right"></i>{{ viagem.dataPartida }}</p>
                 <p class="card-text"><i class="bi bi-arrow-left"></i>{{ viagem.dataChegada }}</p>
-                <p class="card-text"><i class="bi bi-people"></i>{{ viagem.passageiros }}</p>
+                <p class="card-text {% if viagem.passageiros == 5 %}text-danger{% endif %}"><i class="bi bi-people"></i>{{ viagem.passageiros }}</p>
                 {% if viagem.passageiros < 5 %}
                     <a href="https://i.pinimg.com/736x/3f/02/26/3f0226750c3c4448e207bd0a1b2224d7.jpg" target="_blank" class="btn btn-primary">Entrar em contato</a>
                 {% endif %}

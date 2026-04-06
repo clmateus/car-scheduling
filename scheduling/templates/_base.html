@@ -11,6 +11,7 @@
 
 <body class="d-flex flex-column vh-100">
     <div class="d-flex flex-nowrap flex-grow-1">
+        
         {% if user.is_authenticated %}
             {% include 'partials/sidebar.html' %}
         {% endif %}
@@ -19,7 +20,7 @@
             {% block content %}
             {% endblock content %}
         </main>
-    </div>
+    
 
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.20/index.global.min.js"></script>
@@ -29,4 +30,5 @@
    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
 </body>
+</div>
 </html>

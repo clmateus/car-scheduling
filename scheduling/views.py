@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
 from django.core.files.base import ContentFile
 from django.utils import timezone
@@ -12,6 +12,9 @@ from PIL import Image
 import json
 import io
 import random
+
+def is_gestor(user):
+    return user.groups.filter(name='Gestores').exists() or user.is_superuser
 
 def sideBarTEST(request):
     return render(request, 'sideBarTEST.html')
@@ -139,6 +142,7 @@ def listar_agendamentos(request):
     return JsonResponse(eventos, safe=False)
 
 @login_required
+@user_passes_test(is_gestor, login_url='/')
 def remover_agendamento(request, pk):
     agendamento = get_object_or_404(Agendamento, pk=pk)
     agendamento.delete()
@@ -147,6 +151,7 @@ def remover_agendamento(request, pk):
     return response
 
 @login_required
+@user_passes_test(is_gestor, login_url='/')
 def editar_agendamento(request, pk):
     agendamento = get_object_or_404(Agendamento, pk=pk)
 
@@ -185,6 +190,7 @@ def editar_agendamento(request, pk):
     return render(request, 'edicao_form.html', {'form': form, 'agendamento_id': pk})
 
 @login_required
+@user_passes_test(is_gestor, login_url='/')
 def veiculos(request):
     todos_veiculos = Veiculo.objects.all()
 
@@ -218,6 +224,7 @@ def veiculos(request):
     return render(request, 'veiculos.html', {'veiculos': todos_veiculos, 'form': form})
 
 @login_required
+@user_passes_test(is_gestor, login_url='/')
 @require_POST
 def remover_veiculo(request, pk):
     veiculo = get_object_or_404(Veiculo, pk=pk)
@@ -225,6 +232,7 @@ def remover_veiculo(request, pk):
     return HttpResponse('')
 
 @login_required
+@user_passes_test(is_gestor, login_url='/')
 @require_POST
 def editar_veiculo(request, pk):
     veiculo = get_object_or_404(Veiculo, pk=pk)
@@ -246,6 +254,7 @@ def viagens(request):
     return render(request, 'viagens.html', {'proximas_viagens': proximas_viagens, 'veiculos': veiculos})
 
 @login_required
+@user_passes_test(is_gestor, login_url='/')
 def alterar_veiculo(request, pk):
     if request.method == 'POST':
         veiculo_id = request.POST.get('selectVeiculos')
@@ -259,6 +268,7 @@ def alterar_veiculo(request, pk):
         return resposta
 
 @login_required
+@user_passes_test(is_gestor, login_url='/')
 def historico(request):
     todas_as_viagens = Agendamento.objects.all().order_by('dataPartida').reverse()        
 

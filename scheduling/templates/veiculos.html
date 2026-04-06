@@ -1,12 +1,10 @@
 {% extends '_base.html' %}
 {% block content %}
     <div class="container">
-        <h2 class="mt-5">Veículos</h2>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_insercao">
+        <h2 class="mt-5">Veículos <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_insercao">
             Adicionar um carro
-        </button>
+        </button></h2>
         <h3 class="mt-5">Todos os carros</h3>
-        
         {% for veiculo in veiculos %}
         <div class="card mb-3" id="card_{{ veiculo.id }}" style="max-width: 540px;">
             <div class="row g-0">

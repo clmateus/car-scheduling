@@ -22,8 +22,9 @@
         padding: .75rem .75rem;
         border-radius: 0.5rem;
         border: 1px solid #F5F5F5;
-        max-width: 480px;
+        max-width: 400px;
         margin: 0 auto;
+        transform: translate(0%, -10%);
     }
 
     .login-form .form-control {
@@ -237,10 +238,69 @@ body{
     opacity: 1 !important;
 }
 .btn-primary {
-    background-color: #089994;
-    border-bottom: none;
-    border-color: #089994;
+    border-color: #4f8e8d;
+    background-image: linear-gradient(to right, #213d5d, #4f8e8d);
+    border: none;
+    color: white;
+    padding: 7px 15px;
+    border-radius: 7px;
+    cursor: pointer;
 }
 .table {
     border: 2px solid #333;
+}
+
+.bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+
+  #wrapper {
+    display: none;
+    
+  }
+
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 62px;
+    background-color: #212529; 
+    border-top: 1px solid #50575d;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1050;
+  }
+
+  .bottom-nav__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #adb5bd;
+    font-size: 0.65rem;
+    gap: 4px;
+    flex: 1;
+    height: 100%;
+    transition: color 0.2s ease;
+  }
+
+  .bottom-nav__item:hover,
+  .bottom-nav__item.active {
+    color: #ffffff;
+  }
+
+  .bottom-nav__item i {
+    font-size: 1.2rem;
+    float: none !important;
+    display: block !important;
+  }
+
+  body {
+    padding-bottom: 62px;
+  }
 }

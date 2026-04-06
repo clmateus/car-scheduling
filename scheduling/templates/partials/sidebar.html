@@ -1,13 +1,62 @@
+{% load authenticate_user %}
 <div id="wrapper" class="animate">
-    <nav class="navbar header-top fixed-top navbar-expand-lg navbar-dark bg-dark">
-      <a class="navbar-brand" href="#">Agenda de Carros</a>
+  <nav class="navbar header-top fixed-top navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="/#">
+        <i class="fa fa-book" aria-hidden="true"></i> Agenda de Carros</a>
 
-          <!-- Parou aqui -->
+    <div class="collapse navbar-collapse" id="navbarText">
+      <ul class="navbar-nav animate side-nav">
 
+      <li class="nav-item">
+        <a class="nav-link" href="/#" title="Inicio">
+          <i class="fas fa-home"></i> Início
+          <i class="fas fa-home shortmenu animate"></i>
+        </a>
+      </li>
 
-  <span class="fs-4">Agenda de Carros</span>
-    <hr>
+      {% if user|has_group:'Gestores' %}
+        <li class="nav-item">
+          <a class="nav-link" href="/veiculos" title="Veiculos">
+            <i class="fas fa-car"></i> Veículos
+            <i class="fas fa-car shortmenu animate"></i>
+          </a>
+        </li>
+      {% endif %}
 
+      <li class="nav-item">
+        <a class="nav-link" href="/viagens" title="Viagens">
+          <i class="fa fa-map" aria-hidden="true"></i> Viagens
+          <i class="fa fa-map shortmenu animate"></i>
+        </a>
+      </li>
+
+      {% if user|has_group:'Gestores' %}
+      <li class="nav-item">
+        <a class="nav-link" href="/historico" title="Historico">
+          <i class="fas fa-history"></i> Histórico
+          <i class="fas fa-history shortmenu animate"></i>
+        </a>
+      </li>
+      {% endif %}
+
+      <li class="nav-item sidebar-footer mt-auto">
+        <form id="logout-form" action="{% url 'logout' %}" method="post">
+          {% csrf_token %}
+        </form>
+        <a class="nav-link" href="#" onclick="document.getElementById('logout-form').submit()">
+          <i class="fas fa-sign-out-alt"></i> Sair
+          <i class="fas fa-sign-out-alt shortmenu animate"></i>
+        </a>
+      </li>
+
+       <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+      </ul>
+    </div>
+  </nav>
+</div>
+
+ 
+{% comment %}
   {% if user.is_authenticated %}
   <ul class="nav nav-pills flex-column mb-auto">
     
@@ -58,3 +107,4 @@
     {% endif %}
   </div>
 </div>
+{% endcomment %}

@@ -16,6 +16,6 @@ urlpatterns = [
     path('editar_agendamento/<int:pk>/', views.editar_agendamento, name='editar_agendamento'), # New
     path('viagens/', views.viagens, name='viagens'),
     path('historico/', views.historico, name='historico'),
-    path('sideBarTEST', views.sideBarTEST, name='sideBarTEST')
-
+    path('sideBarTEST', views.sideBarTEST, name='sideBarTEST'),
+    path('alteral_veiculo/<int:pk>/', views.alterar_veiculo, name='alterar_veiculo')
 ]

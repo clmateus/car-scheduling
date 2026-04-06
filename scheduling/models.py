@@ -16,6 +16,7 @@ class Agendamento(models.Model):
     dataPartida = models.DateTimeField()
     dataChegada = models.DateTimeField()
     destino = models.TextField(blank=True)
+    passageiros = models.IntegerField(default=1)
 
     def __str__(self):
         return f'{self.destino} - {self.motorista} - {self.dataPartida} - {self.dataChegada}'

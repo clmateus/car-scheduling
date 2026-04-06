@@ -1,15 +1,22 @@
 {% extends '_base.html' %}
+{% load static %}
 {% block content %}
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
+    
 <div class="container-fluid">
     <main class="form-signin w-100 m-auto">
     <form method="post" class="login-form mt-4">
         {% csrf_token %}
-        <div class="form-floating justify-content-center mb-3">
-            <input type="text" id="user" name="username" class="form-control" Placeholder="Usuário" value required autofocus>
+        <div class="text-center mb-4">
+            <img src="{% static 'img/Lanmax.png' %}" alt="Lanmax" width="200">
         </div>
-        <div class="form-floating justify-content-center mb-3">
-            <input type="password" id="password" name="password" class="form-control"Placeholder="Senha" value required autofocus>
+        <div class="form-floating mb-3">
+            <input type="text" id="user" name="username" class="form-control" placeholder="Usuário" value required autofocus>
+            <label for="user">Usuário</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="password" id="password" name="password" class="form-control" placeholder="Senha" value required autofocus>
+            <label for="password">Senha</label>
         </div>
         {% if form.errors %}
             <div style="padding: 15px; 
@@ -20,8 +27,9 @@
                 Usuário e/ou Senha incorreta!
             </div>
         {% endif %}
-        <button type="submit" class="btn btn-primary w-100 py-2">Entrar</button>
+        <button type="submit" class="btn btn-primary w-100 py-2"><i class="fa fa-sign-in" aria-hidden="true"></i> Entrar</button>
     </form>
+
 </main>
 </div>
 {% endblock %}

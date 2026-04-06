@@ -1,24 +1,26 @@
 {% extends "_base.html" %}
-
+{% load authenticate_user %}
 {% block content %}
-  <!-- Modals -->
   <script>
   document.addEventListener('DOMContentLoaded', function() {
+    let telaMobile = window.innerWidth < 768;
     var modalEvento = new bootstrap.Modal(document.getElementById('modal_evento'));
     var modalInsercao = new bootstrap.Modal(document.getElementById('modal_insercao'));
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
-      themeSystem: 'bootstrap5',
-      height: 800,
       locale: 'pt-br',
-      initialView: 'dayGridMonth',
+      initialView: telaMobile ? 'timeGridDay' : 'dayGridMonth',
+      height: 'auto',
+      width: 'auto',
       timeZone: 'local',
       nowIndicator: true,
       selectable: true,
       navLinks: false,
       editable: true,
+      allDaySlot: false,
+      titleFormat: telaMobile ? { month: 'short', day: '2-digit' } : { month: 'long' },
       headerToolbar: {
-        left: '',
+        left: 'title',
         center: '',
         right: 'prev,next'
     },
@@ -61,8 +63,10 @@
         if (typeof htmx !== 'undefined') htmx.process(formRemover);
 
         const btnEditar = document.getElementById('btnEditarEvento');
-        btnEditar.setAttribute('hx-get', `{% url 'editar_agendamento' 0 %}`.replace('0', eventId));
-        if (typeof htmx !== 'undefined') htmx.process(btnEditar);
+        if (btnEditar) {
+          btnEditar.setAttribute('hx-get', `{% url 'editar_agendamento' 0 %}`.replace('0', eventId));
+          if (typeof htmx !== 'undefined') htmx.process(btnEditar);
+        }
 
         modalEvento.show()
       },
@@ -90,6 +94,16 @@
             console.error('Erro:', error)
             info.revert()
           })
+      },
+      windowResize: function(info) {
+        let telaMobile = window.innerWidth < 768;
+        if (telaMobile) {
+          calendar.changeView('timeGridDay');
+          calendar.setOption('titleFormat', { month: 'short', day: '2-digit' });
+        } else {
+          calendar.changeView('dayGridMonth');
+          calendar.setOption('titleFormat', { month: 'long' });
+        }
       }
     });
     calendar.render();
@@ -97,7 +111,6 @@
     document.body.addEventListener('atualizarCalendario', function() {
       calendar.refetchEvents();
       
-      // Fechar todos os modais abertos após uma inserção, edição ou exclusão com sucesso
       ['modal_insercao', 'modal_edicao', 'modal_evento'].forEach(function(modalId) {
         var modalEl = document.getElementById(modalId);
         if (modalEl) {
@@ -124,7 +137,7 @@
     }
   </style>
   <div class="container">
-    <h2 class="mt-3">Agende uma viagem clicando em um dia</h2>
+    <h2 class="mt-5">Agende uma viagem clicando em um dia</h2>
     <div id="calendar"></div>
   </div>
   
@@ -149,23 +162,24 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-            <button type="button" class="btn btn-primary" 
-                    id="btnEditarEvento"
-                    data-bs-toggle="modal" 
-                    data-bs-target="#modal_edicao"
-                    data-bs-dismiss="modal" {# Fecha o modal_evento ao abrir o modal_edicao #}
-                    hx-get="{% url 'editar_agendamento' 0 %}" {# Placeholder para o ID, será atualizado pelo JS #}
-                    hx-target="#modalEdicaoBody"
-                    hx-swap="innerHTML">
-                Editar
-            </button>
-            
-            <form id="formRemoverAgendamento" {# Adicionado ID para JS #}
-                    hx-post="" {# Será preenchido pelo JS #}
-                    hx-swap="none"
-                >
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Excluir</button>
+            {% if user|has_group:'Gestores' %}
+              <button type="button" class="btn btn-primary" 
+                      id="btnEditarEvento"
+                      data-bs-toggle="modal" 
+                      data-bs-target="#modal_edicao"
+                      data-bs-dismiss="modal" {# Fecha o modal_evento ao abrir o modal_edicao #}
+                      hx-get="{% url 'editar_agendamento' 0 %}" {# Placeholder para o ID, será atualizado pelo JS #}
+                      hx-target="#modalEdicaoBody"
+                      hx-swap="innerHTML">
+                  Editar
+              </button>
+            {% else %}
+            {% endif %}
+            <form id="formRemoverAgendamento" hx-post="" hx-swap="none">
+              {% csrf_token %}
+              {% if user|has_group:'Gestores' %}
+                  <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Excluir</button>
+            {% endif %}
             </form>
           </div>
         </div>
@@ -191,6 +205,8 @@
               <input type="datetime-local" class="form-control" name="dataHoraChegada" id="dataHoraChegada">
               <label for="destino" class="form-label">Destino</label>
               <input type="text" class="form-control" name="destino" id="destino">
+              <label for="passageiros" class="form-label">Quantidade de Passageiros</label>
+              <input type="number" class="form-control" name="passageiros" id="passageiros" min=1 max=5 value=1>
               <div id="resultadoModal" class="mt-3"></div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>

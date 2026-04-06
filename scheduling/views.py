@@ -27,6 +27,7 @@ def agendar(request):
         dataHoraPartida = request.POST.get('dataHoraPartida')
         dataHoraChegada = request.POST.get('dataHoraChegada')
         destino = request.POST.get('destino')
+        passageiros = request.POST.get('passageiros')
 
         # Verifica se todos os campos vieram preenchidos
         if all([motorista, dataHoraPartida, dataHoraChegada, destino]):
@@ -73,7 +74,8 @@ def agendar(request):
                     motorista=motorista, 
                     dataPartida=partida_dt, 
                     dataChegada=chegada_dt, 
-                    destino=destino
+                    destino=destino,
+                    passageiros=passageiros
                 )
 
             # Só chega aqui se o agendamento deu certo
@@ -239,10 +241,25 @@ def editar_veiculo(request, pk):
 @login_required
 def viagens(request):
     proximas_viagens = Agendamento.objects.filter(dataPartida__gt=timezone.now()).order_by('dataPartida')
-    return render(request, 'viagens.html', {'proximas_viagens': proximas_viagens})
+    veiculos = Veiculo.objects.all()
+
+    return render(request, 'viagens.html', {'proximas_viagens': proximas_viagens, 'veiculos': veiculos})
+
+@login_required
+def alterar_veiculo(request, pk):
+    if request.method == 'POST':
+        veiculo_id = request.POST.get('selectVeiculos')
+        
+        agendamento = get_object_or_404(Agendamento, pk=pk)
+        agendamento.veiculo_id = veiculo_id
+        agendamento.save()
+
+        resposta = HttpResponse()
+        resposta['HX-Refresh'] = 'true'
+        return resposta
 
 @login_required
 def historico(request):
-    todas_as_viagens = Agendamento.objects.all().order_by('dataPartida')
+    todas_as_viagens = Agendamento.objects.all().order_by('dataPartida').reverse()        
 
     return render(request, 'historico.html', {'todas_as_viagens': todas_as_viagens})

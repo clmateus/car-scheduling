@@ -1,21 +1,59 @@
 {% extends '_base.html' %}
 {% block content %}
+{% load authenticate_user %}
 <div class="container">
-    <h3 class="mt-3">Próximas viagens</h3>
-    {% for viagem in proximas_viagens %}
-    <div class="card mb-3">
-        <div class="card-header">
-            <strong>Status:</strong> Confirmado <span class="status-dot bg-success rounded-circle d-inline-block me-2"></span>
+    <h3 class="mt-5">Próximas viagens</h3>
+    {% if proximas_viagens %}
+        {% for viagem in proximas_viagens %}
+        <div class="card mb-3">
+            <div class="card-header">
+                <strong>Status:</strong> Previsto <span class="status-dot bg-success rounded-circle d-inline-block me-2"></span>
+            </div>
+            <div class="card-body ">
+                <i class="bi bi-car-front"> {{ viagem.veiculo.modelo}} {{ viagem.veiculo.marca }}</i>
+                <p class="card-text"><i class="bi bi-person"></i>{{ viagem.motorista }}</p>
+                <p class="card-text"><i class="bi bi-pin-map"></i>{{ viagem.destino }}</p>
+                <p class="card-text"><i class="bi bi-arrow-right"></i>{{ viagem.dataPartida }}</p>
+                <p class="card-text"><i class="bi bi-arrow-left"></i>{{ viagem.dataChegada }}</p>
+                <p class="card-text"><i class="bi bi-people"></i>{{ viagem.passageiros }}</p>
+                {% if viagem.passageiros < 5 %}
+                    <a href="https://i.pinimg.com/736x/3f/02/26/3f0226750c3c4448e207bd0a1b2224d7.jpg" target="_blank" class="btn btn-primary">Entrar em contato</a>
+                {% endif %}
+                {% if user|has_group:'Gestores' %}
+                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalAlterarVeiculo{{ viagem.id }}">Alterar Veículo</button>
+                {% endif %}
+            </div>
         </div>
-        <div class="card-body ">
-            <i class="bi bi-car-front"> {{ viagem.veiculo.modelo}} {{ viagem.veiculo.marca }}</i>
-            <p class="card-text"><i class="bi bi-person"></i>{{ viagem.motorista }}</p>
-            <p class="card-text"><i class="bi bi-pin-map"></i>{{ viagem.destino }}</p>
-            <p class="card-text"><i class="bi bi-arrow-right"></i>{{ viagem.dataPartida }}</p>
-            <p class="card-text"><i class="bi bi-arrow-left"></i>{{ viagem.dataChegada }}</p>
+
+        <div class="modal fade" id="modalAlterarVeiculo{{ viagem.id }}">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form hx-post="{% url 'alterar_veiculo' viagem.id %}" hx-swap="none">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h5 class="modal-title">Alterar o veículo da viagem</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <select name="selectVeiculos" class="form-select">
+                                {% for veiculo in veiculos %}
+                                    <!-- Se o veículo atual da viagem for igual ao do for, marca com selected -->
+                                    <option value="{{ veiculo.id }}" {% if viagem.veiculo_id == veiculo.id %}selected{% endif %}>{{ veiculo.modelo }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-    </div>
-    {% endfor %}
+        {% endfor %}
+    {% else %}
+        <p class="mt-5">Nenhuma viagem marcada</p>
+    {% endif %}
 </div>
 
 <style>

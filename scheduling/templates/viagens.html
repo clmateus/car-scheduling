@@ -2,10 +2,10 @@
 {% block content %}
 {% load authenticate_user %}
 <div class="container">
-    <h3 class="mt-5">Próximas viagens</h3>
+    <h3 class="mt-1">Próximas viagens</h3>
     {% if proximas_viagens %}
         {% for viagem in proximas_viagens %}
-        <div class="card mb-3">
+        <div class="card mb-3" id="cardViagem{{ viagem.id }}">
             <div class="card-header">
                 <strong>Status:</strong> Previsto <span class="status-dot bg-success rounded-circle d-inline-block me-2"></span>
             </div>
@@ -39,6 +39,20 @@
                 {% if user|has_group:'Gestores' %}
                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalAlterarVeiculo{{ viagem.id }}">Alterar Veículo</button>
                 {% endif %}
+                {% if user|has_group:'Gestores' or viagem.usuario == user %}
+                    <button type="button" class="btn btn-primary"
+                        data-bs-toggle="modal" 
+                        data-bs-target="#modalEdicao"
+                        hx-get="{% url 'editar_agendamento' viagem.id %}"
+                        hx-target="#modalEdicaoBody"
+                        hx-swap="innerHTML">
+                            Editar
+                    </button>
+                    <form hx-post="{% url 'remover_agendamento' viagem.id %}" hx-target="#cardViagem{{ viagem.id }}" hx-swap="outerHTML" class="d-inline-block">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Excluir</button>
+                    </form>
+                {% endif %}
             </div>
         </div>
 
@@ -67,10 +81,28 @@
                 </div>
             </div>
         </div>
+
         {% endfor %}
     {% else %}
         <p class="mt-5">Nenhuma viagem marcada</p>
     {% endif %}
+
+    <!-- Modal de Edição -->
+    <div class="modal fade" id="modalEdicao" tabindex="-1" aria-labelledby="modalEdicaoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEdicaoLabel">Editar Agendamento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body" id="modalEdicaoBody">
+                    <!-- O conteúdo do formulário será injetado aqui pelo HTMX -->
+                    <div class="text-center"><div class="spinner-border" role="status"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 </div>
 
 <style>
@@ -89,4 +121,11 @@
     }
 }
 </style>
+<script>
+document.body.addEventListener('closeModalEdicao', function() {
+    // Recarrega a página ao editar um agendamento com sucesso
+    // para que os dados atualizados sejam refletidos nos cards
+    window.location.reload();
+});
+</script>
 {% endblock %}

@@ -45,13 +45,6 @@ body {
     background-color: #FFFAF0 ;
 }
 
-.form-floating justify-content-center {
-    position: relative;
-    padding: 1rem .75rem;
-    box-sizing: border-box;
-    display: block;
-
-}
 /* Container do input */
 .form-group {
     position: relative;

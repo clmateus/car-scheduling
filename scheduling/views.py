@@ -16,9 +16,6 @@ import random
 def is_gestor(user):
     return user.groups.filter(name='Gestores').exists() or user.is_superuser
 
-def sideBarTEST(request):
-    return render(request, 'sideBarTEST.html')
-
 @login_required
 def index(request):
     return render(request, 'index.html')
@@ -260,7 +257,12 @@ def editar_veiculo(request, pk):
 
 @login_required
 def viagens(request):
-    proximas_viagens = Agendamento.objects.filter(dataPartida__gt=timezone.now()).order_by('dataPartida')
+    q = request.GET.get('q', '').strip()
+    if q:
+        proximas_viagens = Agendamento.objects.filter(id=q)
+    else:
+        proximas_viagens = Agendamento.objects.filter(dataPartida__gt=timezone.now()).order_by('dataPartida')
+    
     veiculos = Veiculo.objects.all()
 
     for viagem in proximas_viagens:

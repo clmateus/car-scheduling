@@ -11,7 +11,9 @@
         min-height: 100vh; 
         width: 100%;
     }
-
+    h2.container {
+        --bs-gutter-x: 0.1rem;
+    }
     #calendar a {
         text-decoration: none;
     }
@@ -39,10 +41,6 @@
 
     .login-form .form-control::placeholder {
         color: #6c757d;
-    }
-
-    body {
-        background-color: #FFFAF0 ;
     }
 
     .form-floating justify-content-center {
@@ -92,9 +90,6 @@
         display: none; 
     }
 
-    #wrapper {
-        padding:90px 15px;
-    }
     .navbar-expand-lg .navbar-nav.side-nav{
         flex-direction: column;
     }
@@ -112,11 +107,11 @@
     }
 
     body{
-    background:#f9f9f9;
+        background:#f9f9f9;
+        padding-top: 56px;
     }
-
     #wrapper{
-    padding:90px 15px;
+        padding:90px 15px;
     }
     .navbar-expand-lg .navbar-nav.side-nav{
         flex-direction: column;
@@ -250,16 +245,25 @@
     .bottom-nav {
     display: none;
     }
+    #calendar {
+      text-transform: capitalize;
+    }
+    #calendar a {
+      text-decoration: none;
+      color: #000;
+    }
+    .fc-event {
+      cursor: pointer;
+    }
 
 @media (max-width: 768px) {
-        
+    
     main.main-content {
-        padding-top: 72px !important;
-        padding-bottom: 80px !important;
+        padding-top: 56px !important; 
     }
 
     main {
-        padding-top: 70px !important;
+        padding-top: 0 !important; 
     }
 
     #wrapper {
@@ -305,7 +309,13 @@
         display: block !important;
     }
 
+
     body {
-        padding-bottom: 62px;
+        padding-top: 1px; 
+        padding-bottom: 1px;
+    }
+
+    .navbar {
+        min-height: 1px;
     }
 }

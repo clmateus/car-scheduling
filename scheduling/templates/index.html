@@ -1,202 +1,9 @@
 {% extends "_base.html" %}
 {% load authenticate_user %}
 {% block content %}
-  <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    let telaMobile = window.innerWidth < 768;
 
-    if(telaMobile){
-      document.getElementById('tituloPrincipal').innerHTML = 'Mobile'
-    } else {
-      document.getElementById('tituloPrincipal').innerHTML = 'Desktop'
-    }
-
-    var modalEvento = new bootstrap.Modal(document.getElementById('modal_evento'));
-    var modalInsercao = new bootstrap.Modal(document.getElementById('modal_insercao'));
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-      locale: 'pt-br',
-      initialView: telaMobile ? 'timeGridDay' : 'dayGridMonth',
-      height: 'auto',
-      timeZone: 'local',
-      nowIndicator: true,
-      selectable: true,
-      navLinks: false,
-      eventTextColor: '#fff',
-      eventColor: '#3a86ad',
-      eventDisplay: 'block',
-      allDaySlot: false,
-      titleFormat: telaMobile ? { month: 'short', day: '2-digit' } : { month: 'long' },
-      headerToolbar: {
-        left: 'title',
-        center: '',
-        right: 'prev,next'
-    },
-      buttonText: {
-        day: 'Hoje',
-        month: 'Mês',
-        today: 'Hoje',
-      },
-      eventTimeFormat: {
-        hour12: false,
-        hour: '2-digit',
-        minute: '2-digit'
-      },
-      events: 'api/eventos',
-      dateClick: function(info){
-        let dataFormatada = info.dateStr;
-
-        if (dataFormatada.length === 10) {
-          dataFormatada += 'T08:00';
-        } else {
-          dataFormatada = dataFormatada.substring(0, 16);
-        }
-        document.getElementById('dataHoraPartida').value = dataFormatada;
-        document.getElementById('dataHoraChegada').value = '';
-        modalInsercao.show()
-      },
-      eventClick: function(info){
-        const titulo = info.event.title
-        const inicio = info.event.start ? info.event.start.toLocaleString() : ''
-        const fim = info.event.end ? info.event.end.toLocaleString() : 'Não especificado'
-        const eventId = info.event.id;
-        const podeEditar = info.event.extendedProps.pode_editar;
-
-        document.getElementById('tituloEvento').innerHTML = titulo
-        document.getElementById('inicioEvento').innerHTML = `<strong>Partida:</strong> ${inicio}`
-        document.getElementById('fimEvento').innerHTML = `<strong>Volta:</strong> ${fim}`
-
-        // Atualiza o action do formulário de remoção com o ID do evento
-        const formRemover = document.getElementById('formRemoverAgendamento');
-        formRemover.setAttribute('hx-post', `{% url 'remover_agendamento' 0 %}`.replace('0', eventId));
-        if (typeof htmx !== 'undefined') htmx.process(formRemover);
-
-        const btnEditar = document.getElementById('btnEditarEvento');
-        const btnRemover = document.getElementById('btnRemoverEvento');
-
-        if (podeEditar) {
-          if (btnEditar) btnEditar.style.display = 'inline-block';
-          if (btnRemover) btnRemover.style.display = 'inline-block';
-          btnEditar.setAttribute('hx-get', `{% url 'editar_agendamento' 0 %}`.replace('0', eventId));
-          if (typeof htmx !== 'undefined') htmx.process(btnEditar);
-        } else {
-          if (btnEditar) btnEditar.style.display = 'none';
-          if (btnRemover) btnRemover.style.display = 'none';
-        }
-
-        modalEvento.show()
-      },
-      eventDrop: function(info) {
-        let dados = {
-          id: info.event.id,
-          start: info.event.start.toISOString(),
-          end: info.event.end ? info.event.end.toISOString() : null
-        }
-
-        if (!info.event.extendedProps.pode_editar) {
-          alert('Você não tem permissão para alterar este agendamento.');
-          info.revert();
-          return;
-        }
-
-        fetch("{% url 'mudar_dia_agendamento' %}", {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{csrf_token}}'
-          },
-          body: JSON.stringify(dados)
-        }).then(function(response) {
-          if (!response.ok) {
-              alert('Erro ao mudar o dia do evento!')
-              info.revert()
-            }
-          })
-          .catch(error => {
-            console.error('Erro:', error)
-            info.revert()
-          })
-      },
-      windowResize: function(info) {
-        let telaMobile = window.innerWidth < 768;
-        if (telaMobile) {
-          calendar.changeView('timeGridDay');
-          calendar.setOption('titleFormat', { month: 'short', day: '2-digit' });
-          document.getElementById('tituloPrincipal').innerHTML = 'Mobile'
-        } else {
-          calendar.changeView('dayGridMonth');
-          calendar.setOption('titleFormat', { month: 'long' });
-          document.getElementById('tituloPrincipal').innerHTML = 'Desktop'
-        }
-      }
-    });
-    calendar.render();
-
-    document.body.addEventListener('atualizarCalendario', function() {
-      calendar.refetchEvents();
-      
-      ['modal_insercao', 'modal_edicao', 'modal_evento'].forEach(function(modalId) {
-        var modalEl = document.getElementById(modalId);
-        if (modalEl) {
-          var modalInstance = bootstrap.Modal.getInstance(modalEl);
-          if (modalInstance) {
-            modalInstance.hide();
-          }
-        }
-      });
-    })
-
-    setInterval(function() {
-      calendar.refetchEvents();
-    }, 15000);
-
-      document.body.addEventListener('htmx:afterRequest', function(event) {
-    const form = event.detail.elt;
-    if (form.getAttribute('hx-post') && form.getAttribute('hx-post').includes('agendar')) {
-      if (event.detail.successful) {
-        const toastEl = document.getElementById('liveToast');
-        const toast = bootstrap.Toast.getOrCreateInstance(toastEl);
-        toast.show();
-      }
-    }
-  });
-
-  document.body.addEventListener('htmx:afterRequest', function(event) {
-  const form = event.detail.elt;
-
-  if (form.getAttribute('hx-post') && form.getAttribute('hx-post').includes('agendar')) {
-    if (event.detail.successful) {
-      const toastEl = document.getElementById('liveToast');
-      const toast = bootstrap.Toast.getOrCreateInstance(toastEl);
-      toast.show();
-    }
-  }
-
-  if (form.getAttribute('hx-post') && form.getAttribute('hx-post').includes('remover')) {
-    if (event.detail.successful) {
-      const toastEl = document.getElementById('liveToastCancelado');
-      const toast = bootstrap.Toast.getOrCreateInstance(toastEl);
-      toast.show();
-    }
-  }
-});
-
-  });
-  </script>
-  <style>
-    #calendar {
-      text-transform: capitalize;
-    }
-    #calendar a {
-      text-decoration: none;
-      color: #000;
-    }
-    .fc-event {
-      cursor: pointer;
-    }
-  </style>
   <div class="container">
-    <h2 class="mt-5" id='tituloPrincipal'></h2>
+    <h2 id='tituloPrincipal'></h2>
     <div id="calendar"></div>
   </div>
   
@@ -251,7 +58,7 @@
           <div class="modal-body">
             <form hx-post="{% url 'agendar' %}" hx-target="#resultadoModal" hx-swap="innerHTML" class="form-control">
               {% csrf_token %}
-              <label for="dataHoraPartida" class="form-label">Nome do motorista</label>
+              <label for="motorista" class="form-label">Nome do motorista</label>
               <input type="text" class="form-control" name="motorista" id="motorista">
               <label for="dataHoraPartida" class="form-label">Data e hora de Partida</label>
               <input type="datetime-local" class="form-control" name="dataHoraPartida" id="dataHoraPartida">
@@ -272,37 +79,29 @@
       </div>
    </div>
 
-   <!-- Modal de Edição -->
-   <div class="modal fade" id="modal_edicao" tabindex="-1" aria-labelledby="modalEdicaoLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalEdicaoLabel">Editar Viagem</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body" id="modalEdicaoBody">
-
-        </div>
+    <!-- Toast Sucesso -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+      <div id="liveToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            ✅ Reserva realizada com sucesso!
+          </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
       </div>
     </div>
-  </div>
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
-    <div id="liveToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <!-- Toast Cancelado -->
+    <div id="liveToastCancelado" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
       <div class="d-flex">
         <div class="toast-body">
-          ✅ Reserva realizada com sucesso!
+          ❌ Sua reserva foi cancelada.
         </div>
         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
       </div>
     </div>
-  
-  <div id="liveToastCancelado" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="d-flex">
-      <div class="toast-body">
-        ❌ Sua reserva foi cancelada.
-      </div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-    </div>
-  </div>
 </div>
+<script>
+    document.body.addEventListener('htmx:configRequest', function(event) {
+        event.detail.headers['X-CSRFToken'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    });
+</script>
 {% endblock content %}

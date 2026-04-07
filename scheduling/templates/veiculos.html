@@ -1,13 +1,16 @@
 {% extends '_base.html' %}
 {% block content %}
     <div class="container">
-        <h2>Veículos <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_insercao">
+        <h2 class="mt-2">Veículos <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_insercao">
             Adicionar um carro
         </button></h2>
-        <h3 class="mt-5">Todos os carros</h3>
+        <h3 class="mt-2">Todos os carros</h3>
+
+        <div class="veiculos-grid">
         {% for veiculo in veiculos %}
-        <div class="card mb-3" id="card_{{ veiculo.id }}" style="max-width: 540px;">
-            <div class="row g-0">
+        <div class="card mb-3" id="card_{{ veiculo.id }}">
+            
+            <div class="row g-2">
                 <div class="col-md-4">
                     {% if veiculo.foto %}
                         <img src="{{ veiculo.foto.url }}" class="img-fluid rounded-start w-100" style="height: 180px; object-fit: cover;" alt="...">
@@ -24,6 +27,7 @@
                     <p class="card-text"><small class="text-body-secondary">algum texto aqui</small></p>
                 </div>
                 </div>
+                <div class="spacer-bottom"></div>
             </div>
             <div class="position-absolute bottom-0 end-0 mb-2 me-2">
                 <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_editar_{{ veiculo.id }}">
@@ -79,6 +83,7 @@
           </div>
        </div>
        {% endfor %}
+       </div> <!-- /veiculos-grid -->
        <div class="modal fade" id="modal_insercao">
         <div class="modal-dialog">
             <div class="modal-content">

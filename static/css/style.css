@@ -98,6 +98,7 @@
         border-radius:0;
         box-shadow: 0 3px 5px rgba(0,0,0,.1);
     }
+
     .header-top{
         box-shadow: 0 3px 5px rgba(0,0,0,.1)
     }
@@ -143,9 +144,7 @@
     }
         /* Teste da Side bar*/
 
-    #wrapper{
-        padding: 90px 15px 15px 75px;
-    }
+
     .navbar-nav.side-nav:hover {
         left:0;
     }
@@ -245,6 +244,18 @@
     .bottom-nav {
     display: none;
     }
+
+    /* Grid de veículos */
+    .veiculos-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .veiculos-grid .card {
+        max-width: 100%;
+        margin-bottom: 0;
+    }
     #calendar {
       text-transform: capitalize;
     }
@@ -267,7 +278,7 @@
     }
 
     #wrapper {
-        display: none;
+        display: 0;
     }
 
     .bottom-nav {
@@ -281,7 +292,7 @@
         border-top: 1px solid #50575d;
         justify-content: space-around;
         align-items: center;
-        z-index: 1050;
+       
     }
 
     .bottom-nav__item {
@@ -309,7 +320,6 @@
         display: block !important;
     }
 
-
     body {
         padding-top: 1px; 
         padding-bottom: 1px;
@@ -318,4 +328,21 @@
     .navbar {
         min-height: 1px;
     }
+    .cards-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        
+    }
+    .cards-container .card {
+        max-width: 100%;
+        margin-bottom: 0;
+    }
+    .veiculos-grid {
+        grid-template-columns: 1fr;
+    }
+        .spacer-bottom {
+        height: 70px;
+    }
+
 }

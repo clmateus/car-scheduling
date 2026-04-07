@@ -29,16 +29,23 @@ class CadastroVeiculo(forms.ModelForm):
 class EdicaoForm(forms.ModelForm):
     class Meta:
         model = Agendamento
-        fields = ['motorista', 'dataPartida', 'dataChegada', 'destino']    
+        fields = ['motorista', 'dataPartida', 'dataChegada', 'destino', 'passageiros']    
         widgets = {
             'motorista': forms.TextInput(attrs={'class': 'form-control'}),
-            'dataPartida': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
-            'dataChegada': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
+            'dataPartida': forms.DateTimeInput(format='%Y-%m-%dT%H:%M', attrs={'type': 'datetime-local', 'class': 'form-control'}),
+            'dataChegada': forms.DateTimeInput(format='%Y-%m-%dT%H:%M', attrs={'type': 'datetime-local', 'class': 'form-control'}),
             'destino': forms.TextInput(attrs={'class': 'form-control'}),
+            'passageiros': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 5}),
         }
         labels = {
             'motorista': 'Nome do motorista',
             'dataPartida': 'Data e hora de Partida',
             'dataChegada': 'Data e hora da Volta',
             'destino': 'Destino',
+            'passageiros': 'Passageiros'
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['dataPartida'].input_formats = ('%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M')
+        self.fields['dataChegada'].input_formats = ('%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M')

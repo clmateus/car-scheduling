@@ -78,7 +78,8 @@ def agendar(request):
                     dataPartida=partida_dt, 
                     dataChegada=chegada_dt, 
                     destino=destino,
-                    passageiros=passageiros
+                    passageiros=passageiros,
+                    usuario=request.user
                 )
 
             # Só chega aqui se o agendamento deu certo
@@ -100,6 +101,9 @@ def mudar_dia_agendamento(request):
         try:
             agendamento = Agendamento.objects.get(id=dados.get('id'))
             
+            if not (is_gestor(request.user) or (hasattr(agendamento, 'usuario') and agendamento.usuario == request.user)):
+                return JsonResponse({'status': 'erro', 'mensagem': 'Você não tem permissão para alterar este agendamento.'}, status=403)
+
             novo_inicio = parse_datetime(dados.get('start'))
             novo_fim = parse_datetime(dados.get('end')) if dados.get('end') else None
 
@@ -137,23 +141,31 @@ def listar_agendamentos(request):
             'title': agendamento.motorista + ' -> ' + agendamento.destino,
             'start': agendamento.dataPartida.isoformat() if agendamento.dataPartida else None,
             'end': agendamento.dataChegada.isoformat() if agendamento.dataChegada else None,
+            'extendedProps': {
+                'pode_editar': is_gestor(request.user) or (hasattr(agendamento, 'usuario') and agendamento.usuario == request.user)
+            }
         })
 
     return JsonResponse(eventos, safe=False)
 
 @login_required
-@user_passes_test(is_gestor, login_url='/')
 def remover_agendamento(request, pk):
     agendamento = get_object_or_404(Agendamento, pk=pk)
+    
+    if not (is_gestor(request.user) or (hasattr(agendamento, 'usuario') and agendamento.usuario == request.user)):
+        return HttpResponse('Você não tem permissão para excluir este agendamento.', status=403)
+
     agendamento.delete()
     response = HttpResponse('')
     response['HX-Trigger'] = 'atualizarCalendario'
     return response
 
 @login_required
-@user_passes_test(is_gestor, login_url='/')
 def editar_agendamento(request, pk):
     agendamento = get_object_or_404(Agendamento, pk=pk)
+
+    if not (is_gestor(request.user) or (hasattr(agendamento, 'usuario') and agendamento.usuario == request.user)):
+        return HttpResponse('Você não tem permissão para editar este agendamento.', status=403)
 
     if request.method == 'POST':
         form = EdicaoForm(request.POST, instance=agendamento)
@@ -250,6 +262,23 @@ def editar_veiculo(request, pk):
 def viagens(request):
     proximas_viagens = Agendamento.objects.filter(dataPartida__gt=timezone.now()).order_by('dataPartida')
     veiculos = Veiculo.objects.all()
+
+    for viagem in proximas_viagens:
+        if viagem.veiculo and viagem.veiculo.placa and viagem.dataPartida:
+            placa_final = str(viagem.veiculo.placa)[-1]
+            dia_semana = viagem.dataPartida.weekday() # 0 = Segunda, 6 = Domingo
+            
+            # Regras de rodízio de São Paulo
+            rodizio_sp = {
+                0: ['1', '2'], # Segunda-feira
+                1: ['3', '4'], # Terça-feira
+                2: ['5', '6'], # Quarta-feira
+                3: ['7', '8'], # Quinta-feira
+                4: ['9', '0'], # Sexta-feira
+            }
+            
+            placas_proibidas = rodizio_sp.get(dia_semana, [])
+            viagem.em_rodizio = placa_final in placas_proibidas
 
     return render(request, 'viagens.html', {'proximas_viagens': proximas_viagens, 'veiculos': veiculos})
 

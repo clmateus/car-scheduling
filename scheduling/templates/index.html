@@ -4,6 +4,13 @@
   <script>
   document.addEventListener('DOMContentLoaded', function() {
     let telaMobile = window.innerWidth < 768;
+
+    if(telaMobile){
+      document.getElementById('tituloPrincipal').innerHTML = 'Mobile'
+    } else {
+      document.getElementById('tituloPrincipal').innerHTML = 'Desktop'
+    }
+
     var modalEvento = new bootstrap.Modal(document.getElementById('modal_evento'));
     var modalInsercao = new bootstrap.Modal(document.getElementById('modal_insercao'));
     var calendarEl = document.getElementById('calendar');
@@ -15,7 +22,9 @@
       nowIndicator: true,
       selectable: true,
       navLinks: false,
-      editable: true,
+      eventTextColor: '#fff',
+      eventColor: '#3a86ad',
+      eventDisplay: 'block',
       allDaySlot: false,
       titleFormat: telaMobile ? { month: 'short', day: '2-digit' } : { month: 'long' },
       headerToolbar: {
@@ -51,6 +60,7 @@
         const inicio = info.event.start ? info.event.start.toLocaleString() : ''
         const fim = info.event.end ? info.event.end.toLocaleString() : 'Não especificado'
         const eventId = info.event.id;
+        const podeEditar = info.event.extendedProps.pode_editar;
 
         document.getElementById('tituloEvento').innerHTML = titulo
         document.getElementById('inicioEvento').innerHTML = `<strong>Partida:</strong> ${inicio}`
@@ -62,9 +72,16 @@
         if (typeof htmx !== 'undefined') htmx.process(formRemover);
 
         const btnEditar = document.getElementById('btnEditarEvento');
-        if (btnEditar) {
+        const btnRemover = document.getElementById('btnRemoverEvento');
+
+        if (podeEditar) {
+          if (btnEditar) btnEditar.style.display = 'inline-block';
+          if (btnRemover) btnRemover.style.display = 'inline-block';
           btnEditar.setAttribute('hx-get', `{% url 'editar_agendamento' 0 %}`.replace('0', eventId));
           if (typeof htmx !== 'undefined') htmx.process(btnEditar);
+        } else {
+          if (btnEditar) btnEditar.style.display = 'none';
+          if (btnRemover) btnRemover.style.display = 'none';
         }
 
         modalEvento.show()
@@ -74,6 +91,12 @@
           id: info.event.id,
           start: info.event.start.toISOString(),
           end: info.event.end ? info.event.end.toISOString() : null
+        }
+
+        if (!info.event.extendedProps.pode_editar) {
+          alert('Você não tem permissão para alterar este agendamento.');
+          info.revert();
+          return;
         }
 
         fetch("{% url 'mudar_dia_agendamento' %}", {
@@ -99,9 +122,11 @@
         if (telaMobile) {
           calendar.changeView('timeGridDay');
           calendar.setOption('titleFormat', { month: 'short', day: '2-digit' });
+          document.getElementById('tituloPrincipal').innerHTML = 'Mobile'
         } else {
           calendar.changeView('dayGridMonth');
           calendar.setOption('titleFormat', { month: 'long' });
+          document.getElementById('tituloPrincipal').innerHTML = 'Desktop'
         }
       }
     });
@@ -124,6 +149,38 @@
     setInterval(function() {
       calendar.refetchEvents();
     }, 15000);
+
+      document.body.addEventListener('htmx:afterRequest', function(event) {
+    const form = event.detail.elt;
+    if (form.getAttribute('hx-post') && form.getAttribute('hx-post').includes('agendar')) {
+      if (event.detail.successful) {
+        const toastEl = document.getElementById('liveToast');
+        const toast = bootstrap.Toast.getOrCreateInstance(toastEl);
+        toast.show();
+      }
+    }
+  });
+
+  document.body.addEventListener('htmx:afterRequest', function(event) {
+  const form = event.detail.elt;
+
+  if (form.getAttribute('hx-post') && form.getAttribute('hx-post').includes('agendar')) {
+    if (event.detail.successful) {
+      const toastEl = document.getElementById('liveToast');
+      const toast = bootstrap.Toast.getOrCreateInstance(toastEl);
+      toast.show();
+    }
+  }
+
+  if (form.getAttribute('hx-post') && form.getAttribute('hx-post').includes('remover')) {
+    if (event.detail.successful) {
+      const toastEl = document.getElementById('liveToastCancelado');
+      const toast = bootstrap.Toast.getOrCreateInstance(toastEl);
+      toast.show();
+    }
+  }
+});
+
   });
   </script>
   <style>
@@ -134,9 +191,12 @@
       text-decoration: none;
       color: #000;
     }
+    .fc-event {
+      cursor: pointer;
+    }
   </style>
   <div class="container">
-    <h2 class="mt-5">Agende uma viagem clicando em um dia</h2>
+    <h2 class="mt-5" id='tituloPrincipal'></h2>
     <div id="calendar"></div>
   </div>
   
@@ -161,24 +221,19 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-            {% if user|has_group:'Gestores' %}
-              <button type="button" class="btn btn-primary" 
-                      id="btnEditarEvento"
-                      data-bs-toggle="modal" 
-                      data-bs-target="#modal_edicao"
-                      data-bs-dismiss="modal" {# Fecha o modal_evento ao abrir o modal_edicao #}
-                      hx-get="{% url 'editar_agendamento' 0 %}" {# Placeholder para o ID, será atualizado pelo JS #}
-                      hx-target="#modalEdicaoBody"
-                      hx-swap="innerHTML">
-                  Editar
-              </button>
-            {% else %}
-            {% endif %}
+            <button type="button" class="btn btn-primary" style="display: none;"
+                    id="btnEditarEvento"
+                    data-bs-toggle="modal" 
+                    data-bs-target="#modal_edicao"
+                    data-bs-dismiss="modal"
+                    hx-get=""
+                    hx-target="#modalEdicaoBody"
+                    hx-swap="innerHTML">
+                Editar
+            </button>
             <form id="formRemoverAgendamento" hx-post="" hx-swap="none">
               {% csrf_token %}
-              {% if user|has_group:'Gestores' %}
-                  <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Excluir</button>
-            {% endif %}
+              <button type="submit" class="btn btn-danger" id="btnRemoverEvento" style="display: none;" data-bs-dismiss="modal">Excluir</button>
             </form>
           </div>
         </div>
@@ -209,7 +264,7 @@
               <div id="resultadoModal" class="mt-3"></div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-                <button class="btn btn-success" type="submit">Agendar</button>
+                <button type="submit" class="btn btn-success">Agendar</button>
               </div>
             </form>
           </div>
@@ -230,8 +285,24 @@
         </div>
       </div>
     </div>
-   </div>
-
-
-
+  </div>
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+    <div id="liveToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          ✅ Reserva realizada com sucesso!
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  
+  <div id="liveToastCancelado" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        ❌ Sua reserva foi cancelada.
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
 {% endblock content %}

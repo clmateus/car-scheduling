@@ -9,13 +9,30 @@
             <div class="card-header">
                 <strong>Status:</strong> Previsto <span class="status-dot bg-success rounded-circle d-inline-block me-2"></span>
             </div>
-            <div class="card-body ">
-                <i class="bi bi-car-front"> {{ viagem.veiculo.modelo}} {{ viagem.veiculo.marca }}</i>
-                <p class="card-text"><i class="bi bi-person"></i>{{ viagem.motorista }}</p>
-                <p class="card-text"><i class="bi bi-pin-map"></i>{{ viagem.destino }}</p>
-                <p class="card-text"><i class="bi bi-arrow-right"></i>{{ viagem.dataPartida }}</p>
-                <p class="card-text"><i class="bi bi-arrow-left"></i>{{ viagem.dataChegada }}</p>
-                <p class="card-text {% if viagem.passageiros == 5 %}text-danger{% endif %}"><i class="bi bi-people"></i>{{ viagem.passageiros }}</p>
+            <div class="card-body">
+                {% if viagem.em_rodizio %}
+                    <div class="alert alert-warning py-2 px-3" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i><strong>Atenção:</strong> Este veículo estará em rodízio na data de partida.
+                    </div>
+                {% endif %}
+                <p class="card-text"><strong>Lanmax - {{ viagem.destino }}</strong></p>
+                <div class="row">
+                    <div class="col">
+                        <p class="card-text"><strong>Data de Partida: </strong>{{ viagem.dataPartida }}</p>
+                    </div>
+                    <div class="col">
+                        <p class="card-text"><strong>Data de Chegada: </strong>{{ viagem.dataChegada }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <p class="card-text"><strong>Motorista: </strong>{{ viagem.motorista }}</p>
+                    </div>
+                    <div class="col">
+                        <p class="card-text"><strong>Veículo: </strong>{{ viagem.veiculo.modelo }}</p>
+                    </div>
+                </div>
+                <p class="card-text {% if viagem.passageiros == 5 %}text-danger{% endif %}"><strong>Vagas disponíveis: </strong>{{ viagem.vagas_restantes }}</p>
                 {% if viagem.passageiros < 5 %}
                     <a href="https://i.pinimg.com/736x/3f/02/26/3f0226750c3c4448e207bd0a1b2224d7.jpg" target="_blank" class="btn btn-primary">Entrar em contato</a>
                 {% endif %}

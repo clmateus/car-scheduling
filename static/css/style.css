@@ -1,11 +1,12 @@
 /* ===========================
    LAYOUT GERAL
    =========================== */
-body {
+   body {
     background: #f9f9f9;
     padding-top: 56px;
 }
 
+contai.row g-2
 .container-fluid {
     background-color: #F5F5F5;
     display: flex;
@@ -261,7 +262,7 @@ input:focus::placeholder {
 /* ===========================
    RESPONSIVO — MOBILE (max-width: 768px)
    =========================== */
-@media (max-width: 768px) {
+@media (max-width: 819px) {
 
     body {
         padding-bottom: 62px;

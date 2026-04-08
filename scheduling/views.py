@@ -268,6 +268,7 @@ def viagens(request):
     veiculos = Veiculo.objects.all()
 
     for viagem in proximas_viagens:
+        email_criador_do_evento = viagem.usuario.email if viagem.usuario else "notfound@gmail.com"
         if viagem.veiculo and viagem.veiculo.placa and viagem.dataPartida:
             placa_final = str(viagem.veiculo.placa)[-1]
             dia_semana = viagem.dataPartida.weekday() # 0 = Segunda, 6 = Domingo
@@ -286,7 +287,7 @@ def viagens(request):
 
             hora_viagem = viagem.dataPartida.timestamp()
 
-    return render(request, 'viagens.html', {'proximas_viagens': proximas_viagens, 'veiculos': veiculos, 'hora_atual': hora_atual, 'hora_viagem': hora_viagem})
+    return render(request, 'viagens.html', {'proximas_viagens': proximas_viagens, 'veiculos': veiculos, 'hora_atual': hora_atual, 'hora_viagem': hora_viagem, 'email_criador_do_evento': email_criador_do_evento})
 
 @login_required
 @user_passes_test(is_gestor, login_url='/')

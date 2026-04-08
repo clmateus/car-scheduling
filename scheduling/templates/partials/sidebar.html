@@ -53,35 +53,35 @@
   </nav>
 </div>
   <!-- Menu Bottom Mobile/Tablet -->
-   <nav class="navbar fixed-bottom">
-<nav class="bottom-nav">
-  <a href="/#" class="bottom-nav__item">
-    <i class="fas fa-home"></i>
-    <span>Início</span>
-  </a>
+<nav class="navbar fixed-bottom">
+  <nav class="bottom-nav">
+    <a href="/#" class="bottom-nav__item">
+      <i class="fas fa-home"></i>
+      <span>Início</span>
+    </a>
 
-  {% if user|has_group:'Gestores' %}
-  <a href="/veiculos" class="bottom-nav__item">
-    <i class="fas fa-car"></i>
-    <span>Veículos</span>
-  </a>
-  {% endif %}
+    {% if user|has_group:'Gestores' %}
+    <a href="/veiculos" class="bottom-nav__item">
+      <i class="fas fa-car"></i>
+      <span>Veículos</span>
+    </a>
+    {% endif %}
 
-  <a href="/viagens" class="bottom-nav__item">
-    <i class="fa fa-map"></i>
-    <span>Viagens</span>
-  </a>
+    <a href="/viagens" class="bottom-nav__item">
+      <i class="fa fa-map"></i>
+      <span>Viagens</span>
+    </a>
 
-  {% if user|has_group:'Gestores' %}
-  <a href="/historico" class="bottom-nav__item">
-    <i class="fas fa-history"></i>
-    <span>Histórico</span>
-  </a>
-  {% endif %}
+    {% if user|has_group:'Gestores' %}
+      <a href="/historico" class="bottom-nav__item">
+        <i class="fas fa-history"></i>
+        <span>Histórico</span>
+      </a>
+    {% endif %}
 
-  <a href="#" class="bottom-nav__item" onclick="document.getElementById('logout-form').submit()">
-    <i class="fas fa-sign-out-alt"></i>
-    <span>Sair</span>
+    <a href="#" class="bottom-nav__item" onclick="document.getElementById('logout-form').submit()">
+      <i class="fas fa-sign-out-alt"></i>
+      <span>Sair</span>
   </a>
   </nav>
 </nav>

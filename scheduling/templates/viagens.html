@@ -1,58 +1,107 @@
 {% extends '_base.html' %}
 {% block content %}
 {% load authenticate_user %}
-<div class="container">
-    <h3 class="mt-1">Próximas viagens</h3>
-    {% if proximas_viagens %}
-        {% for viagem in proximas_viagens %}
-        <div class="card mb-3" id="cardViagem{{ viagem.id }}">
+        <div class="container">
+            <h3 class="mt-1">Próximas viagens</h3>
+            {% if proximas_viagens %}
+                {% for viagem in proximas_viagens %}
+                <div class="card mb-3" id="cardViagem{{ viagem.id }}">
+            
             <div class="card-header">
-                <strong>Status:</strong> Previsto <span class="status-dot bg-success rounded-circle d-inline-block me-2"></span>
+                {% if hora_atual > hora_viagem %}
+                    <p class="card-text">
+                        <strong>Status:</strong> Encerrado 
+                        <span class="status-dot bg-danger rounded-circle d-inline-block me-2"></span>
+                    </p>
+                {% else %}
+                    <p class="card-text">
+                        <strong>Status:</strong> Previsto 
+                        <span class="status-dot bg-success rounded-circle d-inline-block me-2"></span>
+                    </p>
+                {% endif %}
             </div>
+
             <div class="card-body">
+                
                 {% if viagem.em_rodizio %}
                     <div class="alert alert-warning py-2 px-3" role="alert">
-                        <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i><strong>Atenção:</strong> Este veículo estará em rodízio na data de partida.
+                        <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>
+                        <strong>Atenção:</strong> Este veículo estará em rodízio na data de partida.
                     </div>
                 {% endif %}
+
                 <p class="card-text"><strong>Lanmax - {{ viagem.destino }}</strong></p>
+
                 <div class="row">
                     <div class="col">
-                        <p class="card-text"><strong>Data de Partida: </strong>{{ viagem.dataPartida }}</p>
+                        <p class="card-text"><strong>Data de Partida:</strong> {{ viagem.dataPartida }}</p>
                     </div>
                     <div class="col">
-                        <p class="card-text"><strong>Data de Chegada: </strong>{{ viagem.dataChegada }}</p>
+                        <p class="card-text"><strong>Data de Chegada:</strong> {{ viagem.dataChegada }}</p>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="col">
-                        <p class="card-text"><strong>Motorista: </strong>{{ viagem.motorista }}</p>
+                        <p class="card-text"><strong>Motorista:</strong> {{ viagem.motorista }}</p>
                     </div>
                     <div class="col">
-                        <p class="card-text"><strong>Veículo: </strong>{{ viagem.veiculo.modelo }}</p>
+                        <p class="card-text"><strong>Veículo:</strong> {{ viagem.veiculo.modelo }}</p>
                     </div>
                 </div>
-                <p class="card-text {% if viagem.passageiros == 5 %}text-danger{% endif %}"><strong>Vagas disponíveis: </strong>{{ viagem.vagas_restantes }}</p>
-                {% if viagem.passageiros < 5 %}
-                    <a href="https://i.pinimg.com/736x/3f/02/26/3f0226750c3c4448e207bd0a1b2224d7.jpg" target="_blank" class="btn btn-primary">Entrar em contato</a>
+
+                {% if hora_atual < hora_viagem %}
+                    <p class="card-text {% if viagem.passageiros == 5 %}text-danger{% endif %}">
+                        <strong>Vagas disponíveis:</strong> {{ viagem.vagas_restantes }}
+                    </p>
+                {% else %}
+                    <p class="card-text">
+                        <strong>Passageiros:</strong> {{ viagem.passageiros }}
+                    </p>
                 {% endif %}
-                {% if user|has_group:'Gestores' %}
-                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalAlterarVeiculo{{ viagem.id }}">Alterar Veículo</button>
-                {% endif %}
-                {% if user|has_group:'Gestores' or viagem.usuario == user %}
-                    <button type="button" class="btn btn-primary"
-                        data-bs-toggle="modal" 
-                        data-bs-target="#modalEdicao"
-                        hx-get="{% url 'editar_agendamento' viagem.id %}"
-                        hx-target="#modalEdicaoBody"
-                        hx-swap="innerHTML">
-                            Editar
-                    </button>
-                    <form hx-post="{% url 'remover_agendamento' viagem.id %}" hx-target="#cardViagem{{ viagem.id }}" hx-swap="outerHTML" class="d-inline-block">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">Excluir</button>
-                    </form>
-                {% endif %}
+
+                <div class="d-flex flex-wrap gap-2">
+                    {% if hora_atual < hora_viagem %}
+
+                        {% if viagem.passageiros < 5 %}
+                            <a href="https://i.pinimg.com/736x/3f/02/26/3f0226750c3c4448e207bd0a1b2224d7.jpg"
+                            target="_blank"
+                            class="btn btn-primary">
+                                Entrar em contato
+                            </a>
+                        {% endif %}
+
+                        {% if user|has_group:'Gestores' %}
+                            <button class="btn btn-primary"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalAlterarVeiculo{{ viagem.id }}">
+                                Alterar Veículo
+                            </button>
+                        {% endif %}
+
+                        {% if user|has_group:'Gestores' or viagem.usuario == user %}
+                            <button type="button"
+                                    class="btn btn-primary"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalEdicao"
+                                    hx-get="{% url 'editar_agendamento' viagem.id %}"
+                                    hx-target="#modalEdicaoBody"
+                                    hx-swap="innerHTML">
+                                Editar
+                            </button>
+
+                            <form hx-post="{% url 'remover_agendamento' viagem.id %}"
+                                hx-target="#cardViagem{{ viagem.id }}"
+                                hx-swap="outerHTML"
+                                class="d-inline-block">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Excluir</button>
+                            </form>
+                        {% endif %}
+
+                    {% endif %}
+                </div>
+
             </div>
         </div>
 
@@ -61,22 +110,28 @@
                 <div class="modal-content">
                     <form hx-post="{% url 'alterar_veiculo' viagem.id %}" hx-swap="none">
                         {% csrf_token %}
+
                         <div class="modal-header">
                             <h5 class="modal-title">Alterar o veículo da viagem</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
+
                         <div class="modal-body">
                             <select name="selectVeiculos" class="form-select">
                                 {% for veiculo in veiculos %}
-                                    <!-- Se o veículo atual da viagem for igual ao do for, marca com selected -->
-                                    <option value="{{ veiculo.id }}" {% if viagem.veiculo_id == veiculo.id %}selected{% endif %}>{{ veiculo.modelo }}</option>
+                                    <option value="{{ veiculo.id }}"
+                                        {% if viagem.veiculo_id == veiculo.id %}selected{% endif %}>
+                                        {{ veiculo.modelo }}
+                                    </option>
                                 {% endfor %}
                             </select>
                         </div>
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                             <button type="submit" class="btn btn-primary">Salvar Alterações</button>
                         </div>
+
                     </form>
                 </div>
             </div>
@@ -112,12 +167,25 @@
     animation: pulse-glow 1.5s infinite alternate;
 }
 
+.status-dot.bg-danger {
+    animation: pulse-glow-red 1.5s infinite alternate;
+}
+
 @keyframes pulse-glow {
     0% {
         box-shadow: 0 0 4px rgba(25, 135, 84, 0.4); 
     }
     100% {
         box-shadow: 0 0 12px rgba(25, 135, 84, 0.9), 0 0 4px rgba(25, 135, 84, 0.6) inset;
+    }
+}
+
+@keyframes pulse-glow-red {
+    0% {
+        box-shadow: 0 0 4px rgba(135, 25, 25, 0.4); 
+    }
+    100% {
+        box-shadow: 0 0 12px rgba(135, 25, 25, 0.9), 0 0 4px rgba(135, 25, 25, 0.6) inset;
     }
 }
 </style>

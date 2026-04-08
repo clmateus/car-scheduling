@@ -1,286 +1,281 @@
-    #theme-toggle {
-        font-size: 0.85rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    .container-fluid {
-        background-color: #F5F5F5;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh; 
-        width: 100%;
-    }
-    h2.container {
-        --bs-gutter-x: 0.1rem;
-    }
-    #calendar a {
-        text-decoration: none;
-    }
+/* ===========================
+   LAYOUT GERAL
+   =========================== */
+body {
+    background: #f9f9f9;
+    padding-top: 56px;
+}
 
-    .login-form {
-        background-color: transparent;
-        color: #212529;
-        padding: .75rem .75rem;
-        border-radius: 0.5rem;
-        border: 1px solid #F5F5F5;
-        max-width: 400px;
-        margin: 0 auto;
-        transform: translate(0%, -10%);
-    }
-
-    .login-form .form-control {
-        background-color: #F5F5F5 !important;
-        color: #212529 !important;
-        border-color: #ced4da !important;
-    }
-
-    .login-form .form-label {
-        color: #212529;
-    }
-
-    .login-form .form-control::placeholder {
-        color: #6c757d;
-    }
-
-    .form-floating justify-content-center {
-        position: relative;
-        padding: 1rem .75rem;
-        box-sizing: border-box;
-        display: block;
-    }
-
-        .form-group {
-        position: relative;
-        margin-top: 15px;
-        }
-
-    .form-group label {
-        position: absolute;
-        left: 12px;
-        top: -10px;
-        background: #fff;
-        padding: 0 5px;
-        font-size: 12px;
-        color: #6c757d;
-        transition: all 0.2s;
-        pointer-events: none;
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: #b3d7ff;
-        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-    }
-
-    input.form-control {
-        padding-top: 10px !important;
-        padding-bottom: 10px !important;
-        line-height: normal !important;
-    }
-    
-    input:focus::placeholder {
-        color: transparent;
-    }
-    .form-floating > .form-control {
-        padding-top: 0.625rem !important; 
-    }
-
-    .form-floating > label {
-        display: none; 
-    }
-
-    .navbar-expand-lg .navbar-nav.side-nav{
-        flex-direction: column;
-    }
-    .card{
-        margin-bottom: 15px;
-        border-radius:0;
-        box-shadow: 0 3px 5px rgba(0,0,0,.1);
-    }
-
-    .header-top{
-        box-shadow: 0 3px 5px rgba(0,0,0,.1)
-    }
-
-    .card-title{
-        font-size: 28px
-    }
-
-    body{
-        background:#f9f9f9;
-        padding-top: 56px;
-    }
-    #wrapper{
-        padding:90px 15px;
-    }
-    .navbar-expand-lg .navbar-nav.side-nav{
-        flex-direction: column;
-    }
-    .card {
-        border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease;
-        overflow: hidden;
-    }
-
-    .card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-        border-color: #089994;
-    }
-
-    /* Ajuste para a imagem dentro do card */
-    .card .img-fluid {
-        border-top-left-radius: 12px;
-        border-bottom-left-radius: 12px;
-    }
-    .header-top{
-        box-shadow: 0 3px 5px rgba(0,0,0,.1)
-    }
-    .card-title{
-        font-size: 28px
-    }
-        /* Teste da Side bar*/
-
-
-    .navbar-nav.side-nav:hover {
-        left:0;
-    }
-    .side-nav li a {
-        padding: 20px;
-        background:#212529 ;
-    }
-    /* Ícone principal — sempre visível */
-    .nav-link i:first-child {
-        display: block;
-        float: right;
-        opacity: 1;
-        text-align: center;
-    }
-    .leftmenutrigger {
-        display: none;
-    }
-
-    /* Shortmenu — visível só quando recolhido */
-    .navbar-nav li a .shortmenu {
-        display: block;
-        float: right;
-        opacity: 1;
-    }
-
-    .navbar-nav.side-nav:hover li a .shortmenu {
-        display: none;
-    }
-    .navbar-nav.side-nav {
-        background:#212529 ;
-        box-shadow: 2px 1px 2px rgba(0,0,0,.1);
-        position:fixed;
-        top:56px;
-        flex-direction: column!important;
-        left:-140px;
-        width:200px;
-        overflow-y:auto;
-        bottom:0;
-        overflow-x:hidden;
-        display: flex; 
-        
-    }
-    .animate {
-        -webkit-transition:all .2s ease-in-out;
-        -moz-transition:all .2s ease-in-out;
-        -o-transition:all .2s ease-in-out;
-        -ms-transition:all .2s ease-in-out;
-        transition:all .2s ease-in-out;
-        
-    
-    }
-    .navbar-nav li a svg {
-        font-size: 25px;
-        float: left;
-        margin: 0 10px 0 5px;
-    }
-    .side-nav li { 
-        border-bottom: 1px solid #50575d;
-        background:#212529 ;
-    }
-    .sidebar-footer {
-        border-top: 1px solid #50575d;
-        padding: 5px 8px;
-        bottom: 0;   
-        background: #585f66; 
-    }
-
-    .sidebar-footer .btn {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
-    .navbar-brand {
-        margin-left: 15px;
-    }
-    /* Protege ícones dentro de botões */
-    .btn i {
-        display: inline-block !important;
-        float: none !important;
-        opacity: 1 !important;
-    }
-    .btn-primary {
-        border-color: #4f8e8d;
-        background-image: linear-gradient(to right, #213d5d, #4f8e8d);
-        border: none;
-        color: white;
-        padding: 7px 15px;
-        border-radius: 7px;
-        cursor: pointer;
-    }
-    .table {
-        border: 2px solid #333;
-    }
-
-    .bottom-nav {
+.container-fluid {
+    background-color: #F5F5F5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+}
+h2.container {
+    --bs-gutter-x: 0.1rem;
+}
+#wrapper {
+    padding: 90px 15px;
+}
+/* ===========================
+   NAVBAR / HEADER
+   =========================== */
+.navbar-brand {
+    margin-left: 15px;
+}
+.header-top {
+    box-shadow: 0 3px 5px rgba(0, 0, 0, .1);
+}
+/* ===========================
+   SIDEBAR
+   =========================== */
+.navbar-expand-lg .navbar-nav.side-nav {
+    flex-direction: column;
+}
+.navbar-nav.side-nav {
+    background: #212529;
+    box-shadow: 2px 1px 2px rgba(0, 0, 0, .1);
+    position: fixed;
+    top: 56px;
+    flex-direction: column !important;
+    left: -140px;
+    width: 200px;
+    overflow-y: auto;
+    bottom: 0;
+    overflow-x: hidden;
+    display: flex;
+}
+.navbar-nav.side-nav:hover {
+    left: 0;
+}
+.side-nav li a {
+    padding: 20px;
+    background: #212529;
+}
+.side-nav li {
+    border-bottom: 1px solid #50575d;
+    background: #212529;
+}
+/* Ícone principal — sempre visível */
+.nav-link i:first-child {
+    display: block;
+    float: right;
+    opacity: 1;
+    text-align: center;
+}
+.leftmenutrigger {
     display: none;
-    }
+}
+/* Shortmenu — visível só quando recolhido */
+.navbar-nav li a .shortmenu {
+    display: block;
+    float: right;
+    opacity: 1;
+}
+.navbar-nav.side-nav:hover li a .shortmenu {
+    display: none;
+}
+.navbar-nav li a svg {
+    font-size: 25px;
+    float: left;
+    margin: 0 10px 0 5px;
+}
+.sidebar-footer {
+    border-top: 1px solid #50575d;
+    padding: 5px 8px;
+    bottom: 0;
+    background: #585f66;
+}
+.sidebar-footer .btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+/* ===========================
+   CARDS
+   =========================== */
+/* CORRIGIDO: unificado em uma única declaração (era duplicado com valores conflitantes) */
+.card {
+    margin-bottom: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    border-color: #089994;
+}
+/* CORRIGIDO: padding-bottom 0px pode causar conteúdo colado nas bordas */
+.card-body {
+    padding: 7px;
+}
+/* CORRIGIDO: unificado em uma única declaração (era duplicado com mesmo valor) */
+.card-title {
+    font-size: 28px;
+}
+/* Imagem dentro do card */
+.card .img-fluid {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+/* ===========================
+   FORMULÁRIOS — LOGIN
+   =========================== */
+.login-form {
+    background-color: transparent;
+    color: #212529;
+    padding: .75rem .75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #F5F5F5;
+    max-width: 400px;
+    margin: 0 auto;
+    transform: translate(0%, -10%);
+}
+.login-form .form-control {
+    background-color: #F5F5F5 !important;
+    color: #212529 !important;
+    border-color: #ced4da !important;
+}
+.login-form .form-label {
+    color: #212529;
+}
+.login-form .form-control::placeholder {
+    color: #6c757d;
+}
+/* CORRIGIDO: seletor inválido era ".form-floating justify-content-center" (com espaço) */
+.form-floating.justify-content-center {
+    position: relative;
+    padding: 1rem .75rem;
+    box-sizing: border-box;
+    display: block;
+}
+.form-group {
+    position: relative;
+    margin-top: 15px;
+}
+.form-group label {
+    position: absolute;
+    left: 12px;
+    top: -10px;
+    background: #fff;
+    padding: 0 5px;
+    font-size: 12px;
+    color: #6c757d;
+    transition: all 0.2s;
+    pointer-events: none;
+}
+.form-control:focus {
+    outline: none;
+    border-color: #b3d7ff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, .25);
+}
+input.form-control {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    line-height: normal !important;
+}
+input:focus::placeholder {
+    color: transparent;
+}
+.form-floating > .form-control {
+    padding-top: 0.625rem !important;
+}
+.form-floating > label {
+    display: none;
+}
+/* ===========================
+   BOTÕES
+   =========================== */
+.btn-primary {
+    border-color: #4f8e8d;
+    background-image: linear-gradient(to right, #213d5d, #4f8e8d);
+    border: none;
+    color: white;
+    padding: 7px 15px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+/* Protege ícones dentro de botões */
+.btn i {
+    display: inline-block !important;
+    float: none !important;
+    opacity: 1 !important;
+}
 
-    /* Grid de veículos */
-    .veiculos-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-    }
-
-    .veiculos-grid .card {
-        max-width: 100%;
-        margin-bottom: 0;
-    }
-    #calendar {
-      text-transform: capitalize;
-    }
-    #calendar a {
-      text-decoration: none;
-      color: #000;
-    }
-    .fc-event {
-      cursor: pointer;
-    }
-
+/* ===========================
+   TABELA
+   =========================== */
+.table {
+    border: 2px solid #333;
+}
+/* ===========================
+   ANIMAÇÕES
+   =========================== */
+.animate {
+    -webkit-transition: all .2s ease-in-out;
+    -moz-transition: all .2s ease-in-out;
+    -o-transition: all .2s ease-in-out;
+    -ms-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+}
+/* ===========================
+   CALENDÁRIO
+   =========================== */
+#calendar {
+    text-transform: capitalize;
+}
+/* CORRIGIDO: unificado em uma única declaração (era duplicado com valores distintos) */
+#calendar a {
+    text-decoration: none;
+    color: #000;
+}
+.fc-event {
+    cursor: pointer;
+}
+/* ===========================
+   GRID DE VEÍCULOS
+   =========================== */
+.veiculos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+.veiculos-grid .card {
+    max-width: 100%;
+    margin-bottom: 0;
+}
+/* ===========================
+   BOTTOM NAV (oculta no desktop)
+   =========================== */
+.bottom-nav {
+    display: none;
+}
+/* ===========================
+   RESPONSIVO — MOBILE (max-width: 768px)
+   =========================== */
 @media (max-width: 768px) {
-    
+
+    body {
+        padding-bottom: 62px;
+    }
     main.main-content {
-        padding-top: 56px !important; 
+        padding-bottom: 80px !important;
     }
-
     main {
-        padding-top: 0 !important; 
+        padding-top: 0 !important;
     }
-
+    /* CORRIGIDO: "display: 0" é inválido — removida a propriedade inoperante */
     #wrapper {
-        display: 0;
+        padding: 0;
     }
-
     .bottom-nav {
         display: flex;
         position: fixed;
@@ -288,13 +283,11 @@
         left: 0;
         width: 100%;
         height: 62px;
-        background-color: #212529; 
+        background-color: #212529;
         border-top: 1px solid #50575d;
         justify-content: space-around;
         align-items: center;
-       
     }
-
     .bottom-nav__item {
         display: flex;
         flex-direction: column;
@@ -308,23 +301,15 @@
         height: 100%;
         transition: color 0.2s ease;
     }
-
     .bottom-nav__item:hover,
     .bottom-nav__item.active {
         color: #ffffff;
     }
-
     .bottom-nav__item i {
         font-size: 1.2rem;
         float: none !important;
         display: block !important;
     }
-
-    body {
-        padding-top: 1px; 
-        padding-bottom: 1px;
-    }
-
     .navbar {
         min-height: 1px;
     }
@@ -332,7 +317,6 @@
         display: grid;
         grid-template-columns: 1fr;
         gap: 20px;
-        
     }
     .cards-container .card {
         max-width: 100%;
@@ -341,8 +325,17 @@
     .veiculos-grid {
         grid-template-columns: 1fr;
     }
-        .spacer-bottom {
+    .spacer-bottom {
         height: 70px;
     }
+    .btn-teste {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
 
+    /* Isso garante que o formulário de excluir não quebre o layout */
+    .btn-teste form {
+        display: contents; 
+    }
 }

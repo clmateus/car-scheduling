@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var modalInsercao = new bootstrap.Modal(document.getElementById('modal_insercao'));
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
+      themeSystem: 'bootstrap5',
       locale: 'pt-br',
       initialView: telaMobile ? 'timeGridDay' : 'dayGridMonth',
       height: 'auto',
@@ -27,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
       eventColor: '#3a86ad',
       eventDisplay: 'block',
       allDaySlot: false,
-      titleFormat: telaMobile ? { month: 'short', day: '2-digit' } : { month: 'long' },
+      titleFormat: telaMobile ? { month: 'short', day: '2-digit' } : { month: 'long', year:'numeric' },
       headerToolbar: {
         left: 'title',
         center: '',
@@ -123,15 +124,15 @@ document.addEventListener('DOMContentLoaded', function() {
       calendar.refetchEvents();
     }, 15000);
 
-    document.body.addEventListener('htmx:afterRequest', function(event) {
-    const form = event.detail.elt;
-    if (form.getAttribute('hx-post') && form.getAttribute('hx-post').includes('agendar')) {
-      if (event.detail.successful) {
-        const toastEl = document.getElementById('liveToast');
-        const toast = bootstrap.Toast.getOrCreateInstance(toastEl);
-        toast.show();
+  document.body.addEventListener('htmx:afterSwap', function(event) {
+      if (event.detail.target.id === 'resultadoModal') {
+          const conteudo = event.detail.target.innerHTML.toLowerCase();
+          if (conteudo.includes('sucesso') || conteudo.includes('agendado')) {
+              const toastEl = document.getElementById('liveToast');
+              const toast = bootstrap.Toast.getOrCreateInstance(toastEl);
+              toast.show();
+          }
       }
-    }
   });
 
   document.body.addEventListener('htmx:afterRequest', function(event) {

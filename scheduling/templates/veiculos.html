@@ -8,12 +8,12 @@
 
         <div class="veiculos-grid">
         {% for veiculo in veiculos %}
-        <div class="card mb-3" id="card_{{ veiculo.id }}">
+        <div class="card" id="card_{{ veiculo.id }}">
             
             <div class="row g-2">
                 <div class="col-md-4">
                     {% if veiculo.foto %}
-                        <img src="{{ veiculo.foto.url }}" class="img-fluid rounded-start w-100" style="height: 180px; object-fit: cover;" alt="...">
+                         <img src="{{ veiculo.foto.url }}" class="img-fluid rounded-start w-100" style="height: 100%; object-fit: cover;" alt="...">
                     {% else %}
                         <div class="bg-secondary text-white d-flex align-items-center justify-content-center rounded-start" style="height: 180px;">
                             <span>Sem Imagem</span>
@@ -27,7 +27,6 @@
                     <p class="card-text"><small class="text-body-secondary">algum texto aqui</small></p>
                 </div>
                 </div>
-                <div class="spacer-bottom"></div>
             </div>
             <div class="position-absolute bottom-0 end-0 mb-2 me-2">
                 <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_editar_{{ veiculo.id }}">

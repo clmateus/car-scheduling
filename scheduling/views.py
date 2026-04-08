@@ -30,7 +30,7 @@ def agendar(request):
         passageiros = request.POST.get('passageiros')
 
         # Verifica se todos os campos vieram preenchidos
-        if all([motorista, dataHoraPartida, dataHoraChegada, destino]):
+        if all([motorista, dataHoraPartida, dataHoraChegada, destino, passageiros]):
             
             partida_dt = parse_datetime(dataHoraPartida)
             chegada_dt = parse_datetime(dataHoraChegada)
@@ -83,7 +83,7 @@ def agendar(request):
             resposta = render(request, 'partials/success.html', {'agendamento': agendamento})
             resposta['HX-Trigger'] = 'atualizarCalendario'
             return resposta
-
+        
         else:
             # Erro caso o usuário tenha deixado campos em branco
             erro = 'Por favor, preencha corretamente todos os campos.'
@@ -215,7 +215,7 @@ def veiculos(request):
                 img = Image.open(foto_enviada)
                 
                 img = img.convert('RGB')                
-                img = img.resize((180, 130), Image.LANCZOS)
+                img = img.resize((250, 200), Image.LANCZOS)
                 
                 temp_thumb = io.BytesIO()
                 img.save(temp_thumb, format='JPEG', quality=90)
@@ -257,12 +257,14 @@ def editar_veiculo(request, pk):
 
 @login_required
 def viagens(request):
+    hora_atual = timezone.now().timestamp()
+
     q = request.GET.get('q', '').strip()
     if q:
         proximas_viagens = Agendamento.objects.filter(id=q)
     else:
         proximas_viagens = Agendamento.objects.filter(dataPartida__gt=timezone.now()).order_by('dataPartida')
-    
+
     veiculos = Veiculo.objects.all()
 
     for viagem in proximas_viagens:
@@ -282,7 +284,9 @@ def viagens(request):
             placas_proibidas = rodizio_sp.get(dia_semana, [])
             viagem.em_rodizio = placa_final in placas_proibidas
 
-    return render(request, 'viagens.html', {'proximas_viagens': proximas_viagens, 'veiculos': veiculos})
+            hora_viagem = viagem.dataPartida.timestamp()
+
+    return render(request, 'viagens.html', {'proximas_viagens': proximas_viagens, 'veiculos': veiculos, 'hora_atual': hora_atual, 'hora_viagem': hora_viagem})
 
 @login_required
 @user_passes_test(is_gestor, login_url='/')

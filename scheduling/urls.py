@@ -16,5 +16,6 @@ urlpatterns = [
     path('editar_agendamento/<int:pk>/', views.editar_agendamento, name='editar_agendamento'), # New
     path('viagens/', views.viagens, name='viagens'),
     path('historico/', views.historico, name='historico'),
-    path('alteral_veiculo/<int:pk>/', views.alterar_veiculo, name='alterar_veiculo')
+    path('alteral_veiculo/<int:pk>/', views.alterar_veiculo, name='alterar_veiculo'),
+    path('emails_teste/', views.emails_teste, name='emails_teste')
 ]

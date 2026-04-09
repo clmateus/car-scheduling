@@ -10,8 +10,8 @@
         {% for veiculo in veiculos %}
         <div class="card h-100" id="card_{{ veiculo.id }}">
             
-            <div class="row g-2 h-100">
-                <div class="col-md-4 h-100">
+            <div class="row g-0 h-100">
+                <div class="col-12 col-md-4 h-100">
                     {% if veiculo.foto %}
                          <img src="{{ veiculo.foto.url }}" class="img-fluid rounded-start w-100 h-100" style="min-height: 180px; object-fit: cover;" alt="...">
                     {% else %}
@@ -20,7 +20,7 @@
                         </div>
                     {% endif %}
                 </div>
-                <div class="col-md-8">
+                <div class="col-12 col-md-8">
                 <div class="card-body pb-5">
                     <h5 class="card-title">{{ veiculo.marca }} - {{ veiculo.modelo }}</h5>
                     <p class="card-text">Placa: {{ veiculo.placa }}</p>
@@ -56,13 +56,18 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
-                <form 
-                    hx-post="{% url 'editar_veiculo' veiculo.id %}" 
-                    hx-target="#card_{{ veiculo.id }}" 
-                    hx-swap="outerHTML"
-                    class="form-control"
-                    enctype="multipart/form-data"
-                >
+<form 
+    hx-post="{% url 'editar_veiculo' veiculo.id %}" 
+    hx-target="#card_{{ veiculo.id }}" 
+    hx-swap="outerHTML"
+    hx-encoding="multipart/form-data"
+
+    _="on htmx:xhr:progress(loaded, total)
+    log loaded
+       set #progress_{{ veiculo.id }}.value to (loaded/total)*100"
+
+    class="form-control">
+
                     {% csrf_token %}
                     <label class="form-label">Modelo</label>
                     <input type="text" name="modelo" value="{{ veiculo.modelo }}" class="form-control" required>
@@ -70,8 +75,11 @@
                     <input type="text" name="marca" value="{{ veiculo.marca }}" class="form-control" required>
                     <label class="form-label">Placa</label>
                     <input type="text" name="placa" value="{{ veiculo.placa }}" class="form-control" required>
+
                     <label class="form-label">Foto</label>
-                    <input type="file" name="foto" value="{{ veiculo.foto }}" class="form-control">
+                    <input type="file" name="foto" class="form-control" >
+                    <progress id="progress_{{ veiculo.id }}" value="0" max="100" style="width:100%;"></progress>
+               
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-success">Salvar Alterações</button>

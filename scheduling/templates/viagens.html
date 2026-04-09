@@ -7,10 +7,11 @@
         {% for viagem in proximas_viagens %}
             <div class="card mb-3" id="cardViagem{{ viagem.id }}">
                 <div class="card-header">
+                    
                     {% if hora_atual > hora_viagem %}
                         <p class="card-text"><strong>Status: </strong>Encerrado <span class="status-dot bg-danger rounded-circle d-inline-block me-2"></span></p>
                     {% else %}
-                        <p class="card-text"><strong>Status: </strong>Previsto <span class="status-dot bg-success rounded-circle d-inline-block me-2"></span></p>
+                    <p class="card-text"><strong>Status: </strong>Previsto <span class="status-dot bg-success rounded-circle d-inline-block me-2"></span></p>
                     {% endif %}
                 </div>
                 <div class="card-body">

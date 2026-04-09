@@ -6,9 +6,13 @@ from django.utils import timezone
 from django.db import transaction
 from django.utils.dateparse import parse_datetime
 from django.http import JsonResponse, HttpResponse
+from django.core.mail import send_mail
+from django_q.tasks import async_task
 from .models import Agendamento, Veiculo
 from .forms import CadastroVeiculo, EdicaoForm
+from .tasks import enviar_email
 from PIL import Image
+import time
 import json
 import io
 import random
@@ -81,7 +85,17 @@ def agendar(request):
 
             # Só chega aqui se o agendamento deu certo
             resposta = render(request, 'partials/success.html', {'agendamento': agendamento})
-            resposta['HX-Trigger'] = 'atualizarCalendario'
+            resposta['HX-Trigger'] = 'atualizarCalendario'  
+
+            async_task(
+                send_mail,
+                    "Agendamento de Viagem",
+                    f"O seu agendamento com destino a {agendamento.destino} foi realizado com sucesso.\nData e hora de partida: {agendamento.dataPartida.strftime('%d/%m/%Y %H:%M:%S')}\nData e hora de chegada: {agendamento.dataChegada.strftime('%d/%m/%Y %H:%M:%S')}\nChegue na expedição com 10 minutos de antecedência.\nDirija com responsabilidade.",
+                    "lanmax.carscheduling@gmail.com",
+                    [agendamento.usuario.email],
+                    fail_silently=False
+            )
+
             return resposta
         
         else:
@@ -155,6 +169,16 @@ def remover_agendamento(request, pk):
     agendamento.delete()
     response = HttpResponse('')
     response['HX-Trigger'] = 'atualizarCalendario'
+
+    async_task(
+        send_mail,
+        "Cancelamento de Viagem",
+        f"O seu agendamento com destino a {agendamento.destino} foi cancelado com sucesso.",
+        "lanmax.carscheduling@gmail.com",
+        [agendamento.usuario.email],
+        fail_silently=False
+    )
+
     return response
 
 @login_required
@@ -190,6 +214,16 @@ def editar_agendamento(request, pk):
             form.save()
             response = HttpResponse()
             response['HX-Trigger'] = 'atualizarCalendario, closeModalEdicao' 
+
+            async_task(
+                send_mail,
+                "Atualização de Viagem",
+                f"O seu agendamento com destino a {agendamento.destino} foi atualizado com sucesso.\nData e hora de partida: {agendamento.dataPartida.strftime('%d/%m/%Y %H:%M:%S')}\nData e hora de chegada: {agendamento.dataChegada.strftime('%d/%m/%Y %H:%M:%S')}\nChegue na expedição com 10 minutos de antecedência.\nDirija com responsabilidade.",
+                "lanmax.carscheduling@gmail.com",
+                [agendamento.usuario.email],
+                fail_silently=False
+            )
+
             return response
         else:
             return render(request, 'edicao_form.html', {'form': form, 'agendamento_id': pk})
@@ -253,10 +287,15 @@ def editar_veiculo(request, pk):
         resposta['HX-Refresh'] = 'true'
         return resposta
     
+    
     return HttpResponse('Erro ao validar formulário. Feche e tente novamente.', status=400)
+
 
 @login_required
 def viagens(request):
+    hora_viagem = None
+    email_criador_do_evento = None
+
     hora_atual = timezone.now().timestamp()
 
     q = request.GET.get('q', '').strip()
@@ -309,3 +348,7 @@ def historico(request):
     todas_as_viagens = Agendamento.objects.all().order_by('dataPartida').reverse()        
 
     return render(request, 'historico.html', {'todas_as_viagens': todas_as_viagens})
+
+def emails_teste(request):
+    
+    return HttpResponse("Email enviado com sucesso!")

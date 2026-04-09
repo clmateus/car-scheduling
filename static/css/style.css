@@ -133,12 +133,12 @@ h2.container {
 .login-form {
     background-color: transparent;
     color: #212529;
-    padding: .75rem .75rem;
+    padding: 50px;
     border-radius: 0.5rem;
     border: 1px solid #F5F5F5;
     max-width: 400px;
     margin: 0 auto;
-    transform: translate(0%, -10%);
+    transform: translate(0%, 0%);
 }
 .login-form .form-control {
     background-color: #F5F5F5 !important;
@@ -338,5 +338,22 @@ input:focus::placeholder {
     /* Isso garante que o formulário de excluir não quebre o layout */
     .btn-teste form {
         display: contents; 
+    }
+    .veiculos-grid .card .row {
+        height: auto !important;
+    }
+    .veiculos-grid .card .col-12.col-md-4 {
+        height:200px !important;
+        min-height: unset !important;
+    }
+    .veiculos-grid .card .col-12.col-md-4 img,
+    .veiculos-grid .card .col-12.col-md-4 > div {
+        border-radius: 12px 12px 0 0 !important;
+        border-bottom-left-radius: 0 !important;
+        height: 200px !important;
+        min-height: unset !important;
+    }
+    .veiculos-grid .card .col-12.col-md-8 .card-body {
+        padding: 12px 12px 50px 12px !important;
     }
 }

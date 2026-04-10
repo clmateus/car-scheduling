@@ -21,7 +21,11 @@
                     {% endif %}
                 </div>
                 <div class="col-12 col-md-8">
-                <div class="card-body pb-5">
+
+                    <!--TESTE -->
+
+                <div class="card-body pb-5" onclick="" style="cursor: pointer;">
+
                     <h5 class="card-title">{{ veiculo.marca }} - {{ veiculo.modelo }}</h5>
                     <p class="card-text">Placa: {{ veiculo.placa }}</p>
                     <p class="card-text"><small class="text-body-secondary">algum texto aqui</small></p>
@@ -56,17 +60,17 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
-<form 
-    hx-post="{% url 'editar_veiculo' veiculo.id %}" 
-    hx-target="#card_{{ veiculo.id }}" 
-    hx-swap="outerHTML"
-    hx-encoding="multipart/form-data"
+        <form 
+            hx-post="{% url 'editar_veiculo' veiculo.id %}" 
+            hx-target="#card_{{ veiculo.id }}" 
+            hx-swap="outerHTML"
+            hx-encoding="multipart/form-data"
 
-    _="on htmx:xhr:progress(loaded, total)
-    log loaded
-       set #progress_{{ veiculo.id }}.value to (loaded/total)*100"
+            _="on htmx:xhr:progress(loaded, total)
+            log loaded
+            set #progress_{{ veiculo.id }}.value to (loaded/total)*100"
 
-    class="form-control">
+            class="form-control">
 
                     {% csrf_token %}
                     <label class="form-label">Modelo</label>

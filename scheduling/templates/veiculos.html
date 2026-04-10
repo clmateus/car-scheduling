@@ -1,118 +1,174 @@
 {% extends '_base.html' %}
+{% load authenticate_user %}
 {% block content %}
     <div class="container">
-        <h2 class="mt-2">Veículos <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_insercao">
-            Adicionar um carro
-        </button></h2>
+        <h2 class="mt-2">Veículos
+            <button type="button" id="botao-adicionar" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_insercao">
+                Adicionar um carro
+            </button>
+        </h2>
         <h3 class="mt-2">Todos os carros</h3>
 
         <div class="veiculos-grid">
-        {% for veiculo in veiculos %}
-        <div class="card h-100" id="card_{{ veiculo.id }}">
-            
-            <div class="row g-0 h-100">
-                <div class="col-12 col-md-4 h-100">
-                    {% if veiculo.foto %}
-                         <img src="{{ veiculo.foto.url }}" class="img-fluid rounded-start w-100 h-100" style="min-height: 180px; object-fit: cover;" alt="...">
-                    {% else %}
-                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center rounded-start h-100" style="min-height: 180px;">
-                            <span>Sem Imagem</span>
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="col-12 col-md-8">
-
-                    <!--TESTE -->
-
-                <div class="card-body pb-5" onclick="" style="cursor: pointer;">
-
-                    <h5 class="card-title">{{ veiculo.marca }} - {{ veiculo.modelo }}</h5>
-                    <p class="card-text">Placa: {{ veiculo.placa }}</p>
-                    <p class="card-text"><small class="text-body-secondary">algum texto aqui</small></p>
-                </div>
-                </div>
-            </div>
-            <div class="position-absolute bottom-0 end-0 mb-2 me-2">
-                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_editar_{{ veiculo.id }}">
-                    <i class="bi bi-pen"></i>
-                </button>
-                <form 
-                    hx-post="{% url 'remover_veiculo' veiculo.id %}" 
-                    hx-confirm="Tem certeza que deseja remover esse veículo?" 
-                    hx-target="closest .card" 
-                    hx-swap="outerHTML" 
-                    style="display: inline;"
-                    >
+            {% for veiculo in veiculos %}
+                <div class="card h-100" id="card_{{ veiculo.id }}">
                     
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-danger">
-                        <i class="bi bi-trash3"></i>
-                    </button>
-                </form>
-            </div>
-        </div>
-
-        <div class="modal fade" id="modal_editar_{{ veiculo.id }}">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="tituloEvento">Editar {{ veiculo.modelo }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-        <form 
-            hx-post="{% url 'editar_veiculo' veiculo.id %}" 
-            hx-target="#card_{{ veiculo.id }}" 
-            hx-swap="outerHTML"
-            hx-encoding="multipart/form-data"
-
-            _="on htmx:xhr:progress(loaded, total)
-            log loaded
-            set #progress_{{ veiculo.id }}.value to (loaded/total)*100"
-
-            class="form-control">
-
-                    {% csrf_token %}
-                    <label class="form-label">Modelo</label>
-                    <input type="text" name="modelo" value="{{ veiculo.modelo }}" class="form-control" required>
-                    <label class="form-label">Marca</label>
-                    <input type="text" name="marca" value="{{ veiculo.marca }}" class="form-control" required>
-                    <label class="form-label">Placa</label>
-                    <input type="text" name="placa" value="{{ veiculo.placa }}" class="form-control" required>
-
-                    <label class="form-label">Foto</label>
-                    <input type="file" name="foto" class="form-control" >
-                    <progress id="progress_{{ veiculo.id }}" value="0" max="100" style="width:100%;"></progress>
-               
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                    <div class="row g-0 h-100" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modal_carro"onclick="abrirModalCarro({{ veiculo.id}})">
+                        <div class="col-12 col-md-4 h-100">
+                            {% if veiculo.foto %}
+                                 <img src="{{ veiculo.foto.url }}" class="img-fluid rounded-start w-100 h-100" style="min-height: 180px; object-fit: cover;" alt="...">
+                            {% else %}
+                                <div class="bg-secondary text-white d-flex align-items-center justify-content-center rounded-start h-100" style="min-height: 180px;">
+                                    <span>Sem Imagem</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-12 col-md-8">
+                            <div class="card-body pb-5">
+                                <h5 class="card-title">{{ veiculo.marca }} - {{ veiculo.modelo }}</h5>
+                                <p class="card-text">Placa: {{ veiculo.placa }}</p>
+                                <p class="card-text"><small class="text-body-secondary">algum texto aqui</small></p>
+                            </div>
+                        </div>
                     </div>
-                </form>
-              </div>
-            </div>
-          </div>
-       </div>
-       {% endfor %}
-       </div> <!-- /veiculos-grid -->
-       <div class="modal fade" id="modal_insercao">
-        <div class="modal-dialog">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="tituloEvento">Adicionar um carro</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form method="post" class="form-control" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-success">Confirmar</button>
+                    
+                    {% if user|has_group:'Gestores' %}
+                    <div class="position-absolute bottom-0 end-0 mb-2 me-2">
+                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_editar_{{ veiculo.id }}">
+                            <i class="bi bi-pen"></i>
+                        </button>
+                        <form 
+                            hx-post="{% url 'remover_veiculo' veiculo.id %}" 
+                            hx-confirm="Tem certeza que deseja remover esse veículo?" 
+                            hx-target="closest .card" 
+                            hx-swap="outerHTML" 
+                            style="display: inline;"
+                        >
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </form>
                     </div>
-                </form>
+                    {% endif %}
+                </div> <div class="modal fade" id="modal_editar_{{ veiculo.id }}">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="tituloEvento">Editar {{ veiculo.modelo }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form 
+                                    hx-post="{% url 'editar_veiculo' veiculo.id %}" 
+                                    hx-target="#card_{{ veiculo.id }}" 
+                                    hx-swap="outerHTML"
+                                    hx-encoding="multipart/form-data"
+                                    _="on htmx:xhr:progress(loaded, total) log loaded set #progress_{{ veiculo.id }}.value to (loaded/total)*100"
+                                    class="form-control"
+                                >
+                                    {% csrf_token %}
+                                    <label class="form-label">Modelo</label>
+                                    <input type="text"
+                                            name="modelo"
+                                            value="{{ veiculo.modelo }}"
+                                            class="form-control"
+                                            required>
+                                    
+                                    <label class="form-label">Marca</label>
+                                    <input type="text"
+                                            name="marca"
+                                            value="{{ veiculo.marca }}"
+                                            class="form-control"
+                                            required>
+                                    
+                                    <label class="form-label">Placa</label>
+                                    <input type="text"
+                                            name="placa"
+                                            value="{{ veiculo.placa }}"
+                                            class="form-control"
+                                            required>
+
+                                    <label class="form-label">Foto</label>
+                                    <input type="file" name="foto" class="form-control" >
+                                    <progress id="progress_{{ veiculo.id }}" value="0" max="100" style="width:100%;"></progress>
+                               
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div> {% endfor %}
+        </div> 
+        <div class="modal fade" id="modal_carro" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Ficha do Veículo</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        
+                        <div class="modal-body pb-0">
+                            <ul class="nav nav-tabs" id="abas-veiculo" role="tablist">
+                                <li class="nav-item">
+                                    <button class="nav-link active" data-aba="identificacao" onclick="trocarAba(this)">
+                                        Identificação
+                                    </button>
+                                </li>
+                                <li class="nav-item">
+                                    <button class="nav-link" data-aba="info" onclick="trocarAba(this)">
+                                        Info
+                                    </button>
+                                </li>
+                                <li class="nav-item">
+                                    <button class="nav-link" data-aba="documentacao" onclick="trocarAba(this)">
+                                        Documentação
+                                    </button>
+                                </li>
+                                <li class="nav-item">
+                                    <button class="nav-link" data-aba="mecanica" onclick="trocarAba(this)">
+                                        Mecânica
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="modal-body pt-3" id="tab-body">
+                            <!-- Conteúdo será carregado aqui via HTMX -->
+                            <div class="text-center text-secondary py-4">
+                                Carregando...
+                            </div>
+                        </div>
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+        <div class="modal fade" id="modal_insercao">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="tituloEvento">Adicionar um carro</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" class="form-control" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-success">Confirmar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-{% endblock %}
+        </div> 
+    </div> 
+        {% endblock %}

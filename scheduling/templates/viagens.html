@@ -72,7 +72,9 @@
                                         hx-swap="innerHTML">
                                     Editar
                                 </button>
-                                <form hx-post="{% url 'remover_agendamento' viagem.id %}"
+                                <form 
+                                    hx-post="{% url 'remover_agendamento' viagem.id %}"
+                                    hx-confirm="Tem certeza que deseja remover este agendamento?"
                                     hx-target="#cardViagem{{ viagem.id }}"
                                     hx-swap="outerHTML"
                                     class="d-inline-block">
@@ -85,7 +87,7 @@
                 </div>
             </div>
             <div class="modal fade" id="modalAlterarVeiculo{{ viagem.id }}">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <form hx-post="{% url 'alterar_veiculo' viagem.id %}" hx-swap="none">
                             {% csrf_token %}
@@ -117,7 +119,7 @@
     {% endif %}
     <!-- Modal de Edição -->
     <div class="modal fade" id="modalEdicao" tabindex="-1" aria-labelledby="modalEdicaoLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalEdicaoLabel">Editar Agendamento</h5>

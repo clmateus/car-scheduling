@@ -127,18 +127,28 @@ h2.container {
     border-top-left-radius: 12px;
     border-bottom-left-radius: 12px;
 }
+
+.htmx-indicator {
+    display: none;
+}
+.htmx-request .htmx-indicator {
+    display: block;
+}
+.htmx-request.htmx-indicator {
+    display: block;
+}
 /* ===========================
    FORMULÁRIOS — LOGIN
    =========================== */
 .login-form {
     background-color: transparent;
     color: #212529;
-    padding: 50px;
+    padding: .75rem .75rem;
     border-radius: 0.5rem;
     border: 1px solid #F5F5F5;
     max-width: 400px;
     margin: 0 auto;
-    transform: translate(0%, 0%);
+    transform: translate(0%, -10%);
 }
 .login-form .form-control {
     background-color: #F5F5F5 !important;
@@ -339,21 +349,5 @@ input:focus::placeholder {
     .btn-teste form {
         display: contents; 
     }
-    .veiculos-grid .card .row {
-        height: auto !important;
-    }
-    .veiculos-grid .card .col-12.col-md-4 {
-        height:200px !important;
-        min-height: unset !important;
-    }
-    .veiculos-grid .card .col-12.col-md-4 img,
-    .veiculos-grid .card .col-12.col-md-4 > div {
-        border-radius: 12px 12px 0 0 !important;
-        border-bottom-left-radius: 0 !important;
-        height: 200px !important;
-        min-height: unset !important;
-    }
-    .veiculos-grid .card .col-12.col-md-8 .card-body {
-        padding: 12px 12px 50px 12px !important;
-    }
+
 }

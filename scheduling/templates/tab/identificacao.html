@@ -1,0 +1,98 @@
+{% load static %}
+<div class="modal-body">
+<form 
+    hx-post="{% url 'salvar_aba_identificacao' veiculo_id %}"
+    hx-target="#tab-body_{{ veiculo.id }}"
+    hx-swap="outerHTML"
+    hx-encoding="multipart/form-data"
+    _="on htmx:xhr:progress(loaded, total) log loaded set #progress_{{ veiculo.id }}.value to (loaded/total)*100"
+    class="form-control"
+>
+    {% csrf_token %}
+    
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Modelo</label>
+            <input type="text" 
+                   class="form-control" 
+                   id="modelo" 
+                   name="modelo" 
+                   value="{{ veiculo.modelo }}" 
+                   disabled>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="marca" class="form-label">Marca</label>
+            <input type="text" 
+                   class="form-control" 
+                   name="marca" 
+                   value="{{ veiculo.marca }}" 
+                   disabled>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="placa" class="form-label">Placa</label>
+            <input type="text" 
+                   class="form-control" 
+                   name="placa" 
+                   value="{{ veiculo.placa }}" 
+                   pattern="[A-Za-z0-9]{7}"
+                   disabled>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="ano" class="form-label">Ano</label>
+            <input type="number" 
+                   class="form-control" 
+                   name="ano" 
+                   value="{{ veiculo.ano }}" 
+                   min="1886"
+                   max="2025"
+                   required>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="cor" class="form-label">Cor</label>
+            <input type="text" 
+                   class="form-control" 
+                   name="cor" 
+                   value="{{ veiculo.cor }}"
+                   required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="chassi" class="form-label">Chassi</label>
+            <input type="text" 
+                   class="form-control" 
+                   name="chassi" 
+                   value="{{ veiculo.chassi }}"
+                   maxlength="17"
+                   required>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Renavam</label>
+            <input type="number" 
+                   class="form-control" 
+                   name="renavam" 
+                   value="{{ veiculo.renavam }}" 
+                   required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="marca" class="form-label">Versão</label>
+            <input type="text" 
+                   class="form-control" 
+                   name="versao" 
+                   value="{{ veiculo.versao }}" 
+                   required>
+        </div>
+    </div>
+
+   
+        
+
+</form>
+</div>

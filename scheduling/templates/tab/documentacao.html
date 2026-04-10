@@ -1,0 +1,34 @@
+{% load static %}
+<div class="modal-body">
+<form 
+    hx-post="{% url 'salvar_aba_identificacao' veiculo_id %}"
+    hx-target="#tab-body_{{ veiculo.id }}"
+    hx-swap="outerHTML"
+    hx-encoding="multipart/form-data"
+    _="on htmx:xhr:progress(loaded, total) log loaded set #progress_{{ veiculo.id }}.value to (loaded/total)*100"
+    class="form-control"
+>
+    {% csrf_token %}
+
+     <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Seguro</label>
+            <input type="text" 
+                   class="form-control" 
+                   name="renavam" 
+                   value="{{ veiculo.seguro }}" 
+                   required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="marca" class="form-label">Nº da apólice</label>
+            <input type="text" 
+                   class="form-control" 
+                   name="versao" 
+                   value="{{ veiculo.apolice }}" 
+                   required>
+        </div>
+    </div>
+
+    <label class="form-label">Apólice</label>
+        <input type="file" name="apolice" class="form-control" >
+        <progress id="progress_{{ veiculo.id }}" value="0" max="100" style="width:100%;"></progress>

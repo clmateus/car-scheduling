@@ -17,5 +17,7 @@ urlpatterns = [
     path('viagens/', views.viagens, name='viagens'),
     path('historico/', views.historico, name='historico'),
     path('alteral_veiculo/<int:pk>/', views.alterar_veiculo, name='alterar_veiculo'),
-    path('emails_teste/', views.emails_teste, name='emails_teste')
+    path('emails_teste/', views.emails_teste, name='emails_teste'),
+    path('veiculos/tab/<str:aba>/<int:veiculo_id>/', views.carregar_aba, name='carregar_aba'),
+    path('veiculos/salvar-aba-identificacao/<int:veiculo_id>/', views.salvar_aba_identificacao, name='salvar_aba_identificacao'),
 ]

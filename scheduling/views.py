@@ -233,7 +233,6 @@ def editar_agendamento(request, pk):
     return render(request, 'edicao_form.html', {'form': form, 'agendamento_id': pk})
 
 @login_required
-@user_passes_test(is_gestor, login_url='/')
 def veiculos(request):
     todos_veiculos = Veiculo.objects.all()
 
@@ -352,3 +351,62 @@ def historico(request):
 def emails_teste(request):
     
     return HttpResponse("Email enviado com sucesso!")
+
+def veiculo_tab(resquest, aba, id):
+    veiculo = Veiculo.objects.get(id=id)
+
+    if aba == 'identificacao':
+        return render(resquest, 'tab/identificacao.html', {"veiculo": veiculo})
+    elif aba == 'info':
+        return render(resquest, 'tab/info.html', {'veiculo': veiculo})
+    elif aba == 'documentacao':
+        return render(resquest, 'tab/documentacao.html', {'veiculo': veiculo})
+    elif aba == 'mecanica':
+        return render(resquest, 'tab/mecanica.html', {'veiculo': veiculo})
+    
+def carregar_aba(request, aba, veiculo_id):
+    """Carrega o conteúdo da aba solicitada"""
+    veiculo = get_object_or_404(Veiculo, id=veiculo_id)
+    
+    # Mapeamento das abas para seus templates
+    templates = {
+        'identificacao': 'tab/identificacao.html',
+        'info': 'tab/info.html',
+        'documentacao': 'tab/documentacao.html',
+        'mecanica': 'tab/mecanica.html',
+    }
+    
+    template_name = templates.get(aba, 'tab/identificacao.html')
+    
+    context = {
+        'veiculo': veiculo,
+        'veiculo_id': veiculo_id,
+    }
+    
+    return render(request, template_name, context)
+
+def salvar_aba_identificacao(request, veiculo_id):
+    """Salva os dados da aba identificacao"""
+    veiculo = get_object_or_404(Veiculo, id=veiculo_id)
+    
+    if request.method == 'POST':
+        # Atualizar campos
+        veiculo.modelo = request.POST.get('modelo', veiculo.modelo)
+        veiculo.marca = request.POST.get('marca', veiculo.marca)
+        veiculo.placa = request.POST.get('placa', veiculo.placa)
+        veiculo.ano = request.POST.get('ano', veiculo.ano) or None
+        veiculo.cor = request.POST.get('cor', veiculo.cor)
+        veiculo.chassi = request.POST.get('chassi', veiculo.chassi)
+        
+        veiculo.save()
+        
+        # Retornar a aba atualizada com mensagem de sucesso
+        context = {
+            'veiculo': veiculo,
+            'veiculo_id': veiculo_id,
+            'mensagem_sucesso': 'Dados salvos com sucesso!'
+        }
+        
+        return render(request, 'tab/identificacao.html', context)
+    
+    return HttpResponse(status=400)

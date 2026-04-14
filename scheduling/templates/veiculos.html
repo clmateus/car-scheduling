@@ -13,7 +13,10 @@
             {% for veiculo in veiculos %}
                 <div class="card h-100" id="card_{{ veiculo.id }}">
                     
-                    <div class="row g-0 h-100" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modal_carro"onclick="abrirModalCarro({{ veiculo.id}})">
+                    <div class="row g-0 h-100" style="cursor: pointer;" 
+                         data-bs-toggle="modal" 
+                         data-bs-target="#modal_carro"
+                         onclick="abrirModalCarro({{ veiculo.id }})">
                         <div class="col-12 col-md-4 h-100">
                             {% if veiculo.foto %}
                                  <img src="{{ veiculo.foto.url }}" class="img-fluid rounded-start w-100 h-100" style="min-height: 180px; object-fit: cover;" alt="...">
@@ -90,7 +93,38 @@
                                             required>
 
                                     <label class="form-label">Foto</label>
-                                    <input type="file" name="foto" class="form-control" >
+                                    <input type="file" name="foto" class="form-control">
+
+                                    <label class="form-label">Ano</label>
+                                    <input type="number"
+                                            name="ano"
+                                            value="{{ veiculo.ano }}"
+                                            class="form-control">
+
+                                    <label class="form-label">Cor</label>
+                                    <input type="text"
+                                            name="cor"
+                                            value="{{ veiculo.cor }}"
+                                            class="form-control">
+
+                                    <label class="form-label">Chassi</label>
+                                    <input type="text"
+                                            name="chassi"
+                                            value="{{ veiculo.chassi }}"
+                                            class="form-control">
+
+                                    <label class="form-label">Renavam</label>
+                                    <input type="number"
+                                            name="renavam"
+                                            value="{{ veiculo.renavam }}"
+                                            class="form-control">
+
+                                    <label class="form-label">Versão</label>
+                                    <input type="text"
+                                            name="versao"
+                                            value="{{ veiculo.versao }}"
+                                            class="form-control">
+
                                     <progress id="progress_{{ veiculo.id }}" value="0" max="100" style="width:100%;"></progress>
                                
                                     <div class="modal-footer">
@@ -110,39 +144,33 @@
                             <h5 class="modal-title">Ficha do Veículo</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        
+
                         <div class="modal-body pb-0">
-                            <ul class="nav nav-tabs" id="abas-veiculo" role="tablist">
+                            <!-- Abas de navegação -->
+                            <ul class="nav nav-tabs mb-3" id="abas-veiculo">
                                 <li class="nav-item">
-                                    <button class="nav-link active" data-aba="identificacao" onclick="trocarAba(this)">
-                                        Identificação
-                                    </button>
+                                    <button class="nav-link active" data-aba="identificacao" onclick="trocarAba(this)">Identificação</button>
                                 </li>
                                 <li class="nav-item">
-                                    <button class="nav-link" data-aba="info" onclick="trocarAba(this)">
-                                        Info
-                                    </button>
+                                    <button class="nav-link" data-aba="documentacao" onclick="trocarAba(this)">Documentação</button>
                                 </li>
                                 <li class="nav-item">
-                                    <button class="nav-link" data-aba="documentacao" onclick="trocarAba(this)">
-                                        Documentação
-                                    </button>
+                                    <button class="nav-link" data-aba="info" onclick="trocarAba(this)">Info</button>
                                 </li>
                                 <li class="nav-item">
-                                    <button class="nav-link" data-aba="mecanica" onclick="trocarAba(this)">
-                                        Mecânica
-                                    </button>
+                                    <button class="nav-link" data-aba="mecanica" onclick="trocarAba(this)">Mecânica</button>
                                 </li>
                             </ul>
-                        </div>
 
-                        <div class="modal-body pt-3" id="tab-body">
-                            <!-- Conteúdo será carregado aqui via HTMX -->
-                            <div class="text-center text-secondary py-4">
-                                Carregando...
+                            <!-- Conteúdo da aba carregado via HTMX -->
+                            <div id="tab-body">
+                                <div class="text-center p-4">
+                                    <div class="spinner-border text-primary" role="status"></div>
+                                    <p class="mt-2 text-muted">Carregando dados do banco...</p>
+                                </div>
                             </div>
                         </div>
-                        
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                         </div>

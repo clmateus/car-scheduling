@@ -6,11 +6,10 @@ document.addEventListener('DOMContentLoaded', function() {
         return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     }
 
-    if(telaMobile){
-      document.getElementById('tituloPrincipal').innerHTML = 'Mobile'
-    } else {
-      document.getElementById('tituloPrincipal').innerHTML = 'Desktop'
-    }
+const titulo = document.getElementById('tituloPrincipal');
+if (titulo) {
+    titulo.innerHTML = telaMobile ? 'Mobile' : 'Desktop';
+}
 
     var modalEvento = new bootstrap.Modal(document.getElementById('modal_evento'));
     var modalInsercao = new bootstrap.Modal(document.getElementById('modal_insercao'));
@@ -145,4 +144,11 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
   });
-});
+})
+  
+function trocarAba(botao) {
+    const aba = botao.getAttribute("data-aba");
+
+    htmx.ajax('GET', `/veiculos/tab/${aba}/${veiculoAtual}/`, '#tab-body');
+}
+htmx.ajax('GET', `/veiculos/tab/identificacao/${id}/`, '#tab-body');

@@ -1,98 +1,55 @@
 {% load static %}
 <div class="modal-body">
-<form 
-    hx-post="{% url 'salvar_aba_identificacao' veiculo_id %}"
-    hx-target="#tab-body_{{ veiculo.id }}"
-    hx-swap="outerHTML"
-    hx-encoding="multipart/form-data"
-    _="on htmx:xhr:progress(loaded, total) log loaded set #progress_{{ veiculo.id }}.value to (loaded/total)*100"
-    class="form-control"
->
-    {% csrf_token %}
-    
+
+    {% if mensagem_sucesso %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ mensagem_sucesso }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endif %}
+
     <div class="row">
         <div class="col-md-6 mb-3">
             <label class="form-label">Modelo</label>
-            <input type="text" 
-                   class="form-control" 
-                   id="modelo" 
-                   name="modelo" 
-                   value="{{ veiculo.modelo }}" 
-                   disabled>
+            <input type="text" class="form-control" value="{{ veiculo.modelo }}" disabled>
         </div>
         <div class="col-md-6 mb-3">
-            <label for="marca" class="form-label">Marca</label>
-            <input type="text" 
-                   class="form-control" 
-                   name="marca" 
-                   value="{{ veiculo.marca }}" 
-                   disabled>
+            <label class="form-label">Marca</label>
+            <input type="text" class="form-control" value="{{ veiculo.marca }}" disabled>
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-6 mb-3">
-            <label for="placa" class="form-label">Placa</label>
-            <input type="text" 
-                   class="form-control" 
-                   name="placa" 
-                   value="{{ veiculo.placa }}" 
-                   pattern="[A-Za-z0-9]{7}"
-                   disabled>
+            <label class="form-label">Placa</label>
+            <input type="text" class="form-control" value="{{ veiculo.placa }}" disabled>
         </div>
         <div class="col-md-6 mb-3">
-            <label for="ano" class="form-label">Ano</label>
-            <input type="number" 
-                   class="form-control" 
-                   name="ano" 
-                   value="{{ veiculo.ano }}" 
-                   min="1886"
-                   max="2025"
-                   required>
+            <label class="form-label">Ano</label>
+            <input type="number" class="form-control" value="{{ veiculo.ano }}" disabled>
         </div>
     </div>
-    
+
     <div class="row">
         <div class="col-md-6 mb-3">
-            <label for="cor" class="form-label">Cor</label>
-            <input type="text" 
-                   class="form-control" 
-                   name="cor" 
-                   value="{{ veiculo.cor }}"
-                   required>
+            <label class="form-label">Cor</label>
+            <input type="text" class="form-control" value="{{ veiculo.cor }}" disabled>
         </div>
         <div class="col-md-6 mb-3">
-            <label for="chassi" class="form-label">Chassi</label>
-            <input type="text" 
-                   class="form-control" 
-                   name="chassi" 
-                   value="{{ veiculo.chassi }}"
-                   maxlength="17"
-                   required>
+            <label class="form-label">Chassi</label>
+            <input type="text" class="form-control" value="{{ veiculo.chassi }}" disabled>
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-6 mb-3">
             <label class="form-label">Renavam</label>
-            <input type="number" 
-                   class="form-control" 
-                   name="renavam" 
-                   value="{{ veiculo.renavam }}" 
-                   required>
+            <input type="number" class="form-control" value="{{ veiculo.renavam }}" disabled>
         </div>
         <div class="col-md-6 mb-3">
-            <label for="marca" class="form-label">Versão</label>
-            <input type="text" 
-                   class="form-control" 
-                   name="versao" 
-                   value="{{ veiculo.versao }}" 
-                   required>
+            <label class="form-label">Versão</label>
+            <input type="text" class="form-control" value="{{ veiculo.versao }}" disabled>
         </div>
     </div>
 
-   
-        
-
-</form>
 </div>

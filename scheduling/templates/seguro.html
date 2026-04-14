@@ -1,0 +1,28 @@
+<div id="aba-seguro">
+    <h5 class="mb-4">Seguro do Veículo: {{ veiculo.modelo }}</h5>
+    
+    {% if mensagem_sucesso %}
+        <div class="alert alert-success">{{ mensagem_sucesso }}</div>
+    {% endif %}
+    {% if mensagem_erro %}
+        <div class="alert alert-danger">{{ mensagem_erro }}</div>
+    {% endif %}
+    
+    <form hx-post="{% url 'seguro_veiculo' veiculo.id %}" 
+          hx-encoding="multipart/form-data" 
+          hx-target="#tab-body" 
+          hx-swap="innerHTML">
+          
+        {% csrf_token %}
+        
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        
+        <div class="mt-4 mb-3">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-save"></i> Salvar Dados do Seguro
+            </button>
+        </div>
+    </form>
+</div>

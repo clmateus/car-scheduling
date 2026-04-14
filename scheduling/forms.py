@@ -1,21 +1,31 @@
 from django import forms
-from .models import Veiculo, Agendamento
+from .models import Veiculo, Agendamento, Seguro
 
 class CadastroVeiculo(forms.ModelForm):
     class Meta:
         model = Veiculo
-        fields = ['modelo', 'marca', 'placa', 'foto']
+        fields = ['modelo', 'marca', 'placa', 'foto', 'ano', 'cor', 'chassi', 'renavam', 'versao']
         widgets = {
             'modelo': forms.TextInput(attrs={'class': 'form-control'}),
             'marca': forms.TextInput(attrs={'class': 'form-control'}),
             'placa': forms.TextInput(attrs={'class': 'form-control'}),
             'foto': forms.FileInput(attrs={'class': 'form-control'}),
+            'ano': forms.NumberInput(attrs={'class': 'form-control'}),
+            'cor': forms.TextInput(attrs={'class': 'form-control'}),
+            'chassi': forms.TextInput(attrs={'class': 'form-control'}),
+            'renavam': forms.NumberInput(attrs={'class': 'form-control'}),
+            'versao': forms.TextInput(attrs={'class': 'form-control'}),
         }
         labels = {
-            'modelo': 'Modelo:',
-            'marca': 'Marca:',
-            'placa': 'Placa:',
-            'foto': 'Foto:',
+            'modelo': 'Modelo',
+            'marca': 'Marca',
+            'placa': 'Placa',
+            'foto': 'Foto',
+            'ano': 'Ano',
+            'cor': 'Cor',
+            'chassi': 'Chassi',
+            'renavam': 'Renavam',
+            'versao': 'Versão',
         }
     
     def clean_placa(self):
@@ -49,3 +59,27 @@ class EdicaoForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['dataPartida'].input_formats = ('%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M')
         self.fields['dataChegada'].input_formats = ('%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M')
+
+class SeguroForm(forms.ModelForm):
+    class Meta:
+        model = Seguro
+        fields = ['seguro', 'num_apolice', 'apolice', 'inicio_vigencia', 'final_vigencia']
+        widgets = {
+            'seguro': forms.TextInput(attrs={'class': 'form-control'}),
+            'num_apolice': forms.NumberInput(attrs={'class': 'form-control'}),
+            'apolice': forms.FileInput(attrs={'class': 'form-control'}),
+            'inicio_vigencia': forms.DateTimeInput(format='%Y-%m-%dT%H:%M', attrs={'type': 'datetime-local', 'class': 'form-control'}),
+            'final_vigencia': forms.DateTimeInput(format='%Y-%m-%dT%H:%M', attrs={'type': 'datetime-local', 'class': 'form-control'}),
+        }
+        labels = {
+            'seguro': 'Seguro',
+            'num_apolice': 'Nº da Apólice',
+            'apolice': 'Apólice',
+            'inicio_vigencia': 'Início da Vigência',
+            'final_vigencia': 'Fim da Vigência',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['inicio_vigencia'].input_formats = ('%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M')
+        self.fields['final_vigencia'].input_formats = ('%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M')

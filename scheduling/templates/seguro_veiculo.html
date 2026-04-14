@@ -1,0 +1,8 @@
+<form hx-post="{% url 'seguro_veiculo' veiculo_id %}" hx-target="#modalEdicaoBody" hx-swap="innerHTML">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <div class="modal-footer mt-3 px-0 pb-0">
+    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+    <button type="submit" class="btn btn-success">Salvar Alterações</button>
+  </div>
+</form>

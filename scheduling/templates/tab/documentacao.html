@@ -1,34 +1,74 @@
 {% load static %}
 <div class="modal-body">
-<form 
-    hx-post="{% url 'salvar_aba_identificacao' veiculo_id %}"
-    hx-target="#tab-body_{{ veiculo.id }}"
-    hx-swap="outerHTML"
-    hx-encoding="multipart/form-data"
-    _="on htmx:xhr:progress(loaded, total) log loaded set #progress_{{ veiculo.id }}.value to (loaded/total)*100"
-    class="form-control"
->
-    {% csrf_token %}
 
-     <div class="row">
-        <div class="col-md-6 mb-3">
-            <label class="form-label">Seguro</label>
-            <input type="text" 
-                   class="form-control" 
-                   name="renavam" 
-                   value="{{ veiculo.seguro }}" 
-                   required>
+    {% if mensagem_sucesso %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ mensagem_sucesso }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-        <div class="col-md-6 mb-3">
-            <label for="marca" class="form-label">Nº da apólice</label>
-            <input type="text" 
-                   class="form-control" 
-                   name="versao" 
-                   value="{{ veiculo.apolice }}" 
-                   required>
+    {% endif %}
+    {% if mensagem_erro %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ mensagem_erro }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-    </div>
+    {% endif %}
 
-    <label class="form-label">Apólice</label>
-        <input type="file" name="apolice" class="form-control" >
-        <progress id="progress_{{ veiculo.id }}" value="0" max="100" style="width:100%;"></progress>
+    <form 
+        hx-post="{% url 'seguro_veiculo' veiculo.id %}"
+        hx-target="#tab-body"
+        hx-swap="innerHTML"
+        hx-encoding="multipart/form-data"
+        class="form-control"
+    >
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Seguro</label>
+                <input type="text" 
+                       class="form-control" 
+                       name="seguro" 
+                       value="{{ seguro.seguro|default:'' }}" 
+                       required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Nº da apólice</label>
+                <input type="number" 
+                       class="form-control" 
+                       name="num_apolice" 
+                       value="{{ seguro.num_apolice|default:'' }}" 
+                       required>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Início da Vigência</label>
+                <input type="datetime-local" 
+                       class="form-control" 
+                       name="inicio_vigencia" 
+                       value="{{ seguro.inicio_vigencia|date:'Y-m-d\TH:i'|default:'' }}" 
+                       required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Fim da Vigência</label>
+                <input type="datetime-local" 
+                       class="form-control" 
+                       name="final_vigencia" 
+                       value="{{ seguro.final_vigencia|date:'Y-m-d\TH:i'|default:'' }}" 
+                       required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Apólice (arquivo)</label>
+            <input type="file" name="apolice" class="form-control">
+            {% if seguro.apolice %}
+                <small class="text-muted mt-1 d-block">Arquivo atual: {{ seguro.apolice.name }}</small>
+            {% endif %}
+        </div>
+        
+        <div class="mt-4 mb-3">
+            <button type="submit" class="btn btn-primary w-100">Salvar Alterações</button>
+        </div>
+    </form>
+</div>

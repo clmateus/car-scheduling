@@ -202,6 +202,22 @@ input:focus::placeholder {
 .form-floating > label {
     display: none;
 }
+textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  resize: vertical;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  box-sizing: border-box; /* Garante padding correto */
+}
+
+#text-area-123:focus{
+    outline: none;
+    border: none;
+}
+
 /* ===========================
    BOTÕES
    =========================== */

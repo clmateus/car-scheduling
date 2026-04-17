@@ -15,6 +15,13 @@
       </li>
 
         <li class="nav-item">
+          <a class="nav-link" href="/agendamento" title="Inicio">
+            <i class="fa fa-calendar"></i>Agenda
+            <i class="fa fa-calendar shortmenu animate"></i>
+          </a>
+        </li>
+
+        <li class="nav-item">
           <a class="nav-link" href="/veiculos" title="Veiculos">
             <i class="fas fa-car"></i> Veículos
             <i class="fas fa-car shortmenu animate"></i>
@@ -23,7 +30,7 @@
 
       <li class="nav-item">
         <a class="nav-link" href="/viagens" title="Viagens">
-          <i class="fa fa-map" aria-hidden="true"></i> Viagens
+          <i class="fa fa-map" aria-hidden="true"></i>Reservas
           <i class="fa fa-map shortmenu animate"></i>
         </a>
       </li>
@@ -36,6 +43,13 @@
         </a>
       </li>
       {% endif %}
+
+      <li class="nav-item">
+        <a class="nav-link" href="/ativos" title="Ativos">
+          <i class="fa fa-laptop" aria-hidden="true"></i> Ativos
+          <i class="fa fa-laptop shortmenu animate"></i>
+        </a>
+      </li>
 
       <li class="nav-item sidebar-footer mt-auto">
         <form id="logout-form" action="{% url 'logout' %}" method="post">
@@ -76,6 +90,11 @@
         <span>Histórico</span>
       </a>
     {% endif %}
+
+    <a href="/ativos" class="bottom-nav__item">
+      <i class="fa-solid fa-mobile-screen"></i>
+      <span>Ativos</span>
+    </a>
 
     <a href="#" class="bottom-nav__item" onclick="document.getElementById('logout-form').submit()">
       <i class="fas fa-sign-out-alt"></i>

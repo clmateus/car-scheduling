@@ -30,7 +30,7 @@
                             <div class="card-body pb-5">
                                 <h5 class="card-title">{{ veiculo.marca }} - {{ veiculo.modelo }}</h5>
                                 <p class="card-text">Placa: {{ veiculo.placa }}</p>
-                                <p class="card-text"><small class="text-body-secondary">algum texto aqui</small></p>
+                                <p class="card-text"><small class="text-body-secondary">Clique para ver mais</small></p>
                             </div>
                         </div>
                     </div>
@@ -125,8 +125,6 @@
                                             value="{{ veiculo.versao }}"
                                             class="form-control">
 
-                                    <progress id="progress_{{ veiculo.id }}" value="0" max="100" style="width:100%;"></progress>
-                               
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                         <button type="submit" class="btn btn-success">Salvar Alterações</button>
@@ -151,18 +149,23 @@
                                 <li class="nav-item">
                                     <button class="nav-link active" data-aba="identificacao" onclick="trocarAba(this)">Identificação</button>
                                 </li>
+
                                 <li class="nav-item">
-                                    <button class="nav-link" data-aba="documentacao" onclick="trocarAba(this)">Documentação</button>
+                                    <button class="nav-link" data-aba="documentacao" onclick="trocarAba(this)">Seguro</button>
                                 </li>
+
                                 <li class="nav-item">
                                     <button class="nav-link" data-aba="info" onclick="trocarAba(this)">Info</button>
                                 </li>
-                                <li class="nav-item">
-                                    <button class="nav-link" data-aba="mecanica" onclick="trocarAba(this)">Mecânica</button>
+                                
+                                {% if user|has_group:'Gestores' %}
+                                 <li class="nav-item">
+                                    <button class="nav-link" data-aba="comentarios" onclick="trocarAba(this)">Comentários</button>
                                 </li>
+                                {% endif %}
+
                             </ul>
 
-                            <!-- Conteúdo da aba carregado via HTMX -->
                             <div id="tab-body">
                                 <div class="text-center p-4">
                                     <div class="spinner-border text-primary" role="status"></div>
@@ -172,7 +175,7 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                         </div>
                     </div>
                 </div>

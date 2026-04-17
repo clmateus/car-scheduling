@@ -20,4 +20,10 @@ urlpatterns = [
     path('veiculos/tab/<str:aba>/<int:veiculo_id>/', views.carregar_aba, name='carregar_aba'),
     path('veiculos/salvar-aba-identificacao/<int:veiculo_id>/', views.salvar_aba_identificacao, name='salvar_aba_identificacao'),
     path('seguro_veiculo/<int:pk>/', views.seguro_veiculo, name='seguro_veiculo'),
+    path('enviar/', views.enviar_texto, name='enviar_texto'),
+    path('seguro_veiculo/<int:pk>/', views.upload_arquivos, name='upload_arquivos'),  
+    path('comentarios/', views.comentarios, name='comentarios'),
+    path('ativos/', views.ativos, name='ativos'),
+    path('cadastrar_equipamento/', views.cadastrar_equipamento, name='cadastrar_equipamento'),
+    path('listar_ativos.html/', views.listar_ativos, name='listar_ativos'),
 ]

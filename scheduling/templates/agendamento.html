@@ -1,0 +1,111 @@
+{% comment %}
+
+{% extends "_base.html" %}
+{% load authenticate_user %}
+{% block content %}
+
+  <div class="container">
+    <h2 id='tituloPrincipal'></h2>
+    <div id="calendar"></div>
+  </div>
+  
+  <!-- Modal do Evento -->
+   <div class="modal fade" id="modal_evento">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="tituloEvento"></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="text">
+              <span id="carroAtribuido"></span>
+            </p>
+            <p class="text">
+              <span id="inicioEvento"></span>
+            </p>
+            <p class="text">
+              <span id="fimEvento"></span>
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            <button type="button" class="btn btn-primary" style="display: none;"
+                    id="btnEditarEvento"
+                    data-bs-toggle="modal" 
+                    data-bs-target="#modal_edicao"
+                    data-bs-dismiss="modal"
+                    hx-get=""
+                    hx-target="#modalEdicaoBody"
+                    hx-swap="innerHTML">
+                Editar
+            </button>
+            <form id="formRemoverAgendamento" hx-post="" hx-swap="none">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger" id="btnRemoverEvento" style="display: none;" data-bs-dismiss="modal">Excluir</button>
+            </form>
+          </div>
+        </div>
+      </div>
+   </div>
+
+   <!-- Modal de Inserção -->
+    <div class="modal fade" id="modal_insercao">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="tituloEvento">Criar nova viagem</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form hx-post="{% url 'agendar' %}" hx-target="#resultadoModal" hx-swap="innerHTML" class="form-control">
+              {% csrf_token %}
+              <label for="motorista" class="form-label">Nome do motorista</label>
+              <input type="text" class="form-control" name="motorista" id="motorista">
+              <label for="dataHoraPartida" class="form-label">Data e hora de Partida</label>
+              <input type="datetime-local" class="form-control" name="dataHoraPartida" id="dataHoraPartida">
+              <label for="dataHoraChegada" class="form-label">Data e hora da Volta</label>
+              <input type="datetime-local" class="form-control" name="dataHoraChegada" id="dataHoraChegada">
+              <label for="destino" class="form-label">Destino</label>
+              <input type="text" class="form-control" name="destino" id="destino">
+              <label for="passageiros" class="form-label">Quantidade de Passageiros</label>
+              <input type="number" class="form-control" name="passageiros" id="passageiros" min=1 max=5 value=1>
+              <div id="resultadoModal" class="mt-3"></div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-success">Agendar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+   </div>
+
+    <!-- Toast Sucesso -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+      <div id="liveToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            ✅ Reserva realizada com sucesso!
+          </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+    <!-- Toast Cancelado -->
+    <div id="liveToastCancelado" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          ❌ Sua reserva foi cancelada.
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+</div>
+<script>
+    document.body.addEventListener('htmx:configRequest', function(event) {
+        event.detail.headers['X-CSRFToken'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    });
+</script>
+{% endblock content %} 
+
+{% endcomment %}

@@ -1,0 +1,64 @@
+{% load static %}
+
+<div id="comentarios">
+    {% for comentario in observacoes %}
+        <div class="comentario-item">
+            <p class="usuario"><strong>{{comentario.usuario}}</strong></p>
+            <p class="veiculo">{{ comentario.veiculo }}</p>
+            <p class="mensagem">{{ comentario.mensagem }}</p>
+        </div>
+    {% empty %}
+        <p class="vazio">Nenhum comentário ainda.</p>
+    {% endfor %}
+
+    <style>
+        /* Container principal */
+#comentarios {
+    max-width: 600px;
+    margin: 20px auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Card de cada comentário */
+.comentario-item {
+    background-color: #f9f9f9;
+    border-left: 5px solid #007bff; /* Barrinha azul de destaque */
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Estilo do Nome do Usuário */
+.usuario {
+    color: #333;
+    font-size: 1.1em;
+    margin: 0 0 5px 0;
+}
+
+/* Estilo do Veículo (menor e cinza) */
+.veiculo {
+    color: #666;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 10px 0;
+}
+
+/* Estilo da Mensagem */
+.mensagem {
+    color: #444;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Mensagem de "Vazio" */
+.vazio {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+}
+
+    </style>
+
+</div>

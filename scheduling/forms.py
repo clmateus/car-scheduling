@@ -1,5 +1,6 @@
 from django import forms
-from .models import Veiculo, Agendamento, Seguro
+from .models import Veiculo, Agendamento, Seguro, Ativo
+
 
 class CadastroVeiculo(forms.ModelForm):
     class Meta:
@@ -30,11 +31,10 @@ class CadastroVeiculo(forms.ModelForm):
     
     def clean_placa(self):
         placa = self.cleaned_data.get('placa')
-
         if placa:
             return placa.upper()
-        
         return placa
+
 
 class EdicaoForm(forms.ModelForm):
     class Meta:
@@ -60,26 +60,44 @@ class EdicaoForm(forms.ModelForm):
         self.fields['dataPartida'].input_formats = ('%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M')
         self.fields['dataChegada'].input_formats = ('%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M')
 
+
 class SeguroForm(forms.ModelForm):
     class Meta:
         model = Seguro
+        # Removido o 'apolice' duplicado e garantido que o nome do campo bate com o model
         fields = ['seguro', 'num_apolice', 'apolice', 'inicio_vigencia', 'final_vigencia']
         widgets = {
             'seguro': forms.TextInput(attrs={'class': 'form-control'}),
             'num_apolice': forms.NumberInput(attrs={'class': 'form-control'}),
-            'apolice': forms.FileInput(attrs={'class': 'form-control'}),
+            'apolice': forms.FileInput(attrs={'class': 'form-control'}), # Campo de Upload
             'inicio_vigencia': forms.DateTimeInput(format='%Y-%m-%dT%H:%M', attrs={'type': 'datetime-local', 'class': 'form-control'}),
             'final_vigencia': forms.DateTimeInput(format='%Y-%m-%dT%H:%M', attrs={'type': 'datetime-local', 'class': 'form-control'}),
         }
         labels = {
             'seguro': 'Seguro',
             'num_apolice': 'Nº da Apólice',
-            'apolice': 'Apólice',
+            'apolice': 'Arquivo da Apólice (PDF/Imagem)',
             'inicio_vigencia': 'Início da Vigência',
             'final_vigencia': 'Fim da Vigência',
         }
+
+class DocumentoForm(forms.ModelForm):
+    class Meta:
+        model = Seguro 
+        fields = ['apolice']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['inicio_vigencia'].input_formats = ('%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M')
         self.fields['final_vigencia'].input_formats = ('%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M')
+
+class AtivoForm(forms.ModelForm):
+    class Meta:
+        model = Ativo
+        fields = ['categoria', 'marca', 'modelo', 'numero_de_serie']
+        widgets = {
+            'categoria': forms.Select(attrs={'class': 'form-select'}),
+            'marca': forms.TextInput(attrs={'class': 'form-control'}),
+            'modelo': forms.TextInput(attrs={'class': 'form-control'}),
+            'numero_de_serie': forms.TextInput(attrs={'class': 'form-control'}),
+        }

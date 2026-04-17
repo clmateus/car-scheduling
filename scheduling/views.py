@@ -8,9 +8,10 @@ from django.utils.dateparse import parse_datetime
 from django.http import JsonResponse, HttpResponse
 from django.core.mail import send_mail
 from django_q.tasks import async_task
-from .models import Agendamento, Veiculo, Seguro
-from .forms import CadastroVeiculo, EdicaoForm, SeguroForm
+from .models import Agendamento, Veiculo, Seguro, Info, Ativo
+from .forms import CadastroVeiculo, EdicaoForm, SeguroForm, DocumentoForm, AtivoForm
 from PIL import Image
+from django.conf import settings
 import json
 import io
 import random
@@ -19,11 +20,9 @@ import random
 def is_gestor(user):
     return user.groups.filter(name='Gestores').exists() or user.is_superuser
 
-
 @login_required
 def index(request):
     return render(request, 'index.html')
-
 
 @login_required
 def agendar(request):
@@ -97,7 +96,6 @@ def agendar(request):
 
     return render(request, 'index.html')
 
-
 @login_required
 def mudar_dia_agendamento(request):
     if request.method != 'POST':
@@ -130,7 +128,6 @@ def mudar_dia_agendamento(request):
     agendamento.save()
     return JsonResponse({'status': 'sucesso'})
 
-
 @login_required
 def listar_agendamentos(request):
     agendamentos = Agendamento.objects.all()
@@ -147,7 +144,6 @@ def listar_agendamentos(request):
         for ag in agendamentos
     ]
     return JsonResponse(eventos, safe=False)
-
 
 @login_required
 def remover_agendamento(request, pk):
@@ -170,7 +166,6 @@ def remover_agendamento(request, pk):
     )
 
     return response
-
 
 @login_required
 def editar_agendamento(request, pk):
@@ -226,7 +221,6 @@ def editar_agendamento(request, pk):
     form = EdicaoForm(instance=agendamento)
     return render(request, 'edicao_form.html', {'form': form, 'agendamento_id': pk})
 
-
 @login_required
 def veiculos(request):
     if request.method == 'POST':
@@ -250,14 +244,12 @@ def veiculos(request):
 
     return render(request, 'veiculos.html', {'veiculos': Veiculo.objects.all(), 'form': form})
 
-
 @login_required
 @user_passes_test(is_gestor, login_url='/')
 @require_POST
 def remover_veiculo(request, pk):
     get_object_or_404(Veiculo, pk=pk).delete()
     return HttpResponse('')
-
 
 @login_required
 @user_passes_test(is_gestor, login_url='/')
@@ -273,7 +265,6 @@ def editar_veiculo(request, pk):
         return resposta
 
     return HttpResponse('Erro ao validar formulário. Feche e tente novamente.', status=400)
-
 
 @login_required
 def viagens(request):
@@ -305,7 +296,6 @@ def viagens(request):
         'email_criador_do_evento': email_criador_do_evento,
     })
 
-
 @login_required
 @user_passes_test(is_gestor, login_url='/')
 def alterar_veiculo(request, pk):
@@ -317,13 +307,11 @@ def alterar_veiculo(request, pk):
         resposta['HX-Refresh'] = 'true'
         return resposta
 
-
 @login_required
 @user_passes_test(is_gestor, login_url='/')
 def historico(request):
     todas_as_viagens = Agendamento.objects.order_by('-dataPartida')
     return render(request, 'historico.html', {'todas_as_viagens': todas_as_viagens})
-
 
 @login_required
 def carregar_aba(request, aba, veiculo_id):
@@ -334,16 +322,17 @@ def carregar_aba(request, aba, veiculo_id):
         'identificacao': 'tab/identificacao.html',
         'documentacao': 'tab/documentacao.html',
         'info': 'tab/info.html',
-        'mecanica': 'tab/mecanica.html',
+        'comentarios': 'tab/comentarios.html',
     }
-
     context = {'veiculo': veiculo, 'veiculo_id': veiculo_id}
 
     if aba == 'documentacao':
         context['seguro'] = Seguro.objects.filter(veiculo=veiculo).first()
 
-    return render(request, templates.get(aba, 'tab/identificacao.html'), context)
+    if aba == 'comentarios':
+        context['observacoes'] = Info.objects.filter(veiculo=veiculo).order_by('-id')
 
+    return render(request, templates.get(aba, 'tab/identificacao.html'), context)
 
 @login_required
 def salvar_aba_identificacao(request, veiculo_id):
@@ -368,7 +357,6 @@ def salvar_aba_identificacao(request, veiculo_id):
         'veiculo_id': veiculo_id,
         'mensagem_sucesso': 'Dados salvos com sucesso!',
     })
-
 
 @login_required
 def seguro_veiculo(request, pk):
@@ -398,3 +386,59 @@ def seguro_veiculo(request, pk):
         })
 
     return render(request, 'tab/documentacao.html', {'veiculo': veiculo, 'seguro': seguro})
+
+def enviar_texto(request):
+    if request.method == 'POST':
+        texto = request.POST.get('mensagem')
+        veiculo_id = request.POST.get('veiculo_id')
+
+        if texto and veiculo_id:
+            veiculo = get_object_or_404(Veiculo, id=veiculo_id)
+
+            Info.objects.create(
+                mensagem=texto,
+                usuario=request.user,
+                veiculo=veiculo
+            )
+
+            observacoes = Info.objects.filter(
+                veiculo=veiculo
+            ).order_by('-criado_em')
+
+            return render(request, 'tab/comentarios.html', {
+                'observacoes': observacoes
+            })
+
+    return HttpResponse(status=400)
+
+def upload_arquivos(request):
+    if request.method == 'POST':
+        form = DocumentoForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('tab/comentarios.html')
+    else:
+        form = DocumentoForm()
+    return render(request, 'tab/comentarios.html', {'form': form})
+
+def comentarios(request):
+    comentarios = Info.objects.all()
+    return render(request, 'tab/comentarios.html', {'observacoes': comentarios})
+
+def ativos(request):
+    return render(request, 'ativos.html')
+
+def cadastrar_equipamento(request):
+    if request.method == 'POST':
+        form = AtivoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('cadastrar_equipamento')
+    else:
+        form = AtivoForm()
+
+    return render(request, 'cadastrar_equipamento.html', {'form': form})
+
+def listar_ativos(request):
+    ativos = Ativo.objects.all()
+    return render(request, 'listar_ativos.html', {'ativos': ativos})

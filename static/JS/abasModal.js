@@ -46,3 +46,7 @@ document.body.addEventListener('refreshIdentificacao', function () {
 
     carregarAba('identificacao', veiculoAtivoId);
 });
+
+document.body.addEventListener('atualizarComentarios', function () {
+    // força clicar na aba comentários
+});

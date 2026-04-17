@@ -1,0 +1,22 @@
+{% extends '_base.html' %}
+{% block content %}
+    <div class="container">
+        {% if ativos %}
+            <h1>Ativos</h1>
+        {% else %}
+            <h1>Nenhum ativo encontrado.</h1>
+        {% endif %}
+        {% for ativo in ativos %}
+            <div class="card h-100" id="card_{{ ativo.id }}">
+                 <div class="row g-0 h-100" style="cursor: pointer;">
+                    <div class="col-12 col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title"><span class="badge text-bg-primary">{{ ativo.categoria}}</span> {{ ativo.marca }} - {{ ativo.modelo }}</h5>
+                                <p class="card-text">Número de Série: {{ ativo.numero_de_serie }}</p>
+                            </div>
+                        </div>
+                 </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock%}

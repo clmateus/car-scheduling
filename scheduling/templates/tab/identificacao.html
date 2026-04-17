@@ -8,6 +8,15 @@
         </div>
     {% endif %}
 
+    <form 
+        hx-post="{% url 'salvar_aba_identificacao' veiculo.id %}"
+        hx-target="#tab-body"
+        hx-swap="innerHTML"
+        hx-encoding="multipart/form-data"
+        class="form-control"
+    >
+        {% csrf_token %}
+
     <div class="row">
         <div class="col-md-6 mb-3">
             <label class="form-label">Modelo</label>
@@ -51,5 +60,5 @@
             <input type="text" class="form-control" value="{{ veiculo.versao }}" disabled>
         </div>
     </div>
-
+    </form>
 </div>

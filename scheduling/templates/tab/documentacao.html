@@ -1,3 +1,4 @@
+{% load authenticate_user %}
 {% load static %}
 <div class="modal-body">
 
@@ -19,6 +20,7 @@
         hx-target="#tab-body"
         hx-swap="innerHTML"
         hx-encoding="multipart/form-data"
+        enctype="multipart/form-data"  
         class="form-control"
     >
         {% csrf_token %}
@@ -30,7 +32,7 @@
                        class="form-control" 
                        name="seguro" 
                        value="{{ seguro.seguro|default:'' }}" 
-                       required>
+                       {% if user|has_group:'Gestores' %}required{% else %}disabled{% endif %}>
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Nº da apólice</label>
@@ -38,16 +40,15 @@
                        class="form-control" 
                        name="num_apolice" 
                        value="{{ seguro.num_apolice|default:'' }}" 
-                       required>
+                       {% if user|has_group:'Gestores' %}required{% else %}disabled{% endif %}>
             </div>
-            
             <div class="col-md-6 mb-3">
                 <label class="form-label">Início da Vigência</label>
                 <input type="datetime-local" 
                        class="form-control" 
                        name="inicio_vigencia" 
                        value="{{ seguro.inicio_vigencia|date:'Y-m-d\TH:i'|default:'' }}" 
-                       required>
+                       {% if user|has_group:'Gestores' %}required{% else %}disabled{% endif %}>
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Fim da Vigência</label>
@@ -55,20 +56,42 @@
                        class="form-control" 
                        name="final_vigencia" 
                        value="{{ seguro.final_vigencia|date:'Y-m-d\TH:i'|default:'' }}" 
-                       required>
+                       {% if user|has_group:'Gestores' %}required{% else %}disabled{% endif %}>
             </div>
-        </div>
 
-        <div class="mb-3">
-            <label class="form-label">Apólice (arquivo)</label>
-            <input type="file" name="apolice" class="form-control">
-            {% if seguro.apolice %}
-                <small class="text-muted mt-1 d-block">Arquivo atual: {{ seguro.apolice.name }}</small>
+            {% if user|has_group:'Gestores' %}
+            <div class="col-12 mb-3">
+                <label class="form-label">Arquivo da Apólice (PDF, PNG ou JPEG)</label>
+                <input 
+                    type="file" 
+                    name="apolice" 
+                    class="form-control"
+                    accept=".pdf,.png,.jpg,.jpeg">
+                {% if seguro.apolice %}
+                    <small class="text-muted mt-1 d-block">
+                        Arquivo atual: {{ seguro.apolice.name }}
+                    </small>
+                {% endif %}
+            </div>
             {% endif %}
         </div>
-        
+
+        {% if seguro.apolice %}
+        <div class="mb-3">
+            <a href="{{ seguro.apolice.url }}" 
+               class="btn btn-primary" 
+               download
+               target="_blank">
+                Baixar Arquivo da Apólice
+            </a>
+        </div>
+        {% endif %}
+
+        {% if user|has_group:'Gestores' %}
         <div class="mt-4 mb-3">
             <button type="submit" class="btn btn-primary w-100">Salvar Alterações</button>
         </div>
+        {% endif %}
+
     </form>
 </div>

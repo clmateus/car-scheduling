@@ -1,20 +1,86 @@
 {% extends '_base.html' %}
 {% block content %}
 
-    <div class="container">
-        <h1>Ativos</h1>
-        <div class="container text-center">
-            <div class="row g-0 h-100">
-                    <a href="{% url 'cadastrar_equipamento' %}" class="bg-info link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover py-5 rounded">
-                    Cadastrar Equipamento</a>
-                </div>
-                <br>
-                <div class="row g-0 h-100">
-                    <a href="{% url 'listar_ativos' %}" class="bg-info link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover py-5 rounded">
-                        Listar Equipamentos</a>
-                </div>
+<div class="container text-center py-3">
+        <h2 class="display-4">Ativos</h2>
+        <title>ATIVOS</title>
+                                        {% comment %} LINHA UM {% endcomment %}
+        <div class="row g-4 mb-4 justify-content-center">
+            <div class="col-12 col-md-4">
+                <a href="{% url 'cadastrar_equipamento' %}" class="text-reset text-decoration-none d-block h-100">
+                    <div class="card h-100 border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4">
+                            <i class="bi bi-plus-circle display-4 text-primary mb-3 d-block"></i>
+                            <h5 class="card-title fw-semibold">Cadastrar Equipamento</h5>
+                        </div>
+                    </div>
+                </a>         
+            </div>
+            <div class="col-12 col-md-4">
+                <a href="{% url 'listar_ativos' %}" class="text-reset text-decoration-none d-block h-100">
+                    <div class="card h-100 border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4">
+                            <i class="bi bi-card-list display-4 text-primary mb-3 d-block"></i>
+                            <h5 class="card-title fw-semibold">Listar Itens</h5>
+                        </div>
+                    </div>
+                </a>  
             </div>
         </div>
-  
-    </div>     
+                                        {% comment %} LINHA DOIS {% endcomment %}
+        <div class="row g-4 mb-4 justify-content-center">
+            <div class="col-12 col-md-4">
+                <a href="{% url 'solicitar_equipamento' %}" class="text-reset text-decoration-none d-block h-100">
+                    <div class="card h-100 border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4">
+                            <i class="bi bi-phone display-4 text-primary mb-3 d-block"></i>
+                            <h5 class="card-title fw-semibold">Solicitar Equipamento</h5>
+                        </div>
+                    </div>
+                </a>  
+            </div>
+            <div class="col-12 col-md-4 ">
+                <a href="{% url 'ativos' %}" class="text-reset text-decoration-none d-block h-100">
+                    <div class="card h-100 border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4">
+                            <i class="bi bi-arrow-return-left display-4 text-primary mb-3 d-block"></i>
+                            <h5 class="card-title fw-semibold">Recolhimento</h5>
+                        </div>
+                    </div>
+                </a>  
+            </div>
+
+        </div>
+        <div class="row g-4 mb-4 justify-content-center">
+            <div class="col-12 col-md-4">
+                <a href="{% url 'ver_solicitacoes' %}" class="text-reset text-decoration-none d-block h-100">
+                    <div class="card h-100 border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4">
+                            <i class="bi bi-file-text display-4 text-primary mb-3 d-block"></i>
+                            <h5 class="card-title fw-semibold">Ver Solicitações</h5>
+                        </div>
+                    </div>
+                </a>  
+            </div>
+            <div class="col-12 col-md-4 ">
+                <a href="{% url 'meus_itens' %}" class="text-reset text-decoration-none d-block h-100">
+                    <div class="card h-100 border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4">
+                            <i class="bi bi-person display-4 text-primary mb-3 d-block"></i>
+                            <h5 class="card-title fw-semibold">Meus Itens</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+    <script>
+        .col-12.col-md-4 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+    </script>
 {% endblock %}

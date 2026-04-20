@@ -8,21 +8,25 @@ from django.utils.dateparse import parse_datetime
 from django.http import JsonResponse, HttpResponse
 from django.core.mail import send_mail
 from django_q.tasks import async_task
-from .models import Agendamento, Veiculo, Seguro, Info, Ativo
-from .forms import CadastroVeiculo, EdicaoForm, SeguroForm, DocumentoForm, AtivoForm
+from django.contrib import messages
+from .models import *
+from .forms import *
 from PIL import Image
 from django.conf import settings
 import json
-import io
+import io, os
 import random
 
 
 def is_gestor(user):
     return user.groups.filter(name='Gestores').exists() or user.is_superuser
 
-@login_required
 def index(request):
     return render(request, 'index.html')
+
+@login_required
+def agendamento(request):
+    return render(request, 'agendamento.html')
 
 @login_required
 def agendar(request):
@@ -94,7 +98,7 @@ def agendar(request):
 
         return resposta
 
-    return render(request, 'index.html')
+    return render(request, 'agendamento.html')
 
 @login_required
 def mudar_dia_agendamento(request):
@@ -442,3 +446,23 @@ def cadastrar_equipamento(request):
 def listar_ativos(request):
     ativos = Ativo.objects.all()
     return render(request, 'listar_ativos.html', {'ativos': ativos})
+
+def solicitar_equipamento(request):
+    if request.method == 'POST':
+        form = SolicitarAtivoForm(request.POST, user=request.user)
+        if form.is_valid():
+            form.save()
+            # message = messages.success(request, 'Solicitação registrada com sucesso.\nAguarde a aprovação e retorno do gestor.')
+            return redirect('ativos')
+    else:
+        form = SolicitarAtivoForm(user=(f'{request.user.first_name} {request.user.last_name}'))
+
+    return render(request, 'solicitar_equipamento.html', {'form': form})
+
+def ver_solicitacoes(request):
+    solicitacoes = SolicitacaoAtivo.objects.all().order_by('data_solicitacao')
+    return render(request, 'ver_solicitacoes.html', {'solicitacoes': solicitacoes})
+
+def meus_itens(request):
+    itens_do_usuario = Ativo.objects.filter(usuario = request.user)
+    return render(request, 'meus_itens.html', {'itens_do_usuario': itens_do_usuario})

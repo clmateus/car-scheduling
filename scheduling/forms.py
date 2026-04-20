@@ -1,6 +1,5 @@
 from django import forms
-from .models import Veiculo, Agendamento, Seguro, Ativo
-
+from .models import *
 
 class CadastroVeiculo(forms.ModelForm):
     class Meta:
@@ -101,3 +100,25 @@ class AtivoForm(forms.ModelForm):
             'modelo': forms.TextInput(attrs={'class': 'form-control'}),
             'numero_de_serie': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+class SolicitarAtivoForm(forms.ModelForm):
+    class Meta:
+        model = SolicitacaoAtivo
+        fields = ['usuario', 'categoria', 'justificativa']
+        widgets = {
+            'categoria': forms.Select(attrs={'class': 'form-select'}),
+            'justificativa': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'style': 'resize: none;'})
+        }
+        labels = {
+            'usuario': 'Solicitante'
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        
+        self.fields['usuario'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['usuario'].disabled = True
+        
+        if user:
+            self.fields['usuario'].initial = user

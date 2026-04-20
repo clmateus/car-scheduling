@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Veiculo, Agendamento, Seguro, Info, Profile, Ativo
+from .models import *
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 
@@ -23,3 +23,4 @@ admin.site.register(Agendamento, ListarAgendamentos)
 admin.site.register(Seguro)
 admin.site.register(Info)
 admin.site.register(Ativo)
+admin.site.register(SolicitacaoAtivo)

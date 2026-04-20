@@ -76,6 +76,18 @@ class Ativo(models.Model):
     marca = models.CharField(default='')
     modelo = models.CharField()
     numero_de_serie = models.CharField()
-
+    disponibilidade = models.BooleanField(default=False)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    
     def __str__(self):
         return f'[{self.categoria.upper()}] {self.marca} - {self.modelo}'
+    
+class SolicitacaoAtivo(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    categoria = models.CharField(choices=Ativo.Tipo.choices, default=Ativo.Tipo.CELULAR)
+    justificativa = models.TextField(blank=True, null=True)
+    data_solicitacao = models.DateTimeField(auto_now_add=True)
+    ativo_entregue = models.ForeignKey(Ativo, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.categoria} - {self.usuario}'

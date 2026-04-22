@@ -1,19 +1,45 @@
 {% extends '_base.html' %}
 {% block content %}
-    <div class='container'>
-        <h1>Meus itens</h1>
-        {% if itens_do_usuario %}
-            {% for item in itens_do_usuario %}
-                <div class="card" style="width: 18rem">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ item.modelo }}</h5>
-                        <h6 class="card-subtitle mb-2 text-body-secondary">{{ item.marca }}</h6>
-                        <span class="badge text-bg-primary">{{ item.categoria }}</span>
-                    </div>
-                </div>
-            {% endfor %}
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0 display-5">Meus itens</h1>
+            <a class="btn btn-outline-primary px-4" href="{% url 'ativos' %}" title="Voltar para Ativos">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+        </div>
+
+        {% if not itens_do_usuario %}
+            <div class="alert alert-info text-center shadow-sm py-4" role="alert" style="border-radius: 12px;">
+                <i class="bi bi-inbox display-4 text-info d-block mb-3"></i>
+                <h4 class="alert-heading mb-0">Nada por aqui!</h4>
+                <p class="mb-0 text-muted mt-2">Você não possui itens em sua posse no momento.</p>
+            </div>
         {% else %}
-            <h3>Você não possui itens.</h3>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for item in itens_do_usuario %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm border-0 item-card" style="border-radius: 12px; transition: transform 0.2s, box-shadow 0.2s;">
+                            <div class="card-header bg-transparent border-0 pt-3 pb-0">
+                                <span class="badge rounded-pill text-bg-primary fs-6">{{ item.categoria }}</span>
+                            </div>
+                            <div class="card-body">
+                                <h4 class="card-title fw-bold mb-1">{{ item.marca }}</h4>
+                                <h6 class="card-subtitle mb-3 text-muted">{{ item.modelo }}</h6>
+                                
+                                <p class="card-text text-muted mb-1 mt-3">
+                                    <i class="bi bi-upc-scan me-2"></i><strong>Nº de Série:</strong> {{ item.numero_de_serie|default:"Não informado" }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
         {% endif %}
     </div>
+    <style>
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+        }
+    </style>
 {% endblock %}

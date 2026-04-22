@@ -444,8 +444,32 @@ def cadastrar_equipamento(request):
     return render(request, 'cadastrar_equipamento.html', {'form': form})
 
 def listar_ativos(request):
-    ativos = Ativo.objects.all()
-    return render(request, 'listar_ativos.html', {'ativos': ativos})
+    ativos = Ativo.objects.all().order_by('-disponibilidade')
+
+    resumo = [
+        {'nome': 'Celulares', 'total': 0, 'disponiveis': 0, 'em_uso': 0, 'icon': 'bi-phone'},
+        {'nome': 'Notebooks', 'total': 0, 'disponiveis': 0, 'em_uso': 0, 'icon': 'bi-laptop'},
+        {'nome': 'Tablets', 'total': 0, 'disponiveis': 0, 'em_uso': 0, 'icon': 'bi-tablet'},
+    ]
+    
+    for ativo in ativos:
+        cat = str(ativo.categoria).lower()
+        idx = None
+        if 'celular' in cat:
+            idx = 0
+        elif 'notebook' in cat:
+            idx = 1
+        elif 'tablet' in cat:
+            idx = 2
+            
+        if idx is not None:
+            resumo[idx]['total'] += 1
+            if ativo.disponibilidade:
+                resumo[idx]['disponiveis'] += 1
+            else:
+                resumo[idx]['em_uso'] += 1
+
+    return render(request, 'listar_ativos.html', {'ativos': ativos, 'resumo_ativos': resumo})
 
 def solicitar_equipamento(request):
     if request.method == 'POST':
@@ -460,8 +484,43 @@ def solicitar_equipamento(request):
     return render(request, 'solicitar_equipamento.html', {'form': form})
 
 def ver_solicitacoes(request):
-    solicitacoes = SolicitacaoAtivo.objects.all().order_by('data_solicitacao')
-    return render(request, 'ver_solicitacoes.html', {'solicitacoes': solicitacoes})
+    solicitacoes = SolicitacaoAtivo.objects.filter(status=False).order_by('data_solicitacao')
+    ativos_disponiveis = Ativo.objects.filter(disponibilidade=True)
+    return render(request, 'ver_solicitacoes.html', {'solicitacoes': solicitacoes, 'ativos_disponiveis': ativos_disponiveis})
+
+def aprovar_solicitacao(request, pk):
+    if request.method == "POST":
+        solicitacao = get_object_or_404(SolicitacaoAtivo, id=pk)
+
+        ativo_id = request.POST.get('ativo_id')
+        documento = request.FILES.get('documento')
+
+        if not ativo_id:
+            messages.error(request, 'Você precisa selecionar um ativo disponível para aprovar essa solicitação.')
+            return redirect('ver_solicitacoes')
+
+        try:
+            with transaction.atomic():
+                ativo_escolhido = get_object_or_404(Ativo, id=ativo_id)
+                ativo_escolhido.disponibilidade = False
+                ativo_escolhido.usuario = solicitacao.usuario
+                ativo_escolhido.save()
+                solicitacao.ativo_entregue = ativo_escolhido
+                solicitacao.status = True
+
+                if documento:
+                    solicitacao.documento = documento
+
+                solicitacao.save()
+
+        except Exception as e:
+            messages.error(request, f'Ocorreu o seguinte erro ao tentar salvar: {str(e)}')
+        
+        return redirect('ativos')
+    
+    else:
+        messages.warning(request, 'Acesso negado.')
+        return redirect('ativos')
 
 def meus_itens(request):
     itens_do_usuario = Ativo.objects.filter(usuario = request.user)

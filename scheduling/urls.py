@@ -30,4 +30,5 @@ urlpatterns = [
     path('solicitar_equipamento/', views.solicitar_equipamento, name='solicitar_equipamento'),
     path('ver_solicitacoes/', views.ver_solicitacoes, name='ver_solicitacoes'),
     path('meus_itens/', views.meus_itens, name='meus_itens'),
+    path('aprovar_solicitacao/<int:pk>/', views.aprovar_solicitacao, name='aprovar_solicitacao'),
 ]  

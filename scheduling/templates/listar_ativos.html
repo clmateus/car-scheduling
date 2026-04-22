@@ -1,27 +1,139 @@
 {% extends '_base.html' %}
 {% block content %}
-    <div class="container">
-        {% if ativos %}
-            <h1>Ativos
-            <button type="button" class="btn btn-outline-primary">
-                <a class="nav-link" href="/ativos" 
-                title="Ativos">Voltar   
-                </a>
-            </button></h1>
-        {% else %}
-            <h1>Nenhum ativo encontrado.</h1>
-        {% endif %}
-        {% for ativo in ativos %}
-            <div class="card h-100" id="card_{{ ativo.id }}">
-                 <div class="row g-0 h-100" style="cursor: pointer;">
-                    <div class="col-12 col-md-8">
-                            <div class="card-body">
-                                <h5 class="card-title">{% if ativo.disponibilidade == True %}<span class="badge text-bg-success">Disponível</span>{% else %}<span class="badge text-bg-danger">Indisponível</span>{% endif %}<span class="badge text-bg-primary">{{ ativo.categoria}}</span> {{ ativo.marca }} - {{ ativo.modelo }}</h5>
-                                <p class="card-text">Número de Série: {{ ativo.numero_de_serie }}</p>
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0 display-5">Aparelhos</h1>
+            <a class="btn btn-outline-primary px-4" href="{% url 'ativos' %}" title="Voltar para Ativos">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+        </div>
+
+        <div class="row mb-4 g-3">
+            {% for stat in resumo_ativos %}
+            <div class="col-12 col-md-4">
+                <div class="card shadow-sm border-0 h-100" style="border-radius: 12px;">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex justify-content-center align-items-center me-3" style="width: 48px; height: 48px;">
+                                <i class="bi {{ stat.icon }} fs-4"></i>
+                            </div>
+                            <h5 class="card-title fw-bold mb-0">{{ stat.nome }}</h5>
+                        </div>
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <h6 class="text-muted mb-1" style="font-size: 0.85rem;">Total</h6>
+                                <span class="fw-bold fs-5">{{ stat.total }}</span>
+                            </div>
+                            <div class="col-4 border-start border-end" style="border-color: var(--border-color) !important;">
+                                <h6 class="text-success mb-1" style="font-size: 0.85rem;">Livres</h6>
+                                <span class="fw-bold fs-5 text-success">{{ stat.disponiveis }}</span>
+                            </div>
+                            <div class="col-4">
+                                <h6 class="text-danger mb-1" style="font-size: 0.85rem;">Em uso</h6>
+                                <span class="fw-bold fs-5 text-danger">{{ stat.em_uso }}</span>
                             </div>
                         </div>
-                 </div>
+                    </div>
+                </div>
             </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
+
+        <div class="row mb-4 align-items-center g-3">
+            <div class="col-12 col-md-6">
+                <div class="input-group shadow-sm">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Filtrar por marca, modelo, categoria, usuário...">
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="d-flex justify-content-md-end gap-2 overflow-auto pb-1">
+                    <button type="button" class="btn btn-outline-secondary filter-btn active" data-filter="">Todos</button>
+                    <button type="button" class="btn btn-outline-primary filter-btn" data-filter="celular"><i class="bi bi-phone me-1"></i>Celular</button>
+                    <button type="button" class="btn btn-outline-primary filter-btn" data-filter="notebook"><i class="bi bi-laptop me-1"></i>Notebook</button>
+                    <button type="button" class="btn btn-outline-primary filter-btn" data-filter="tablet"><i class="bi bi-tablet me-1"></i>Tablet</button>
+                </div>
+            </div>
+        </div>
+
+        {% if not ativos %}
+            <div class="alert alert-warning text-center shadow-sm" role="alert">
+                <h4 class="alert-heading mb-0"><i class="bi bi-info-circle me-2"></i>Nenhum ativo encontrado.</h4>
+            </div>
+        {% else %}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for ativo in ativos %}
+                    <div class="col ativo-col">
+                        <div class="card h-100 shadow-sm border-0 ativo-card" id="card_{{ ativo.id }}" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border-radius: 12px;">
+                            
+                            <div class="card-header bg-transparent border-0 pt-3 pb-0 d-flex justify-content-between align-items-center">
+                                <span class="badge rounded-pill text-bg-primary fs-6">{{ ativo.categoria }}</span>
+                                {% if ativo.disponibilidade == True %}
+                                    <span class="badge rounded-pill text-bg-success">Disponível</span>
+                                {% else %}
+                                    <span class="badge rounded-pill text-bg-danger">Em uso</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="card-body">
+                                <h4 class="card-title fw-bold mb-3">{{ ativo.marca }} - {{ ativo.modelo }}</h4>
+                                <p class="card-text text-muted mb-1">
+                                    <i class="bi bi-upc-scan me-2"></i><strong>Nº de Série:</strong> {{ ativo.numero_de_serie }}
+                                </p>
+                            </div>
+                            
+                            <div class="card-footer bg-transparent border-0 pb-3 pt-0">
+                                {% if ativo.usuario %}
+                                    <div class="d-flex align-items-center text-secondary mt-2">
+                                        <i class="bi bi-person-circle fs-3 me-2 text-primary"></i>
+                                        <span class="lh-sm"><strong>Em posse de:</strong><br>{{ ativo.usuario.get_full_name|default:ativo.usuario.username }}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
+    <style>
+        .ativo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+        }
+    </style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const searchInput = document.getElementById("searchInput");
+        const columns = document.querySelectorAll(".ativo-col");
+        const filterBtns = document.querySelectorAll(".filter-btn");
+        let activeCategory = "";
+
+        function applyFilters() {
+            const searchValue = searchInput.value.toLowerCase();
+            
+            columns.forEach(col => {
+                const textContent = col.innerText.toLowerCase();
+                const matchesSearch = textContent.includes(searchValue);
+                const matchesCategory = activeCategory === "" || textContent.includes(activeCategory);
+                
+                col.style.display = (matchesSearch && matchesCategory) ? "" : "none";
+            });
+        }
+
+        searchInput.addEventListener("keyup", applyFilters);
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener("click", function() {
+                filterBtns.forEach(b => b.classList.remove("active"));
+                this.classList.add("active");
+                
+                activeCategory = this.getAttribute("data-filter");
+                applyFilters();
+            });
+        });
+    });
+</script>
 {% endblock%}

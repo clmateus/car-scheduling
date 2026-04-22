@@ -88,6 +88,8 @@ class SolicitacaoAtivo(models.Model):
     justificativa = models.TextField(blank=True, null=True)
     data_solicitacao = models.DateTimeField(auto_now_add=True)
     ativo_entregue = models.ForeignKey(Ativo, on_delete=models.SET_NULL, null=True, blank=True)
+    documento = models.FileField(upload_to="documentos/",blank=True, null=True)
+    status = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.categoria} - {self.usuario}'
+        return f'{self.id} - {self.categoria} - {self.usuario}'

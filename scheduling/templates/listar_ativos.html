@@ -3,9 +3,14 @@
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="mb-0 display-5">Aparelhos</h1>
-            <a class="btn btn-outline-primary px-4" href="{% url 'ativos' %}" title="Voltar para Ativos">
-                <i class="bi bi-arrow-left"></i> Voltar
-            </a>
+            <div class="d-flex gap-2">
+                <a class="btn btn-success px-4" href="{% url 'cadastrar_equipamento' %}" title="Cadastrar novo aparelho">
+                    <i class="bi bi-plus-circle me-1"></i> Novo Aparelho
+                </a>
+                <a class="btn btn-outline-primary px-4" href="{% url 'ativos' %}" title="Voltar para Ativos">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
+            </div>
         </div>
 
         <div class="row mb-4 g-3">
@@ -64,7 +69,13 @@
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                 {% for ativo in ativos %}
                     <div class="col ativo-col">
-                        <div class="card h-100 shadow-sm border-0 ativo-card" id="card_{{ ativo.id }}" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border-radius: 12px;">
+                        <div class="card h-100 shadow-sm border-0 ativo-card" id="card_{{ ativo.id }}" 
+                             style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border-radius: 12px;"
+                             data-bs-toggle="modal" 
+                             data-bs-target="#modalDetalhesAtivo"
+                             hx-get="{% url 'detalhes_ativo' ativo.id %}"
+                             hx-target="#modalDetalhesAtivoBody"
+                             hx-swap="innerHTML">
                             
                             <div class="card-header bg-transparent border-0 pt-3 pb-0 d-flex justify-content-between align-items-center">
                                 <span class="badge rounded-pill text-bg-primary fs-6">{{ ativo.categoria }}</span>
@@ -78,7 +89,7 @@
                             <div class="card-body">
                                 <h4 class="card-title fw-bold mb-3">{{ ativo.marca }} - {{ ativo.modelo }}</h4>
                                 <p class="card-text text-muted mb-1">
-                                    <i class="bi bi-upc-scan me-2"></i><strong>Nº de Série:</strong> {{ ativo.numero_de_serie }}
+                                    <i class="bi bi-upc-scan me-2"></i><strong>IMEI:</strong> {{ ativo.numero_de_serie }}
                                 </p>
                             </div>
                             
@@ -96,6 +107,26 @@
                 {% endfor %}
             </div>
         {% endif %}
+
+        <div class="modal fade" id="modalDetalhesAtivo" tabindex="-1" aria-labelledby="modalDetalhesAtivoLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalDetalhesAtivoLabel">Detalhes do Aparelho</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body" id="modalDetalhesAtivoBody">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <style>
         .ativo-card:hover {

@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.files.storage import FileSystemStorage
 from django.views.decorators.http import require_POST
 from django.core.files.base import ContentFile
 from django.utils import timezone
@@ -26,7 +27,7 @@ def index(request):
 
 @login_required
 def agendamento(request):
-    return render(request, 'agendamento.html')
+    return render(request, 'transporte/agendamento.html')
 
 @login_required
 def agendar(request):
@@ -246,7 +247,7 @@ def veiculos(request):
     else:
         form = CadastroVeiculo()
 
-    return render(request, 'veiculos.html', {'veiculos': Veiculo.objects.all(), 'form': form})
+    return render(request, 'transporte/veiculos.html', {'veiculos': Veiculo.objects.all(), 'form': form})
 
 @login_required
 @user_passes_test(is_gestor, login_url='/')
@@ -292,7 +293,7 @@ def viagens(request):
             viagem.em_rodizio = placa_final in RODIZIO_SP.get(viagem.dataPartida.weekday(), [])
             hora_viagem = viagem.dataPartida.timestamp()
 
-    return render(request, 'viagens.html', {
+    return render(request, 'transporte/viagens.html', {
         'proximas_viagens': proximas_viagens,
         'veiculos': Veiculo.objects.all(),
         'hora_atual': hora_atual,
@@ -315,7 +316,7 @@ def alterar_veiculo(request, pk):
 @user_passes_test(is_gestor, login_url='/')
 def historico(request):
     todas_as_viagens = Agendamento.objects.order_by('-dataPartida')
-    return render(request, 'historico.html', {'todas_as_viagens': todas_as_viagens})
+    return render(request, 'transporte/historico_veiculos.html', {'todas_as_viagens': todas_as_viagens})
 
 @login_required
 def carregar_aba(request, aba, veiculo_id):
@@ -323,10 +324,10 @@ def carregar_aba(request, aba, veiculo_id):
     veiculo = get_object_or_404(Veiculo, id=veiculo_id)
 
     templates = {
-        'identificacao': 'tab/identificacao.html',
-        'documentacao': 'tab/documentacao.html',
-        'info': 'tab/info.html',
-        'comentarios': 'tab/comentarios.html',
+        'identificacao': 'transporte/tab/identificacao.html',
+        'documentacao': 'transporte/tab/documentacao.html',
+        'info': 'transporte/tab/info.html',
+        'comentarios': 'transporte/tab/comentarios.html',
     }
     context = {'veiculo': veiculo, 'veiculo_id': veiculo_id}
 
@@ -336,7 +337,7 @@ def carregar_aba(request, aba, veiculo_id):
     if aba == 'comentarios':
         context['observacoes'] = Info.objects.filter(veiculo=veiculo).order_by('-id')
 
-    return render(request, templates.get(aba, 'tab/identificacao.html'), context)
+    return render(request, templates.get(aba, 'transporte/tab/identificacao.html'), context)
 
 @login_required
 def salvar_aba_identificacao(request, veiculo_id):
@@ -356,7 +357,7 @@ def salvar_aba_identificacao(request, veiculo_id):
     veiculo.versao = request.POST.get('versao', veiculo.versao)
     veiculo.save()
 
-    return render(request, 'tab/identificacao.html', {
+    return render(request, 'transporte/tab/identificacao.html', {
         'veiculo': veiculo,
         'veiculo_id': veiculo_id,
         'mensagem_sucesso': 'Dados salvos com sucesso!',
@@ -374,7 +375,7 @@ def seguro_veiculo(request, pk):
             novo_seguro.veiculo = veiculo
             novo_seguro.save()
 
-            response = render(request, 'tab/documentacao.html', {
+            response = render(request, 'transporte/tab/documentacao.html', {
                 'veiculo': veiculo,
                 'seguro': novo_seguro,
                 'mensagem_sucesso': 'Dados do seguro salvos com sucesso!',
@@ -383,13 +384,13 @@ def seguro_veiculo(request, pk):
             return response
 
         print("Erros form de seguro:", form.errors)
-        return render(request, 'tab/documentacao.html', {
+        return render(request, 'transporte/tab/documentacao.html', {
             'veiculo': veiculo,
             'seguro': seguro,
             'mensagem_erro': 'Erro ao salvar: verifique os campos preenchidos.',
         })
 
-    return render(request, 'tab/documentacao.html', {'veiculo': veiculo, 'seguro': seguro})
+    return render(request, 'transporte/tab/documentacao.html', {'veiculo': veiculo, 'seguro': seguro})
 
 def enviar_texto(request):
     if request.method == 'POST':
@@ -409,7 +410,7 @@ def enviar_texto(request):
                 veiculo=veiculo
             ).order_by('-criado_em')
 
-            return render(request, 'tab/comentarios.html', {
+            return render(request, 'transporte/tab/comentarios.html', {
                 'observacoes': observacoes
             })
 
@@ -420,14 +421,14 @@ def upload_arquivos(request):
         form = DocumentoForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('tab/comentarios.html')
+            return redirect('transporte/tab/comentarios.html')
     else:
         form = DocumentoForm()
-    return render(request, 'tab/comentarios.html', {'form': form})
+    return render(request, 'transporte/tab/comentarios.html', {'form': form})
 
 def comentarios(request):
     comentarios = Info.objects.all()
-    return render(request, 'tab/comentarios.html', {'observacoes': comentarios})
+    return render(request, 'transporte/tab/comentarios.html', {'observacoes': comentarios})
 
 def ativos(request):
     return render(request, 'ativos.html')
@@ -471,6 +472,69 @@ def listar_ativos(request):
 
     return render(request, 'listar_ativos.html', {'ativos': ativos, 'resumo_ativos': resumo})
 
+@login_required
+def detalhes_ativo(request, pk):
+    ativo = get_object_or_404(Ativo, id=pk)
+    
+    solicitacao_ativa = None
+    # Se o ativo estiver em uso, buscamos a solicitação mais recente vinculada a ele e ao usuário atual
+    if not ativo.disponibilidade and ativo.usuario:
+        solicitacao_ativa = SolicitacaoAtivo.objects.filter(
+            ativo_entregue=ativo, 
+            usuario=ativo.usuario
+        ).order_by('-data_solicitacao').first()
+        
+    return render(request, 'partials/modal_detalhes_ativo.html', {'ativo': ativo, 'solicitacao_ativa': solicitacao_ativa})
+
+@login_required
+@user_passes_test(is_gestor, login_url='/')
+def editar_ativo(request, pk):
+    ativo = get_object_or_404(Ativo, id=pk)
+    
+    if request.method == 'POST':
+        form = AtivoForm(request.POST, instance=ativo)
+        if form.is_valid():
+            form.save()
+            resposta = HttpResponse()
+            resposta['HX-Refresh'] = 'true'
+            return resposta
+    else:
+        form = AtivoForm(instance=ativo)
+        
+    return render(request, 'partials/modal_editar_ativo.html', {'form': form, 'ativo': ativo})
+
+@login_required
+@user_passes_test(is_gestor, login_url='/')
+@require_POST
+def remover_ativo(request, pk):
+    ativo = get_object_or_404(Ativo, id=pk)
+    ativo.delete()
+    resposta = HttpResponse()
+    resposta['HX-Refresh'] = 'true'
+    return resposta
+
+@login_required
+@user_passes_test(is_gestor, login_url='/')
+@require_POST
+def devolver_ativo(request, pk):
+    ativo = get_object_or_404(Ativo, id=pk)
+    
+    if ativo.usuario:
+        # Remove completamente os dados da solicitação atrelada a esse empréstimo
+        SolicitacaoAtivo.objects.filter(
+            ativo_entregue=ativo, 
+            usuario=ativo.usuario
+        ).delete()
+        
+    # Remove o usuário e volta para disponível
+    ativo.disponibilidade = True
+    ativo.usuario = None
+    ativo.save()
+    
+    resposta = HttpResponse()
+    resposta['HX-Refresh'] = 'true'
+    return resposta
+
 def solicitar_equipamento(request):
     if request.method == 'POST':
         form = SolicitarAtivoForm(request.POST, user=request.user)
@@ -512,6 +576,17 @@ def aprovar_solicitacao(request, pk):
                     solicitacao.documento = documento
 
                 solicitacao.save()
+                async_task(
+                    send_mail,
+                    "Solicitação de ativo aprovada!",
+                    (
+                        f"A sua solicitação de {solicitacao.categoria} foi aprovada!\n"
+                        f"Entre em contato do seu gestor para retirar o seu {solicitacao.ativo_entregue}"
+                    ),
+                    "lanmax.carscheduling@gmail.com",
+                    [ativo_escolhido.usuario.email],
+                    fail_silently=False
+                )
 
         except Exception as e:
             messages.error(request, f'Ocorreu o seguinte erro ao tentar salvar: {str(e)}')
@@ -525,3 +600,45 @@ def aprovar_solicitacao(request, pk):
 def meus_itens(request):
     itens_do_usuario = Ativo.objects.filter(usuario = request.user)
     return render(request, 'meus_itens.html', {'itens_do_usuario': itens_do_usuario})
+
+def menu_veiculos(request):
+    return render(request, 'transporte/menu_veiculos.html')
+
+def testepdf(request):
+    return render(request, 'testepdf.html')
+
+@require_POST
+def teste_salvar_pdf(request):
+    arquivo = request.FILES.get('arquivo_pdf')
+
+    if not arquivo:
+        return JsonResponse({'erro': 'Arquivo inválido/Não encontrado'})
+    
+    fs = FileSystemStorage()
+    nome_salvo = fs.save(f'documentos_assinados/doc_{arquivo.name}', arquivo)
+
+    url_arquivo = fs.url(nome_salvo)
+
+    return JsonResponse({
+        'mensagem': 'Arquivo salvo com sucesso!',
+        'caminho': url_arquivo
+    })
+
+@login_required
+def ver_solicitacoes(request):
+    solicitacoes = SolicitacaoAtivo.objects.filter(status=False).select_related('usuario')
+
+    ativos_por_categoria = {}
+    for categoria, _ in Ativo.Tipo.choices:
+        ativos_por_categoria[categoria] = list(
+            Ativo.objects.filter(categoria=categoria, disponibilidade=True)
+            .values('id', 'marca', 'modelo', 'numero_de_serie')
+        )
+
+    return render(request, 'ver_solicitacoes.html', {
+        'solicitacoes': solicitacoes,
+        'ativos_por_categoria_json': json.dumps(ativos_por_categoria),
+    })
+
+def historico_ativo(request):
+    return render(request, 'historico_ativo.html')

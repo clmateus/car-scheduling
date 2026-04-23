@@ -85,20 +85,25 @@ class DocumentoForm(forms.ModelForm):
         model = Seguro 
         fields = ['apolice']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['inicio_vigencia'].input_formats = ('%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M')
-        self.fields['final_vigencia'].input_formats = ('%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M')
-
 class AtivoForm(forms.ModelForm):
     class Meta:
         model = Ativo
-        fields = ['categoria', 'marca', 'modelo', 'numero_de_serie']
+        fields = ['categoria', 'marca', 'modelo', 'numero_de_serie', 'conta_google', 'senha_conta_google']
         widgets = {
             'categoria': forms.Select(attrs={'class': 'form-select'}),
             'marca': forms.TextInput(attrs={'class': 'form-control'}),
             'modelo': forms.TextInput(attrs={'class': 'form-control'}),
             'numero_de_serie': forms.TextInput(attrs={'class': 'form-control'}),
+            'conta_google': forms.TextInput(attrs={'class': 'form-control'}),
+            'senha_conta_google': forms.TextInput(attrs={'class': 'form-control'})
+        }
+        labels = {
+            'categoria': 'Categoria',
+            'marca': 'Marca',
+            'modelo': 'Modelo',
+            'numero_de_serie': 'Número de Série',
+            'conta_google': 'Conta Google (opcional)',
+            'senha_conta_google': 'Senha da conta Google (opcional)',
         }
 
 class SolicitarAtivoForm(forms.ModelForm):

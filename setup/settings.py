@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'tailwind',
     'theme',
     'django_htmx',
-    'django_q'
+    'django_q',
+    'django_endesive.apps.DjangoEndesiveConfig',
 ]
 
 MIDDLEWARE = [
@@ -166,3 +167,6 @@ Q_CLUSTER = {
     'orm': 'default'
 }
 
+DJANGO_ENDESIVE = {
+    'PDF_CERTIFICATE_PATH': 'required: /signed_documents/',
+}

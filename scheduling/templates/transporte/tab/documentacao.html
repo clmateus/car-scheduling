@@ -44,7 +44,7 @@
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Início da Vigência</label>
-                <input type="datetime-local" 
+                <input type="date" 
                        class="form-control" 
                        name="inicio_vigencia" 
                        value="{{ seguro.inicio_vigencia|date:'Y-m-d\TH:i'|default:'' }}" 
@@ -52,7 +52,7 @@
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Fim da Vigência</label>
-                <input type="datetime-local" 
+                <input type="date" 
                        class="form-control" 
                        name="final_vigencia" 
                        value="{{ seguro.final_vigencia|date:'Y-m-d\TH:i'|default:'' }}" 
@@ -80,7 +80,6 @@
         <div class="mb-3">
             <a href="{{ seguro.apolice.url }}" 
                class="btn btn-primary" 
-               download
                target="_blank">
                 Baixar Arquivo da Apólice
             </a>

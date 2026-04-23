@@ -2,7 +2,12 @@
 {% block content %}
 {% load authenticate_user %}
 <div class="container">
-    <h3 class="mt-1">Próximas viagens</h3>
+    <div class="d-flex justify-content-between align-items-center mt-3 mb-4">
+        <h3 class="mb-0">Próximas viagens</h3>
+        <a class="btn btn-outline-primary px-4" href="{% url 'menu_veiculos' %}" title="Voltar para Menu">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+    </div>
     {% if proximas_viagens %}
         {% for viagem in proximas_viagens %}
             <div class="card mb-3" id="cardViagem{{ viagem.id }}">
@@ -117,7 +122,7 @@
     {% else %}
             <div class="alert alert-warning text-center shadow-sm py-4" role="alert" style="border-radius: 12px;">
                 <i class="bi bi-car-front display-4 text-warning d-block mb-3"></i>
-                <h4 class="alert-heading mb-0">Sem reservas!</h4>
+                <h4 class="alert-heading mb-0">Nada por aqui!</h4>
                 <p class="mb-0 text-muted mt-2">Não há viagens reservadas</p>
             </div>
     {% endif %}

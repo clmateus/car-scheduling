@@ -149,6 +149,6 @@ if (titulo) {
 function trocarAba(botao) {
     const aba = botao.getAttribute("data-aba");
 
-    htmx.ajax('GET', `/veiculos/tab/${aba}/${veiculoAtual}/`, '#tab-body');
+    htmx.ajax('GET', `transporte//veiculos/tab/${aba}/${veiculoAtual}/`, '#tab-body');
 }
-htmx.ajax('GET', `/veiculos/tab/identificacao/${id}/`, '#tab-body');
+htmx.ajax('GET', `transporte//veiculos/tab/identificacao/${id}/`, '#tab-body');

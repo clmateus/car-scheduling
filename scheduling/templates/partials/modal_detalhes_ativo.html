@@ -1,0 +1,100 @@
+{% load authenticate_user %}
+<div class="text-center mb-4">
+    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 64px; height: 64px;">
+        {% if 'celular' in ativo.categoria|stringformat:"s"|lower %}
+            <i class="bi bi-phone fs-1"></i>
+        {% elif 'notebook' in ativo.categoria|stringformat:"s"|lower %}
+            <i class="bi bi-laptop fs-1"></i>
+        {% elif 'tablet' in ativo.categoria|stringformat:"s"|lower %}
+            <i class="bi bi-tablet fs-1"></i>
+        {% else %}
+            <i class="bi bi-display fs-1"></i>
+        {% endif %}
+    </div>
+    <h4 class="fw-bold mb-1">{{ ativo.marca }} - {{ ativo.modelo }}</h4>
+    <span class="badge rounded-pill text-bg-primary fs-6">{{ ativo.categoria }}</span>
+</div>
+
+<div class="card bg-light border-0">
+    <div class="card-body">
+        <ul class="list-unstyled mb-0">
+            <li class="mb-3">
+                <span class="text-muted d-block" style="font-size: 0.85rem;">Status</span>
+                {% if ativo.disponibilidade %}
+                    <span class="fw-bold text-success"><i class="bi bi-check-circle-fill me-1"></i> Disponível</span>
+                {% else %}
+                    <span class="fw-bold text-danger"><i class="bi bi-x-circle-fill me-1"></i> Em uso</span>
+                {% endif %}
+            </li>
+            <li class="mb-3">
+                <span class="text-muted d-block" style="font-size: 0.85rem;">Número de Série / IMEI</span>
+                <span class="fw-bold"><i class="bi bi-upc-scan me-2"></i>{{ ativo.numero_de_serie|default:"Não informado" }}</span>
+            </li>
+            <li class="mb-3">
+                <span class="text-muted d-block" style="font-size: 0.85rem;">Conta Google</span>
+                <span class="fw-bold"><i class="bi bi-google me-2"></i>{{ ativo.conta_google|default:'-' }}</span>
+            </li>
+            <li class="mb-3">
+                <span class="text-muted d-block" style="font-size: 0.85rem;">Senha da conta Google</span>
+                <span class="fw-bold"><i class="bi bi-asterisk me-2"></i>{{ ativo.senha_conta_google|default:'-' }}</span>
+            </li>            
+            {% if ativo.usuario %}
+            <li>
+                <span class="text-muted d-block" style="font-size: 0.85rem;">Usuário em Posse</span>
+                <span class="fw-bold"><i class="bi bi-person-circle me-2"></i>{{ ativo.usuario.get_full_name|default:ativo.usuario.username }}</span>
+            </li>
+            
+            {% if solicitacao_ativa %}
+            <li class="pt-3" style="border-color: var(--border-color) !important;">
+                <span class="text-muted d-block mb-1" style="font-size: 0.85rem;">Detalhes da Solicitação</span>
+                <div class="bg-white p-2 rounded border" style="font-size: 0.9rem;">
+                    <strong>Data:</strong> {{ solicitacao_ativa.data_solicitacao|date:"d/m/Y H:i" }}<br>
+                    <strong class="d-block mt-2">Justificativa:</strong> 
+                    <span class="text-muted">{{ solicitacao_ativa.justificativa|default:"Nenhuma justificativa informada." }}</span>
+                    
+                    {% if solicitacao_ativa.documento %}
+                    <div class="mt-3">
+                        <a href="{{ solicitacao_ativa.documento.url }}" target="_blank" class="btn btn-sm btn-outline-primary w-100">
+                            <i class="bi bi-file-earmark-text me-1"></i> Ver Termo/Documento
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </li>
+            {% endif %}
+            
+            {% endif %}
+        </ul>
+    </div>
+</div>
+
+{% if user|has_group:'Gestores' %}
+<div class="mt-4 pt-3 d-flex justify-content-end gap-2" style="border-color: var(--border-color) !important;">
+    {% if not ativo.disponibilidade %}
+    <form hx-post="{% url 'devolver_ativo' ativo.id %}" 
+          hx-confirm="Tem certeza que deseja remover a posse deste aparelho do usuário {{ ativo.usuario.get_full_name|default:ativo.usuario.username }}?" 
+          class="d-inline m-0 me-auto">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-warning">
+            <i class="bi bi-arrow-return-left me-1"></i> Devolver
+        </button>
+    </form>
+    {% endif %}
+    
+    <button class="btn btn-primary" 
+            hx-get="{% url 'editar_ativo' ativo.id %}" 
+            hx-target="#modalDetalhesAtivoBody" 
+            hx-swap="innerHTML">
+        <i class="bi bi-pencil me-1"></i> Editar
+    </button>
+    
+    <form hx-post="{% url 'remover_ativo' ativo.id %}" 
+          hx-confirm="Tem certeza que deseja excluir permanentemente o aparelho {{ ativo.marca }} {{ ativo.modelo }}?" 
+          class="d-inline m-0">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">
+            <i class="bi bi-trash3 me-1"></i> Excluir
+        </button>
+    </form>
+</div>
+{% endif %}

@@ -2,11 +2,16 @@
 {% load authenticate_user %}
 {% block content %}
     <div class="container">
-        <h2 class="mt-2">Veículos
-            <button type="button" id="botao-adicionar" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_insercao">
-                Adicionar um carro
-            </button>
-        </h2>
+        <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
+            <h2 class="mb-0">Veículos
+                <button type="button" id="botao-adicionar" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#modal_insercao">
+                    Adicionar um carro
+                </button>
+            </h2>
+            <a class="btn btn-outline-primary px-4" href="{% url 'menu_veiculos' %}" title="Voltar para Menu">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+        </div>
         <h3 class="mt-2">Todos os carros</h3>
 
         <div class="veiculos-grid">

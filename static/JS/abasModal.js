@@ -1,5 +1,5 @@
 let veiculoAtivoId = null;
-let abaAtiva = 'identificacao';
+let abaAtiva = 'identificacao';  // ← mudado: sem o prefixo transporte/
 
 function abrirModalCarro(veiculoId) {
     veiculoAtivoId = veiculoId;
@@ -12,7 +12,7 @@ function abrirModalCarro(veiculoId) {
     const btnIdentificacao = document.querySelector('#abas-veiculo [data-aba="identificacao"]');
     if (btnIdentificacao) btnIdentificacao.classList.add('active');
 
-    carregarAba('identificacao', veiculoId);
+    carregarAba('identificacao', veiculoId);  // ← mudado: sem prefixo
 }
 
 function trocarAba(btn) {
@@ -24,11 +24,12 @@ function trocarAba(btn) {
     btn.classList.add('active');
 
     abaAtiva = btn.dataset.aba;
-    carregarAba(abaAtiva, veiculoAtivoId);
+    carregarAba(abaAtiva, veiculoAtivoId);  // ← agora abaAtiva é 'identificacao', 'documentacao', etc.
 }
 
 function carregarAba(aba, veiculoId) {
-    htmx.ajax('GET', `/veiculos/tab/${aba}/${veiculoId}/`, {
+    // Adicione a barra no início para URL absoluta
+    htmx.ajax('GET', `/transporte/veiculos/tab/${aba}/${veiculoId}/`, {
         target: '#tab-body',
         swap: 'innerHTML'
     });
@@ -44,7 +45,7 @@ document.body.addEventListener('refreshIdentificacao', function () {
     const btnIdentificacao = document.querySelector('#abas-veiculo [data-aba="identificacao"]');
     if (btnIdentificacao) btnIdentificacao.classList.add('active');
 
-    carregarAba('identificacao', veiculoAtivoId);
+    carregarAba('identificacao', veiculoAtivoId);  // ← mudado: sem prefixo
 });
 
 document.body.addEventListener('atualizarComentarios', function () {

@@ -66,7 +66,7 @@
                 <form method="POST" id="formAssociarAtivo" enctype="multipart/form-data">
                     {% csrf_token %}
                     <label class="form-label fw-semibold">Escolha um ativo para entregar:</label>
-                    <select name="ativo_id" class="form-select mb-3 shadow-sm" required>
+                    <select name="ativo_id" class="form-select mb-3 shadow-sm" id="selectAtivo" required>
                         <option value="">Selecione um ativo disponível</option>
                         {% for ativo in ativos_disponiveis%}
                             <option value="{{ ativo.id }}">{{ ativo.marca}} - {{ ativo.modelo}} - {{ ativo.numero_de_serie}}</option>
@@ -85,23 +85,38 @@
 </div>
 
 <script>
-    const modalUnico = document.getElementById('modalUnico')
-    if (modalUnico) {
-        modalUnico.addEventListener('show.bs.modal', event => {
-            const button = event.relatedTarget;
-            
-            const usuario = button.getAttribute('data-usuario');
-            const data = button.getAttribute('data-data');
-            const categoria = button.getAttribute('data-categoria');
-            const idSolicitacao = button.getAttribute('data-id');
+    // Injeta o JSON do backend
+const ativosPorCategoria = {{ ativos_por_categoria_json|safe }};
 
-            modalUnico.querySelector('#modalData').textContent = 'Número da Solicitação - ' + idSolicitacao;
-            modalUnico.querySelector('#modalUsuario').textContent = usuario;
-            modalUnico.querySelector('#modalCategoria').textContent = categoria;
+const modalUnico = document.getElementById('modalUnico')
+if (modalUnico) {
+    modalUnico.addEventListener('show.bs.modal', event => {
+        const button = event.relatedTarget;
 
-            const form = modalUnico.querySelector('#formAssociarAtivo');
-            form.action = `/aprovar_solicitacao/${idSolicitacao}/`;
-        })
-    }
+        const usuario = button.getAttribute('data-usuario');
+        const data = button.getAttribute('data-data');
+        const categoria = button.getAttribute('data-categoria');
+        const idSolicitacao = button.getAttribute('data-id');
+
+        modalUnico.querySelector('#modalData').textContent = 'Número da Solicitação - ' + idSolicitacao;
+        modalUnico.querySelector('#modalUsuario').textContent = usuario;
+        modalUnico.querySelector('#modalCategoria').textContent = categoria;
+
+        const select = modalUnico.querySelector('#selectAtivo');
+        select.innerHTML = '<option value="">Selecione um ativo disponível</option>';
+
+        const ativos = ativosPorCategoria[categoria] || [];
+        if (ativos.length === 0) {
+            select.innerHTML += '<option disabled>Nenhum ativo disponível nesta categoria</option>';
+        } else {
+            ativos.forEach(ativo => {
+                select.innerHTML += `<option value="${ativo.id}">${ativo.marca} - ${ativo.modelo} - ${ativo.numero_de_serie}</option>`;
+            });
+        }
+
+        const form = modalUnico.querySelector('#formAssociarAtivo');
+        form.action = `/aprovar_solicitacao/${idSolicitacao}/`;
+    })
+}
 </script>
 {% endblock %}

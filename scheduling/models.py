@@ -76,11 +76,13 @@ class Ativo(models.Model):
     marca = models.CharField(default='')
     modelo = models.CharField()
     numero_de_serie = models.CharField()
-    disponibilidade = models.BooleanField(default=False)
+    disponibilidade = models.BooleanField(default=True)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    
+    conta_google = models.CharField(default='', null=True, blank=True)
+    senha_conta_google = models.CharField(default='', null=True, blank=True)
+
     def __str__(self):
-        return f'[{self.categoria.upper()}] {self.marca} - {self.modelo}'
+        return f'{self.marca} - {self.modelo}'
     
 class SolicitacaoAtivo(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)

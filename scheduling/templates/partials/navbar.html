@@ -1,0 +1,33 @@
+{% load authenticate_user %}
+<div id="wrapper" class="animate mobile-menu">
+    <nav class="navbar header-top fixed-top navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-semibold" href="{% url 'index' %}">
+                <i class="bi bi-boxes text-primary" style="font-size: 1.2rem;"></i> 
+                <span class="tracking-wide">Ativos & Veículos</span>
+            </a>
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                <li>
+                    <a href="{% url 'menu_veiculos' %}" class="nav-link px-2 text-white justify-content-left">Veículos</a>
+                </li>
+
+                <li>
+                    <a href="{% url 'ativos' %}" class="nav-link px-2 text-white">Ativos</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center gap-3">
+                <div class="text-white-50 d-none d-md-block" style="font-size: 0.9rem;">
+                    <i class="bi bi-person-circle me-1"></i> Olá, {{ user.first_name|default:user.username }}
+                </div>
+                <form id="logout-form" action="{% url 'logout' %}" method="post" class="d-inline m-0">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger btn-sm d-flex align-items-center gap-2" style="border-radius: 8px;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span class="d-none d-sm-inline">Sair</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+</div>
+  <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>

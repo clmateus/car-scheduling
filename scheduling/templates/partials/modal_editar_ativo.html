@@ -1,0 +1,22 @@
+<form hx-post="{% url 'editar_ativo' ativo.id %}" 
+      hx-target="#modalDetalhesAtivoBody" 
+      hx-swap="innerHTML"
+      class="form-control border-0 p-0 bg-transparent">
+    {% csrf_token %}
+    
+    <div class="mb-3">
+        {{ form.as_p }}
+    </div>
+    
+    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top" style="border-color: var(--border-color) !important;">
+        <button type="button" class="btn btn-danger" 
+                hx-get="{% url 'detalhes_ativo' ativo.id %}" 
+                hx-target="#modalDetalhesAtivoBody" 
+                hx-swap="innerHTML">
+            Cancelar
+        </button>
+        <button type="submit" class="btn btn-success">
+            Salvar Alterações
+        </button>
+    </div>
+</form>

@@ -97,6 +97,56 @@ h2.container {
     justify-content: center;
     gap: 8px;
 }
+
+.hover-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    border-radius: 15px;
+}
+
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.detalhe-item {
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    margin-bottom: 10px;
+}
+
+.detalhe-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detalhe-valor {
+    font-size: 1rem;
+    color: #212529;
+    margin-top: 5px;
+}
+
+.info-row {
+    border-left: 3px solid #667eea;
+    transition: all 0.2s ease;
+}
+
+.info-row:hover {
+    background-color: #f8f9fa;
+    transform: translateX(5px);
+}
+.ativo-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+}
 /* ===========================
    CARDS
    =========================== */
@@ -143,7 +193,7 @@ h2.container {
 .login-form {
     background-color: transparent;
     color: #212529;
-    padding: .75rem .75rem;
+    padding: 5px;
     border-radius: 0.5rem;
     border: 1px solid #F5F5F5;
     max-width: 400px;
@@ -366,4 +416,10 @@ textarea {
         display: contents; 
     }
 
+}
+
+@media (max-width: 425px) {
+    #signature-canvas {
+        width: 100%;
+    }
 }

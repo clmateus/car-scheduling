@@ -1,16 +1,45 @@
 {% extends "_base.html" %}
 {% block content %}
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@5.1.3/dist/signature_pad.umd.min.js"></script>
     <div class="container">
-        <h1>Solicitar Equipamento
-            <button type="button" class="btn btn-outline-primary">
-                <a class="nav-link" href="/ativos" title="Ativos">Voltar</a>
-            </button>
-        </h1>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0 display-5">Solicitar Ativo</h1>
+            <a class="btn btn-outline-primary px-4" href="{% url 'ativos' %}" title="Voltar para Ativos">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+        </div>
         <form method="post" class="form-control">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type='submit' class='btn btn-success'>Solicitar</button>
+            <div class="text-center">
+                <p>Ao solicitar esse equipamento você está concordando com os <a href="https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf" target=_blank>termos de uso</a>.</p>
+                <p>Assine abaixo</p>
+                <canvas id="signature-canvas" style="border: 1px solid black"></canvas>
+                <div>
+                    <button id="btnResetarCanvas" class="btn btn-warning">Limpar</button>
+                </div>                
+            </div>
+            <button type='submit' class='btn btn-success' id="btnSolicitar">Solicitar</button>
         </form>
     </div>
+    <script>
+        const canvas = document.getElementById("signature-canvas")
+        const signaturePad = new SignaturePad(canvas)
+
+        document.getElementById("btnResetarCanvas").addEventListener('click', (e) => {
+            e.preventDefault()
+            signaturePad.clear()
+        })
+
+        document.getElementById("btnSolicitar").addEventListener('click', (e) => {
+            if (signaturePad.isEmpty()) {
+                e.preventDefault()
+                alert('Por favor, forneça uma assinatura.')
+            } else {
+                const dataURL = signaturePad.toDataURL()
+                document.getElementById("id_assinatura").value = dataURL;
+            }
+        })
+    </script>
 {% endblock %}
     

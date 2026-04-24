@@ -40,7 +40,9 @@
                                                 data-usuario="{{ solicitacao.usuario.get_full_name|default:solicitacao.usuario.username }}"
                                                 data-data="{{ solicitacao.data_solicitacao }}"
                                                 data-categoria="{{ solicitacao.categoria }}"
-                                                data-id={{ solicitacao.id }}>
+                                                data-justificativa="{{ solicitacao.justificativa }}"
+                                                data-id={{ solicitacao.id }}
+                                                data-assinatura={{ solicitacao.assinatura}}>
                                             <i class="bi bi-eye me-1"></i> Ver detalhes
                                         </button>
                                     </td>
@@ -62,7 +64,13 @@
             </div>
             <div class="modal-body">
                 <p class="mb-1"><strong>Solicitante:</strong> <span id="modalUsuario" class="text-primary"></span></p>
-                <p class="mb-4"><strong>Ativo solicitado:</strong> <span id="modalCategoria" class="badge text-bg-secondary"></span></p>
+                <p class="mb-1"><strong>Ativo solicitado:</strong> <span id="modalCategoria" class="badge text-bg-secondary"></span></p>
+                <p class="mb-1"><strong>Justificativa:</strong> <span id="modalJustificativa" class="text"></span></p>
+                <p class="mb-4"><strong>Assinatura:</strong></p>
+                <div class="text-center p-2 border bg-light mb-4" style="border-radius: 8px;">
+                    <img src="" id="modalAssinaturaImg" style="max-width: 100%; height: auto; display: none;">
+                    <span id="semAssinaturaMsg" class="text-muted italic">Nenhuma assinatura registrada.</span>
+                </div>
                 <form method="POST" id="formAssociarAtivo" enctype="multipart/form-data">
                     {% csrf_token %}
                     <label class="form-label fw-semibold">Escolha um ativo para entregar:</label>
@@ -72,8 +80,8 @@
                             <option value="{{ ativo.id }}">{{ ativo.marca}} - {{ ativo.modelo}} - {{ ativo.numero_de_serie}}</option>
                         {% endfor %}
                     </select>
-                    <label class="form-label fw-semibold mt-2">Anexar termo de responsabilidade (opcional):</label>
-                    <input type="file" name="documento" class="form-control shadow-sm">
+                    {% comment %} <label class="form-label fw-semibold mt-2">Anexar termo de responsabilidade (opcional):</label>
+                    <input type="file" name="documento" class="form-control shadow-sm"> {% endcomment %}
                     <div class="modal-footer mt-4 pb-0 border-0 px-0">
                         <button type="submit" class="btn btn-success">Confirmar</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
@@ -97,10 +105,25 @@ if (modalUnico) {
         const data = button.getAttribute('data-data');
         const categoria = button.getAttribute('data-categoria');
         const idSolicitacao = button.getAttribute('data-id');
+        const assinatura = button.getAttribute('data-assinatura');
+        const justificativa = button.getAttribute('data-justificativa');
 
         modalUnico.querySelector('#modalData').textContent = 'Número da Solicitação - ' + idSolicitacao;
         modalUnico.querySelector('#modalUsuario').textContent = usuario;
         modalUnico.querySelector('#modalCategoria').textContent = categoria;
+        modalUnico.querySelector('#modalJustificativa').textContent = justificativa;
+
+        const imgElement = modalUnico.querySelector('#modalAssinaturaImg');
+        const msgElement = modalUnico.querySelector('#semAssinaturaMsg');
+
+        if (assinatura && assinatura !== "None" && assinatura !== "") {
+            imgElement.src = assinatura;
+            imgElement.style.display = 'block';
+            msgElement.style.display = 'none';
+        } else {
+            imgElement.style.display = 'none';
+            msgElement.style.display = 'block';
+        }
 
         const select = modalUnico.querySelector('#selectAtivo');
         select.innerHTML = '<option value="">Selecione um ativo disponível</option>';

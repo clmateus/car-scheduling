@@ -109,10 +109,11 @@ class AtivoForm(forms.ModelForm):
 class SolicitarAtivoForm(forms.ModelForm):
     class Meta:
         model = SolicitacaoAtivo
-        fields = ['usuario', 'categoria', 'justificativa']
+        fields = ['usuario', 'categoria', 'justificativa', 'assinatura']
         widgets = {
             'categoria': forms.Select(attrs={'class': 'form-select'}),
-            'justificativa': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'style': 'resize: none;'})
+            'justificativa': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'style': 'resize: none;', 'rows': '2'}),
+            'assinatura': forms.HiddenInput(),
         }
         labels = {
             'usuario': 'Solicitante'

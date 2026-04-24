@@ -57,7 +57,7 @@ if (titulo) {
         modalInsercao.show()
       },
       eventClick: function(info){
-        window.location.href = '/viagens/?q=' + info.event.id;
+        window.location.href = '/transporte/viagens/?q=' + info.event.id;
       },
       eventDrop: function(info) {
         let dados = {
@@ -149,6 +149,6 @@ if (titulo) {
 function trocarAba(botao) {
     const aba = botao.getAttribute("data-aba");
 
-    htmx.ajax('GET', `transporte//veiculos/tab/${aba}/${veiculoAtual}/`, '#tab-body');
+    htmx.ajax('GET', `/transporte//veiculos/tab/${aba}/${veiculoAtual}/`, '#tab-body');
 }
-htmx.ajax('GET', `transporte//veiculos/tab/identificacao/${id}/`, '#tab-body');
+htmx.ajax('GET', `/transporte//veiculos/tab/identificacao/${id}/`, '#tab-body');

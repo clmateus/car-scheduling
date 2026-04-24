@@ -5,7 +5,7 @@ from django.db import models
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    empresa = models.CharField()
+    empresa = models.CharField(max_length=255)
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
@@ -72,26 +72,28 @@ class Ativo(models.Model):
         CELULAR = 'Celular'
         TABLET = 'Tablet'
         NOTEBOOK = 'Notebook'
-    categoria = models.CharField(choices=Tipo.choices, default=Tipo.CELULAR)
-    marca = models.CharField(default='')
-    modelo = models.CharField()
-    numero_de_serie = models.CharField()
+    categoria = models.CharField(max_length=50, choices=Tipo.choices, default=Tipo.CELULAR)
+    marca = models.CharField(max_length=100, default='')
+    modelo = models.CharField(max_length=100)
+    numero_de_serie = models.CharField(max_length=100)
     disponibilidade = models.BooleanField(default=True)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    conta_google = models.CharField(default='', null=True, blank=True)
-    senha_conta_google = models.CharField(default='', null=True, blank=True)
+    conta_google = models.CharField(max_length=255, default='', null=True, blank=True)
+    senha_conta_google = models.CharField(max_length=255, default='', null=True, blank=True)
 
     def __str__(self):
         return f'{self.marca} - {self.modelo}'
     
 class SolicitacaoAtivo(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    categoria = models.CharField(choices=Ativo.Tipo.choices, default=Ativo.Tipo.CELULAR)
+    categoria = models.CharField(max_length=50, choices=Ativo.Tipo.choices, default=Ativo.Tipo.CELULAR)
     justificativa = models.TextField(blank=True, null=True)
     data_solicitacao = models.DateTimeField(auto_now_add=True)
     ativo_entregue = models.ForeignKey(Ativo, on_delete=models.SET_NULL, null=True, blank=True)
     documento = models.FileField(upload_to="documentos/",blank=True, null=True)
     status = models.BooleanField(default=False)
-
+    assinatura = models.CharField(blank=True, null=True)
+    data_devolucao = models.DateTimeField(null=True, black=True)
+    
     def __str__(self):
         return f'{self.id} - {self.categoria} - {self.usuario}'

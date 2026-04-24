@@ -518,19 +518,18 @@ def remover_ativo(request, pk):
 @require_POST
 def devolver_ativo(request, pk):
     ativo = get_object_or_404(Ativo, id=pk)
-    
+
     if ativo.usuario:
-        # Remove completamente os dados da solicitação atrelada a esse empréstimo
         SolicitacaoAtivo.objects.filter(
-            ativo_entregue=ativo, 
-            usuario=ativo.usuario
-        ).delete()
-        
-    # Remove o usuário e volta para disponível
+            ativo_entregue=ativo,
+            usuario=ativo.usuario,
+            status=True
+        ).update(status=False)
+
     ativo.disponibilidade = True
     ativo.usuario = None
     ativo.save()
-    
+
     resposta = HttpResponse()
     resposta['HX-Refresh'] = 'true'
     return resposta
@@ -540,7 +539,6 @@ def solicitar_equipamento(request):
         form = SolicitarAtivoForm(request.POST, user=request.user)
         if form.is_valid():
             form.save()
-            # message = messages.success(request, 'Solicitação registrada com sucesso.\nAguarde a aprovação e retorno do gestor.')
             return redirect('ativos')
     else:
         form = SolicitarAtivoForm(user=(f'{request.user.first_name} {request.user.last_name}'))
@@ -604,29 +602,11 @@ def meus_itens(request):
 def menu_veiculos(request):
     return render(request, 'transporte/menu_veiculos.html')
 
-def testepdf(request):
-    return render(request, 'testepdf.html')
-
-@require_POST
-def teste_salvar_pdf(request):
-    arquivo = request.FILES.get('arquivo_pdf')
-
-    if not arquivo:
-        return JsonResponse({'erro': 'Arquivo inválido/Não encontrado'})
-    
-    fs = FileSystemStorage()
-    nome_salvo = fs.save(f'documentos_assinados/doc_{arquivo.name}', arquivo)
-
-    url_arquivo = fs.url(nome_salvo)
-
-    return JsonResponse({
-        'mensagem': 'Arquivo salvo com sucesso!',
-        'caminho': url_arquivo
-    })
-
 @login_required
 def ver_solicitacoes(request):
-    solicitacoes = SolicitacaoAtivo.objects.filter(status=False).select_related('usuario')
+    solicitacoes = SolicitacaoAtivo.objects.filter(
+        status=False
+        ).select_related('usuario')
 
     ativos_por_categoria = {}
     for categoria, _ in Ativo.Tipo.choices:
@@ -641,4 +621,11 @@ def ver_solicitacoes(request):
     })
 
 def historico_ativo(request):
-    return render(request, 'historico_ativo.html')
+    solicitacoes_devolvidas = SolicitacaoAtivo.objects.filter(
+        status=False,
+        ativo_entregue__isnull=False
+    ).select_related('usuario', 'ativo_entregue').order_by('-data_solicitacao')
+
+    return render(request, 'historico_ativo.html', {
+        'solicitacoes': solicitacoes_devolvidas
+    })

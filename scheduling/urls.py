@@ -36,7 +36,5 @@ urlpatterns = [
     path('remover_ativo/<int:pk>/', views.remover_ativo, name='remover_ativo'),
     path('devolver_ativo/<int:pk>/', views.devolver_ativo, name='devolver_ativo'),
     path('transporte/menu_veiculos/', views.menu_veiculos, name="menu_veiculos"),
-    path('testepdf/', views.testepdf, name='testepdf'),
-    path('teste_salvar_pdf/', views.teste_salvar_pdf, name='teste_salvar_pdf'),
     path('historico_ativo/', views.historico_ativo, name='historico_ativo')
 ]  

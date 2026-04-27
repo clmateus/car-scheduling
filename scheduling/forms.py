@@ -101,7 +101,7 @@ class AtivoForm(forms.ModelForm):
             'categoria': 'Categoria',
             'marca': 'Marca',
             'modelo': 'Modelo',
-            'numero_de_serie': 'Número de Série',
+            'numero_de_serie': 'IMEI',
             'conta_google': 'Conta Google (opcional)',
             'senha_conta_google': 'Senha da conta Google (opcional)',
         }

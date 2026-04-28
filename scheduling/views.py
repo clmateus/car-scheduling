@@ -602,6 +602,9 @@ def meus_itens(request):
 def menu_veiculos(request):
     return render(request, 'transporte/menu_veiculos.html')
 
+def navbar_teste(request):
+    return render(request, 'ToggleNAv.html')
+
 @login_required
 def ver_solicitacoes(request):
     solicitacoes = SolicitacaoAtivo.objects.filter(

@@ -36,5 +36,6 @@ urlpatterns = [
     path('remover_ativo/<int:pk>/', views.remover_ativo, name='remover_ativo'),
     path('devolver_ativo/<int:pk>/', views.devolver_ativo, name='devolver_ativo'),
     path('transporte/menu_veiculos/', views.menu_veiculos, name="menu_veiculos"),
-    path('historico_ativo/', views.historico_ativo, name='historico_ativo')
+    path('historico_ativo/', views.historico_ativo, name='historico_ativo'),
+    path('navbar_teste/', views.navbar_teste, name='navbar_teste')
 ]  

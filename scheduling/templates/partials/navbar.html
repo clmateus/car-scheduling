@@ -1,64 +1,91 @@
 {% load authenticate_user %}
 {% load static %}
 <div id="wrapper" class="animate mobile-menu">
-    <nav class="navbar header-top fixed-top navbar-expand-lg navbar-dark bg-dark shadow-sm">
-        <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center gap-2 fw-semibold" href="{% url 'index' %}">
-                <img src="{% static 'img/Lanmax2.png' %}" width="30" height="30">
-                <span class="tracking-wide">Ativos & Veículos</span>
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+  <nav class="navbar navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center gap-2 fw-semibold text-white" href="{% url 'index' %}">
+        <img src="{% static 'img/Lanmax2.png' %}" width="30" height="30">
+        <span class="tracking-wide">Ativos & Veículos</span>
+      </a>
+      
+      <button class="navbar-toggler"
+              type="button"
+              data-bs-toggle="offcanvas"
+              data-bs-target="#offcanvasDarkNavbar"
+              aria-controls="offcanvasDarkNavbar"
+              aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <div class="offcanvas offcanvas-end bg-dark" style="width: 300px;"
+            tabindex="-1" 
+            id="offcanvasDarkNavbar"
+            aria-labelledby="offcanvasDarkNavbarLabel">
+        <div class="offcanvas-header">
+          <div class="text-white">
+            <h5 class="bi bi-person-circle me-1"> Olá, {{ user.first_name|default:user.username }}</h5>
+          </div>
+          <button type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="offcanvas"
+                    aria-label="Close">
             </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="nav col-12 col-lg-auto my-2 justify-content-center my-md-0 text-small">
-                <li class="nav-item">
-                    <a href="{% url 'menu_veiculos' %}" class="bi bi-ev-front nav-link text-white d-flex flex-column align-items-center">
-                        <span>Veículos</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'ativos' %}" class="bi bi-phone nav-link text-white d-flex flex-column align-items-center">
-                        <span>Ativos</span>
-                    </a>
-                </li>
-                </ul>
-                
-                <div class="d-flex align-items-center gap-3 ms-auto">
-                    <div class="text-white-50 d-none d-md-block" style="font-size: 0.9rem;">
-                        <i class="bi bi-person-circle me-1"></i> Olá, {{ user.first_name|default:user.username }}
-                    </div>
-                    <form id="logout-form" action="{% url 'logout' %}" method="post" class="d-inline m-0">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-danger btn-sm d-flex align-items-center gap-2" style="border-radius: 8px;">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span class="d-none d-sm-inline">Sair</span>
-                        </button>
-                    </form>
-                </div>
-            </div>
         </div>
-    </nav>
+        <div class="offcanvas-body"><hr>
+        <ul class="nav nav-pills flex-column mb-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <i class="fas fa-car me-2"></i> Veículos
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                    <li><a class="dropdown-item" href="{% url 'menu_veiculos' %}">
+                        <i class="fas fa-list me-2"></i>Menu Veículos
+                    </a></li>
+                    <li><a class="dropdown-item" href="{% url 'agendamento' %}">
+                        <i class="fas fa-calendar-plus me-2"></i>Agendar Viagem
+                    </a></li>
+                    <li><a class="dropdown-item" href="{% url 'viagens' %}">
+                        <i class="fas fa-calendar-alt me-2"></i>Próximas Viagens
+                    </a></li>
+                </ul>
+            </li>
+        </ul>
+        <ul class="nav nav-pills flex-column mb-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <i class="fa fa-cubes me-2"></i> Ativos
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                    <li><a class="dropdown-item" href="{% url 'ativos' %}">
+                        <i class="bi bi-display me-2"></i>Menu Ativos
+                    </a></li>
+                    <li><a class="dropdown-item" href="{% url 'solicitar_equipamento' %}">
+                        <i class="bi bi-cart me-2"></i>Solicitar Equipamentos
+                    </a></li>
+                    <li><a class="dropdown-item" href="{% url 'meus_itens' %}">
+                        <i class="bi bi-archive me-2"></i>Meus Itens
+                    </a></li>
+                </ul>
+            </li>
+        </ul>
+          <hr>
+        <div class="d-flex align-items-center gap-3 mt-3 mt-md-0 mt-auto">
+        <form id="logout-form" action="{% url 'logout' %}" method="post" class="w-100">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm w-100 d-flex align-items-center justify-content-center gap-2" style="border-radius: 8px;">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sair</span>
+            </button>
+        </form>
+        </div>
+        </div>
+      </div>      
+    </div>
+  </nav>
 </div>
-
-<style>
-    .bi {
-        fill: currentColor;
-        vertical-align: -.125em;
-    }
-    
-    /* Remove as regras conflitantes - apenas mantenha o necessário */
-    .nav {
-        display: flex;
-        flex-direction: row;
-        gap: 20px;
-        list-style: none;
-    }
-    
-    .nav .nav-item {
-        display: inline-block;
-        width: auto; /* importante: NÃO use width:100% */
-    }
-</style>

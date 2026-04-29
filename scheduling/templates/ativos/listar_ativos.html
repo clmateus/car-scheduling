@@ -4,16 +4,17 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="mb-0 display-5">Aparelhos</h1>
             <div class="d-flex gap-2">
-                <a class="btn btn-success px-4" href="{% url 'cadastrar_equipamento' %}" title="Cadastrar novo aparelho">
-                    <i class="bi bi-plus-circle me-1"></i> Novo Aparelho
-                </a>
-                <a class="btn btn-outline-primary px-4" href="{% url 'ativos' %}" title="Voltar para Ativos">
+                <a class="btn btn-outline-primary px-4" href="{% url 'ativos/' %}" title="Voltar para Ativos">
                     <i class="bi bi-arrow-left"></i> Voltar
                 </a>
             </div>
         </div>
 
         <div class="row mb-4 g-3">
+            <a class="btn btn-success px-4" href="{% url 'ativos/cadastrar_equipamento' %}" title="Cadastrar novo aparelho">
+                <i class="bi bi-plus-circle me-1"></i> 
+                Novo Aparelho
+            </a>
             {% for stat in resumo_ativos %}
             <div class="col-12 col-md-4">
                 <div class="card shadow-sm border-0 h-100" style="border-radius: 12px;">
@@ -73,16 +74,16 @@
                              style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border-radius: 12px;"
                              data-bs-toggle="modal" 
                              data-bs-target="#modalDetalhesAtivo"
-                             hx-get="{% url 'detalhes_ativo' ativo.id %}"
+                             hx-get="{% url 'ativos/detalhes_ativo' ativo.id %}"
                              hx-target="#modalDetalhesAtivoBody"
                              hx-swap="innerHTML">
                             
                             <div class="card-header bg-transparent border-0 pt-3 pb-0 d-flex justify-content-between align-items-center">
                                 <span class="badge rounded-pill text-bg-primary fs-6">{{ ativo.categoria }}</span>
                                 {% if ativo.disponibilidade == True %}
-                                    <span class="badge rounded-pill text-bg-success">Disponível</span>
+                                    <span class="badge rounded-pill text-bg-success d-flex justify-content-center align-items-center">Disponível</span>
                                 {% else %}
-                                    <span class="badge rounded-pill text-bg-danger">Em uso</span>
+                                    <span class="badge rounded-pill text-bg-danger d-flex justify-content-center align-items-center">Em uso</span>
                                 {% endif %}
                             </div>
                             
@@ -128,5 +129,4 @@
             </div>
         </div>
     </div>
-
 {% endblock%}

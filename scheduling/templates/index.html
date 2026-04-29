@@ -1,31 +1,40 @@
 {% extends '_base.html' %}
 {% load static %}
+{% load authenticate_user %}
 {% block content %}
-
-<div class="container text-center py-3">
-        <h2 class="display-4">Olá, como posso te ajudar?</h2>
+<div class="container text-center py-3" style="height-100vh">
+  <h2 class="display-4">Olá, como posso te ajudar?</h2>
 <br>
 <div class="row g-4 mb-4 justify-content-center">
   <div class="col-12 col-md-4">
     <a href="{% url 'menu_veiculos' %}" class="text-reset text-decoration-none d-block h-100">
       <div class="card h-100 border-0 shadow-sm rounded-4">
-        <div class="card-body p-4">
-          <i class="bi bi-car-front display-4 text-primary mb-3 d-block"></i>
-          <h5 class="card-title fw-semibold">Veículos</h5>
-        </div>
+      <div class="card-body p-4">
+        <i class="bi bi-car-front display-4 text-primary mb-3 d-block"></i>
+        <h5 class="card-title fw-semibold">Veículos</h5>
+      </div>
       </div>
     </a>
   </div>
-
-    <div class="col-12 col-md-4">
-      <a href="{% url 'ativos' %}" class="text-reset text-decoration-none d-block h-100">
-        <div class="card h-100 border-0 shadow-sm rounded-4">
-          <div class="card-body p-4">
-            <i class="bi bi-phone display-4 text-primary mb-3 d-block"></i>
-            <h5 class="card-title fw-semibold">Ativos</h5>
-          </div>
+  <div class="col-12 col-md-4">
+    <a href="{% url 'ativos' %}" class="text-reset text-decoration-none d-block h-100">
+      <div class="card h-100 border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+          <i class="bi bi-phone display-4 text-primary mb-3 d-block"></i>
+          <h5 class="card-title fw-semibold">Ativos</h5>
         </div>
-      </a>         
-    </div>
+      </div>
+    </a>         
+  </div>
 </div>
+
+<style>
+  container {
+    padding: 5px;
+    border-radius: 0.5rem;
+    max-width: 400px;
+    margin: 0 auto;
+    transform: translate(0%, -10%);
+}
+</style>
   {% endblock %}

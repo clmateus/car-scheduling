@@ -46,8 +46,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'scheduling',
-    'tailwind',
-    'theme',
     'django_htmx',
     'django_q',
     'django_endesive.apps.DjangoEndesiveConfig',

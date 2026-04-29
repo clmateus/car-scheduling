@@ -32,58 +32,58 @@
             </button>
         </div>
         <div class="offcanvas-body"><hr>
-        <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle"
-                    role="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                    <i class="fas fa-car me-2"></i> Veículos
-                </a>
-                <ul class="dropdown-menu dropdown-menu-dark">
-                    <li><a class="dropdown-item" href="{% url 'menu_veiculos' %}">
-                        <i class="fas fa-list me-2"></i>Menu Veículos
-                    </a></li>
-                    <li><a class="dropdown-item" href="{% url 'agendamento' %}">
-                        <i class="fas fa-calendar-plus me-2"></i>Agendar Viagem
-                    </a></li>
-                    <li><a class="dropdown-item" href="{% url 'viagens' %}">
-                        <i class="fas fa-calendar-alt me-2"></i>Próximas Viagens
-                    </a></li>
-                </ul>
-            </li>
-        </ul>
-        <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle"
-                    role="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                    <i class="fa fa-cubes me-2"></i> Ativos
-                </a>
-                <ul class="dropdown-menu dropdown-menu-dark">
-                    <li><a class="dropdown-item" href="{% url 'ativos' %}">
-                        <i class="bi bi-display me-2"></i>Menu Ativos
-                    </a></li>
-                    <li><a class="dropdown-item" href="{% url 'solicitar_equipamento' %}">
-                        <i class="bi bi-cart me-2"></i>Solicitar Equipamentos
-                    </a></li>
-                    <li><a class="dropdown-item" href="{% url 'meus_itens' %}">
-                        <i class="bi bi-archive me-2"></i>Meus Itens
-                    </a></li>
-                </ul>
-            </li>
-        </ul>
-          <hr>
-        <div class="d-flex align-items-center gap-3 mt-3 mt-md-0 mt-auto">
-        <form id="logout-form" action="{% url 'logout' %}" method="post" class="w-100">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger btn-sm w-100 d-flex align-items-center justify-content-center gap-2" style="border-radius: 8px;">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Sair</span>
-            </button>
-        </form>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle"
+                        role="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <i class="fas fa-car me-2"></i> Veículos
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="{% url 'menu_veiculos' %}">
+                            <i class="fas fa-list me-2"></i>Menu Veículos
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'agendamento' %}">
+                            <i class="fas fa-calendar-plus me-2"></i>Agendar Viagem
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'viagens' %}">
+                            <i class="fas fa-calendar-alt me-2"></i>Próximas Viagens
+                        </a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle"
+                        role="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <i class="fa fa-cubes me-2"></i> Ativos
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="{% url 'ativos' %}">
+                            <i class="bi bi-display me-2"></i>Menu Ativos
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'solicitar_equipamento' %}">
+                            <i class="bi bi-cart me-2"></i>Solicitar Equipamentos
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'meus_itens' %}">
+                            <i class="bi bi-archive me-2"></i>Meus Itens
+                        </a></li>
+                    </ul>
+                </li>
+            </ul>
         </div>
+        <hr style="margin-left:16px; margin-right:16px;">
+            <div class="logout mt-3 p-3">
+            <form id="logout-form" action="{% url 'logout' %}" method="post" class="w-100">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm w-100 d-flex align-items-center justify-content-center gap-2" style="border-radius: 8px;">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Sair</span>
+                </button>
+            </form>
         </div>
       </div>      
     </div>

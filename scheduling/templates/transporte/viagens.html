@@ -60,14 +60,14 @@
                                     Entrar em contato
                                 </a>
                             {% endif %}
-                            {% if user|has_group:'Gestores' %}
+                            {% if user|has_group:'Gestores' or user|has_group:'RH' or user|has_group:'Expedição' %}
                                 <button class="btn btn-primary"
                                         data-bs-toggle="modal"
                                         data-bs-target="#modalAlterarVeiculo{{ viagem.id }}">
                                     Alterar Veículo
                                 </button>
                             {% endif %}
-                            {% if user|has_group:'Gestores' or viagem.usuario == user %}
+                            {% if user|has_group:'Gestores' or viagem.usuario == user or user|has_group:'RH' or user|has_group:'Expedição' %}
                                 <button type="button"
                                         class="btn btn-primary"
                                         data-bs-toggle="modal"
@@ -178,5 +178,11 @@ document.body.addEventListener('closeModalEdicao', function() {
     // para que os dados atualizados sejam refletidos nos cards
     window.location.reload();
 });
+document.body.addEventListener('fecharModal', function() {
+    const modal = bootstrap.Modal.getInstance(document.querySelector('.modal.show'));
+    modal.hide();
+    location.reload(); // Opcional: para atualizar os dados na tela principal
+});
+
 </script>
 {% endblock %}

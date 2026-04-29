@@ -18,7 +18,6 @@ import json
 import io, os
 import random
 
-
 def is_gestor(user):
     return user.groups.filter(name='Gestores').exists() or user.is_superuser
 
@@ -250,14 +249,12 @@ def veiculos(request):
     return render(request, 'transporte/veiculos.html', {'veiculos': Veiculo.objects.all(), 'form': form})
 
 @login_required
-@user_passes_test(is_gestor, login_url='/')
 @require_POST
 def remover_veiculo(request, pk):
     get_object_or_404(Veiculo, pk=pk).delete()
     return HttpResponse('')
 
 @login_required
-@user_passes_test(is_gestor, login_url='/')
 @require_POST
 def editar_veiculo(request, pk):
     veiculo = get_object_or_404(Veiculo, pk=pk)
@@ -302,7 +299,6 @@ def viagens(request):
     })
 
 @login_required
-@user_passes_test(is_gestor, login_url='/')
 def alterar_veiculo(request, pk):
     if request.method == 'POST':
         agendamento = get_object_or_404(Agendamento, pk=pk)
@@ -313,7 +309,6 @@ def alterar_veiculo(request, pk):
         return resposta
 
 @login_required
-@user_passes_test(is_gestor, login_url='/')
 def historico(request):
     todas_as_viagens = Agendamento.objects.order_by('-dataPartida')
     return render(request, 'transporte/historico_veiculos.html', {'todas_as_viagens': todas_as_viagens})
@@ -442,7 +437,7 @@ def cadastrar_equipamento(request):
     else:
         form = AtivoForm()
 
-    return render(request, 'cadastrar_equipamento.html', {'form': form})
+    return render(request, 'ativos/cadastrar_equipamento.html', {'form': form})
 
 def listar_ativos(request):
     ativos = Ativo.objects.all().order_by('-disponibilidade')
@@ -470,7 +465,7 @@ def listar_ativos(request):
             else:
                 resumo[idx]['em_uso'] += 1
 
-    return render(request, 'listar_ativos.html', {'ativos': ativos, 'resumo_ativos': resumo})
+    return render(request, 'ativos/listar_ativos.html', {'ativos': ativos, 'resumo_ativos': resumo})
 
 @login_required
 def detalhes_ativo(request, pk):
@@ -504,7 +499,6 @@ def editar_ativo(request, pk):
     return render(request, 'partials/modal_editar_ativo.html', {'form': form, 'ativo': ativo})
 
 @login_required
-@user_passes_test(is_gestor, login_url='/')
 @require_POST
 def remover_ativo(request, pk):
     ativo = get_object_or_404(Ativo, id=pk)
@@ -514,7 +508,6 @@ def remover_ativo(request, pk):
     return resposta
 
 @login_required
-@user_passes_test(is_gestor, login_url='/')
 @require_POST
 def devolver_ativo(request, pk):
     ativo = get_object_or_404(Ativo, id=pk)
@@ -524,7 +517,10 @@ def devolver_ativo(request, pk):
             ativo_entregue=ativo,
             usuario=ativo.usuario,
             status=True
-        ).update(status=False)
+        ).update(
+            status=False,
+            
+            )
 
     ativo.disponibilidade = True
     ativo.usuario = None
@@ -543,12 +539,12 @@ def solicitar_equipamento(request):
     else:
         form = SolicitarAtivoForm(user=(f'{request.user.first_name} {request.user.last_name}'))
 
-    return render(request, 'solicitar_equipamento.html', {'form': form})
+    return render(request, 'ativos/solicitar_equipamento.html', {'form': form})
 
 def ver_solicitacoes(request):
     solicitacoes = SolicitacaoAtivo.objects.filter(status=False).order_by('data_solicitacao')
     ativos_disponiveis = Ativo.objects.filter(disponibilidade=True)
-    return render(request, 'ver_solicitacoes.html', {'solicitacoes': solicitacoes, 'ativos_disponiveis': ativos_disponiveis})
+    return render(request, 'ativos/ver_solicitacoes.html', {'solicitacoes': solicitacoes, 'ativos_disponiveis': ativos_disponiveis})
 
 def aprovar_solicitacao(request, pk):
     if request.method == "POST":
@@ -602,9 +598,6 @@ def meus_itens(request):
 def menu_veiculos(request):
     return render(request, 'transporte/menu_veiculos.html')
 
-def navbar_teste(request):
-    return render(request, 'ToggleNAv.html')
-
 @login_required
 def ver_solicitacoes(request):
     solicitacoes = SolicitacaoAtivo.objects.filter(
@@ -627,8 +620,8 @@ def historico_ativo(request):
     solicitacoes_devolvidas = SolicitacaoAtivo.objects.filter(
         status=False,
         ativo_entregue__isnull=False
-    ).select_related('usuario', 'ativo_entregue').order_by('-data_solicitacao')
+    ).select_related('usuario', 'ativo_entregue').order_by('data_solicitacao', 'data_devolucao')
 
-    return render(request, 'historico_ativo.html', {
+    return render(request, 'ativos/historico_ativo.html', {
         'solicitacoes': solicitacoes_devolvidas
     })

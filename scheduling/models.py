@@ -89,12 +89,11 @@ class SolicitacaoAtivo(models.Model):
     categoria = models.CharField(max_length=50, choices=Ativo.Tipo.choices, default=Ativo.Tipo.CELULAR)
     justificativa = models.TextField(blank=True, null=True)
     data_solicitacao = models.DateTimeField(auto_now_add=True)
-    data_devolucao = models.DateField(null=True, blank=True)
+    data_devolucao = models.DateTimeField(null=True, blank=True)
     ativo_entregue = models.ForeignKey(Ativo, on_delete=models.SET_NULL, null=True, blank=True)
     documento = models.FileField(upload_to="documentos/",blank=True, null=True)
     status = models.BooleanField(default=False)
     assinatura = models.CharField(blank=True, null=True)
-    data_devolucao = models.DateTimeField(null=True, blank=True)
     
     def __str__(self):
         return f'{self.id} - {self.categoria} - {self.usuario}'

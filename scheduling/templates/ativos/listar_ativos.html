@@ -4,14 +4,14 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="mb-0 display-5">Aparelhos</h1>
             <div class="d-flex gap-2">
-                <a class="btn btn-outline-primary px-4" href="{% url 'ativos/' %}" title="Voltar para Ativos">
+                <a class="btn btn-outline-primary px-4" href="{% url 'ativos' %}" title="Voltar para Ativos">
                     <i class="bi bi-arrow-left"></i> Voltar
                 </a>
             </div>
         </div>
 
         <div class="row mb-4 g-3">
-            <a class="btn btn-success px-4" href="{% url 'ativos/cadastrar_equipamento' %}" title="Cadastrar novo aparelho">
+            <a class="btn btn-success px-4" href="{% url 'cadastrar_equipamento' %}" title="Cadastrar novo aparelho">
                 <i class="bi bi-plus-circle me-1"></i> 
                 Novo Aparelho
             </a>
@@ -74,7 +74,7 @@
                              style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border-radius: 12px;"
                              data-bs-toggle="modal" 
                              data-bs-target="#modalDetalhesAtivo"
-                             hx-get="{% url 'ativos/detalhes_ativo' ativo.id %}"
+                             hx-get="{% url 'detalhes_ativo' ativo.id %}"
                              hx-target="#modalDetalhesAtivoBody"
                              hx-swap="innerHTML">
                             

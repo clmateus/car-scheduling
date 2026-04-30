@@ -12,7 +12,7 @@
         </div>
         <div class="row g-4 mb-4 justify-content-center">
             <div class="col-12 col-md-4">
-                <a href="{% url 'ativos/solicitar_equipamento' %}" class="text-reset text-decoration-none d-block h-100">
+                <a href="{% url 'solicitar_equipamento' %}" class="text-reset text-decoration-none d-block h-100">
                     <div class="card h-100 border-0 shadow-sm rounded-4">
                         <div class="card-body p-4">
                             <i class="bi bi-phone display-4 text-primary mb-3 d-block"></i>
@@ -22,7 +22,7 @@
                 </a>  
             </div>
             <div class="col-12 col-md-4 ">
-                <a href="{% url 'ativos/meus_itens' %}" class="text-reset text-decoration-none d-block h-100">
+                <a href="{% url 'meus_itens' %}" class="text-reset text-decoration-none d-block h-100">
                     <div class="card h-100 border-0 shadow-sm rounded-4">
                         <div class="card-body p-4">
                             <i class="bi bi-person display-4 text-primary mb-3 d-block"></i>
@@ -35,7 +35,7 @@
         {% if user|has_group:'Gestores' or user|has_group:'RH' %}
         <div class="row g-4 mb-4 justify-content-center">
             <div class="col-12 col-md-4">
-                <a href="{% url 'ativos/listar_ativos' %}" class="text-reset text-decoration-none d-block h-100">
+                <a href="{% url 'listar_ativos' %}" class="text-reset text-decoration-none d-block h-100">
                     <div class="card h-100 border-0 shadow-sm rounded-4">
                         <div class="card-body p-4">
                             <i class="bi bi-card-list display-4 text-primary mb-3 d-block"></i>
@@ -45,7 +45,7 @@
                 </a>  
             </div>
             <div class="col-12 col-md-4">
-                <a href="{% url 'ativos/ver_solicitacoes' %}" class="text-reset text-decoration-none d-block h-100">
+                <a href="{% url 'ver_solicitacoes' %}" class="text-reset text-decoration-none d-block h-100">
                     <div class="card h-100 border-0 shadow-sm rounded-4">
                         <div class="card-body p-4">
                             <i class="bi bi-file-text display-4 text-primary mb-3 d-block"></i>
@@ -57,7 +57,7 @@
         </div>
         <div class="row g-4 mb-4 justify-content-center">
             <div class="col-12 col-md-4">
-                <a href="{% url 'ativos/historico_ativo' %}" class="text-reset text-decoration-none d-block h-100">
+                <a href="{% url 'historico_ativo' %}" class="text-reset text-decoration-none d-block h-100">
                     <div class="card h-100 border-0 shadow-sm rounded-4">
                         <div class="card-body p-4">
                             <i class="bi bi-clock-history display-4 text-primary mb-3 d-block"></i>

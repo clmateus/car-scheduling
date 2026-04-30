@@ -426,7 +426,7 @@ def comentarios(request):
     return render(request, 'transporte/tab/comentarios.html', {'observacoes': comentarios})
 
 def ativos(request):
-    return render(request, 'ativos.html')
+    return render(request, 'ativos/ativos.html')
 
 def cadastrar_equipamento(request):
     if request.method == 'POST':
@@ -519,7 +519,7 @@ def devolver_ativo(request, pk):
             status=True
         ).update(
             status=False,
-            
+            data_devolucao=timezone.now()
             )
 
     ativo.disponibilidade = True
@@ -593,7 +593,7 @@ def aprovar_solicitacao(request, pk):
 
 def meus_itens(request):
     itens_do_usuario = Ativo.objects.filter(usuario = request.user)
-    return render(request, 'meus_itens.html', {'itens_do_usuario': itens_do_usuario})
+    return render(request, 'ativos/meus_itens.html', {'itens_do_usuario': itens_do_usuario})
 
 def menu_veiculos(request):
     return render(request, 'transporte/menu_veiculos.html')
@@ -611,7 +611,7 @@ def ver_solicitacoes(request):
             .values('id', 'marca', 'modelo', 'numero_de_serie')
         )
 
-    return render(request, 'ver_solicitacoes.html', {
+    return render(request, 'ativos/ver_solicitacoes.html', {
         'solicitacoes': solicitacoes,
         'ativos_por_categoria_json': json.dumps(ativos_por_categoria),
     })

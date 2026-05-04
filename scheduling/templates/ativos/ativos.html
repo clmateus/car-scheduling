@@ -4,7 +4,7 @@
 <div class="container text-center py-3 ">
         <div class="row justify-content-center mb-4">
             <div class="col-12 col-md-8 d-flex justify-content-between align-items-center">
-                <h2 class="display-4 mb-0 mt-2">Ativos</h2>
+                <h2 class="display-4 mb-0 mt-2"><b>Ativos</b></h2>
                 <a class="btn btn-outline-primary px-4 mt-2" href="{% url 'index' %}" title="Voltar para o Início">
                     <i class="bi bi-arrow-left "></i> Voltar
                 </a>
@@ -21,6 +21,22 @@
                     </div>
                 </a>  
             </div>
+
+            <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="toast align-items-center text-bg-success border-0 show" role="alert">
+                    <div class="d-flex">
+                    <div class="toast-body">
+                        {{ message }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+            </div>
+
             <div class="col-12 col-md-4 ">
                 <a href="{% url 'meus_itens' %}" class="text-reset text-decoration-none d-block h-100">
                     <div class="card h-100 border-0 shadow-sm rounded-4">
@@ -69,12 +85,5 @@
         </div>
         {% endif %}
     </div>
-    <script>
-        .col-12.col-md-4 {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-    </script>
+
 {% endblock %}

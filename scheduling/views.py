@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.core.files.storage import FileSystemStorage
 from django.views.decorators.http import require_POST
 from django.core.files.base import ContentFile
 from django.utils import timezone
@@ -10,23 +9,30 @@ from django.http import JsonResponse, HttpResponse
 from django.core.mail import send_mail
 from django_q.tasks import async_task
 from django.contrib import messages
-from .models import *
-from .forms import *
+from .models import (
+    Agendamento, Veiculo, Seguro, Info, Ativo, SolicitacaoAtivo
+)
+from .forms import (
+    EdicaoForm, CadastroVeiculo, SeguroForm, DocumentoForm,
+    AtivoForm, SolicitarAtivoForm
+)
 from PIL import Image
-from django.conf import settings
+import io
 import json
-import io, os
 import random
 
 def is_gestor(user):
     return user.groups.filter(name='Gestores').exists() or user.is_superuser
 
+@login_required(login_url='/login/')
 def index(request):
     return render(request, 'index.html')
+
 
 @login_required
 def agendamento(request):
     return render(request, 'transporte/agendamento.html')
+
 
 @login_required
 def agendar(request):
@@ -112,10 +118,17 @@ def mudar_dia_agendamento(request):
         return JsonResponse({'status': 'erro', 'mensagem': 'Agendamento não encontrado.'})
 
     if not (is_gestor(request.user) or agendamento.usuario == request.user):
-        return JsonResponse({'status': 'erro', 'mensagem': 'Você não tem permissão para alterar este agendamento.'}, status=403)
+        return JsonResponse(
+            {'status': 'erro', 'mensagem': 'Você não tem permissão para alterar este agendamento.'},
+            status=403
+        )
 
     novo_inicio = parse_datetime(dados.get('start'))
-    novo_fim = parse_datetime(dados.get('end')) if dados.get('end') else novo_inicio + (agendamento.dataChegada - agendamento.dataPartida)
+    novo_fim = (
+        parse_datetime(dados.get('end'))
+        if dados.get('end')
+        else novo_inicio + (agendamento.dataChegada - agendamento.dataPartida)
+    )
 
     if agendamento.veiculo:
         conflito = Agendamento.objects.filter(
@@ -125,12 +138,16 @@ def mudar_dia_agendamento(request):
         ).exclude(id=agendamento.id).exists()
 
         if conflito:
-            return JsonResponse({'status': 'erro', 'mensagem': 'O veículo já possui agendamento neste horário.'}, status=400)
+            return JsonResponse(
+                {'status': 'erro', 'mensagem': 'O veículo já possui agendamento neste horário.'},
+                status=400
+            )
 
     agendamento.dataPartida = novo_inicio
     agendamento.dataChegada = novo_fim
     agendamento.save()
     return JsonResponse({'status': 'sucesso'})
+
 
 @login_required
 def listar_agendamentos(request):
@@ -148,6 +165,7 @@ def listar_agendamentos(request):
         for ag in agendamentos
     ]
     return JsonResponse(eventos, safe=False)
+
 
 @login_required
 def remover_agendamento(request, pk):
@@ -279,7 +297,6 @@ def viagens(request):
         Agendamento.objects.filter(id=q) if q
         else Agendamento.objects.filter(dataPartida__gt=timezone.now()).order_by('dataPartida')
     )
-
     # Regras de rodízio de São Paulo (dígitos proibidos por dia da semana)
     RODIZIO_SP = {0: ['1', '2'], 1: ['3', '4'], 2: ['5', '6'], 3: ['7', '8'], 4: ['9', '0']}
 
@@ -378,7 +395,7 @@ def seguro_veiculo(request, pk):
             response['HX-Trigger'] = 'refreshIdentificacao'
             return response
 
-        print("Erros form de seguro:", form.errors)
+        # form.errors available for debugging
         return render(request, 'transporte/tab/documentacao.html', {
             'veiculo': veiculo,
             'seguro': seguro,
@@ -425,6 +442,7 @@ def comentarios(request):
     comentarios = Info.objects.all()
     return render(request, 'transporte/tab/comentarios.html', {'observacoes': comentarios})
 
+
 def ativos(request):
     return render(request, 'ativos/ativos.html')
 
@@ -447,7 +465,7 @@ def listar_ativos(request):
         {'nome': 'Notebooks', 'total': 0, 'disponiveis': 0, 'em_uso': 0, 'icon': 'bi-laptop'},
         {'nome': 'Tablets', 'total': 0, 'disponiveis': 0, 'em_uso': 0, 'icon': 'bi-tablet'},
     ]
-    
+
     for ativo in ativos:
         cat = str(ativo.categoria).lower()
         idx = None
@@ -457,7 +475,7 @@ def listar_ativos(request):
             idx = 1
         elif 'tablet' in cat:
             idx = 2
-            
+
         if idx is not None:
             resumo[idx]['total'] += 1
             if ativo.disponibilidade:
@@ -470,22 +488,25 @@ def listar_ativos(request):
 @login_required
 def detalhes_ativo(request, pk):
     ativo = get_object_or_404(Ativo, id=pk)
-    
+
     solicitacao_ativa = None
     # Se o ativo estiver em uso, buscamos a solicitação mais recente vinculada a ele e ao usuário atual
     if not ativo.disponibilidade and ativo.usuario:
         solicitacao_ativa = SolicitacaoAtivo.objects.filter(
-            ativo_entregue=ativo, 
+            ativo_entregue=ativo,
             usuario=ativo.usuario
         ).order_by('-data_solicitacao').first()
-        
-    return render(request, 'partials/modal_detalhes_ativo.html', {'ativo': ativo, 'solicitacao_ativa': solicitacao_ativa})
+
+    return render(request, 'partials/modal_detalhes_ativo.html', {
+        'ativo': ativo,
+        'solicitacao_ativa': solicitacao_ativa,
+    })
 
 @login_required
 @user_passes_test(is_gestor, login_url='/')
 def editar_ativo(request, pk):
     ativo = get_object_or_404(Ativo, id=pk)
-    
+
     if request.method == 'POST':
         form = AtivoForm(request.POST, instance=ativo)
         if form.is_valid():
@@ -495,7 +516,7 @@ def editar_ativo(request, pk):
             return resposta
     else:
         form = AtivoForm(instance=ativo)
-        
+
     return render(request, 'partials/modal_editar_ativo.html', {'form': form, 'ativo': ativo})
 
 @login_required
@@ -535,16 +556,12 @@ def solicitar_equipamento(request):
         form = SolicitarAtivoForm(request.POST, user=request.user)
         if form.is_valid():
             form.save()
+            messages.success(request, "Solicitação realizada com sucesso")
             return redirect('ativos')
     else:
         form = SolicitarAtivoForm(user=(f'{request.user.first_name} {request.user.last_name}'))
 
     return render(request, 'ativos/solicitar_equipamento.html', {'form': form})
-
-def ver_solicitacoes(request):
-    solicitacoes = SolicitacaoAtivo.objects.filter(status=False).order_by('data_solicitacao')
-    ativos_disponiveis = Ativo.objects.filter(disponibilidade=True)
-    return render(request, 'ativos/ver_solicitacoes.html', {'solicitacoes': solicitacoes, 'ativos_disponiveis': ativos_disponiveis})
 
 def aprovar_solicitacao(request, pk):
     if request.method == "POST":
@@ -584,16 +601,17 @@ def aprovar_solicitacao(request, pk):
 
         except Exception as e:
             messages.error(request, f'Ocorreu o seguinte erro ao tentar salvar: {str(e)}')
-        
+
         return redirect('ativos')
-    
+
     else:
         messages.warning(request, 'Acesso negado.')
         return redirect('ativos')
 
 def meus_itens(request):
-    itens_do_usuario = Ativo.objects.filter(usuario = request.user)
+    itens_do_usuario = Ativo.objects.filter(usuario=request.user)
     return render(request, 'ativos/meus_itens.html', {'itens_do_usuario': itens_do_usuario})
+
 
 def menu_veiculos(request):
     return render(request, 'transporte/menu_veiculos.html')

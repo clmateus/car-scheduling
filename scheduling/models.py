@@ -93,7 +93,7 @@ class SolicitacaoAtivo(models.Model):
     ativo_entregue = models.ForeignKey(Ativo, on_delete=models.SET_NULL, null=True, blank=True)
     documento = models.FileField(upload_to="documentos/",blank=True, null=True)
     status = models.BooleanField(default=False)
-    assinatura = models.CharField(blank=True, null=True)
+    assinatura = models.TextField(blank=True, null=True)
     
     def __str__(self):
         return f'{self.id} - {self.categoria} - {self.usuario}'

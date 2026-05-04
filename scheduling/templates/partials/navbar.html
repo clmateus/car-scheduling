@@ -22,16 +22,16 @@
             id="offcanvasDarkNavbar"
             aria-labelledby="offcanvasDarkNavbarLabel">
         <div class="offcanvas-header">
-          <div class="text-white">
-            <h5 class="bi bi-person-circle me-1"> Olá, {{ user.first_name|default:user.username }}</h5>
-          </div>
-          <button type="button"
-                    class="btn-close btn-close-white"
-                    data-bs-dismiss="offcanvas"
-                    aria-label="Close">
+            <div class="text-white">
+                <h5 class="bi bi-person-circle me-1"> Olá, {{ user.first_name|default:user.username }}</h5>
+            </div>
+            <button type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="offcanvas"
+                aria-label="Close">
             </button>
-        </div>
-        <div class="offcanvas-body"><hr>
+        </div><hr style="margin-left:16px; margin-right:16px;">
+        <div class="offcanvas-body">
             <ul class="nav nav-pills flex-column mb-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle"
@@ -50,6 +50,14 @@
                         <li><a class="dropdown-item" href="{% url 'viagens' %}">
                             <i class="fas fa-calendar-alt me-2"></i>Próximas Viagens
                         </a></li>
+                        {% if user|has_group:'Gestores' or user|has_group:'RH' %}
+                        <li><a class="dropdown-item" href="{% url 'veiculos' %}">
+                            <i class="bi bi-car-front me-2"></i>Veículos
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'historico' %}">
+                            <i class="bi bi-clock-history me-2"></i>Histórico
+                        </a></li>
+                    {% endif %}
                     </ul>
                 </li>
             </ul>
@@ -71,9 +79,20 @@
                         <li><a class="dropdown-item" href="{% url 'meus_itens' %}">
                             <i class="bi bi-archive me-2"></i>Meus Itens
                         </a></li>
+                        {% if user|has_group:'Gestores' or user|has_group:'RH' %}
+                        <li><a class="dropdown-item" href="{% url 'listar_ativos' %}">
+                            <i class="fa-solid fa-list me-2"></i>Lista de aparelhos
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'ver_solicitacoes' %}">
+                            <i class="bi bi-file-text me-2"></i>Ver Solicitações
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'historico_ativo' %}">
+                            <i class="bi bi-clock-history me-2"></i>Histórico
+                        </a></li>
                     </ul>
                 </li>
             </ul>
+            {% endif %}
         </div>
         <hr style="margin-left:16px; margin-right:16px;">
             <div class="logout mt-3 p-3">

@@ -2,16 +2,15 @@
 {% block content %}
     <div class="container">
         <h1>Cadastrar Equipamento
-
     <button type="button" class="btn btn-outline-primary">
-        <a class="nav-link" href="ativos/ativos" 
+        <a class="nav-link" href="{% url 'ativos' %}"
         title="Ativos">Voltar   
         </a>
     </button></h1>
 
         <form method="POST">
             {% csrf_token %}
-            {{ form.as_p}}
+            {{ form.as_p }}
             <button type='submit' class='btn btn-success'>
                 Cadastrar
             </button>

@@ -1,6 +1,6 @@
 const btn = document.querySelector('#toggle-dark');
+console.log(btn);
 
-// Aplica preferência salva ao carregar
 if (localStorage.getItem('theme') === 'dark') {
     document.body.classList.add('dark');
 }

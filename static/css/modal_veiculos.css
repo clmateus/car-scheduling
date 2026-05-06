@@ -1,0 +1,166 @@
+/* Container principal */
+#comentarios {
+    max-width: 600px;
+    margin: 20px auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Card de cada comentário */
+.comentario-item {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-left: 5px solid #007bff;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.comentario-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+/* Header do comentário - flex para alinhar nome e botão */
+.comentario-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+/* Estilo do Nome do Usuário */
+.usuario {
+    color: #2c3e50;
+    font-size: 1.05em;
+    margin: 0;
+    flex: 1;
+}
+
+.usuario strong {
+    background: #000000;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Botão de deletar estilizado */
+.btn-delete {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85em;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 4px rgba(238, 90, 82, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-delete::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-delete:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn-delete:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(238, 90, 82, 0.4);
+    background: linear-gradient(135deg, #ff5252 0%, #e74c3c 100%);
+}
+
+.btn-delete:active {
+    transform: scale(0.95);
+}
+
+.btn-icon {
+    font-size: 1.1em;
+    position: relative;
+    z-index: 1;
+}
+
+.btn-text {
+    position: relative;
+    z-index: 1;
+}
+
+/* Spinner de loading */
+.spinner {
+    margin-left: 8px;
+    position: relative;
+    z-index: 1;
+}
+
+.spinner-icon {
+    animation: spin 0.8s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Animação HTMX para deleção */
+.htmx-settling {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.3s ease-out;
+}
+
+/* Estilo do Veículo */
+.veiculo {
+    color: #7f8c8d;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 10px 0 8px 0;
+    font-weight: 500;
+}
+
+/* Estilo da Mensagem */
+.mensagem {
+    color: #34495e;
+    line-height: 1.6;
+    margin: 0;
+    font-size: 0.95em;
+}
+
+/* Mensagem de "Vazio" */
+.vazio {
+    text-align: center;
+    color: #95a5a6;
+    font-style: italic;
+    padding: 40px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    font-size: 0.95em;
+}
+
+/* Efeito de fade out ao deletar */
+.comentario-item.htmx-swapping {
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease-out;
+}

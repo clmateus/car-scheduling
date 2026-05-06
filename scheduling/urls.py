@@ -37,4 +37,5 @@ urlpatterns = [
     path('devolver_ativo/<int:pk>/', views.devolver_ativo, name='devolver_ativo'),
     path('transporte/menu_veiculos/', views.menu_veiculos, name="menu_veiculos"),
     path('ativos/historico_ativo/', views.historico_ativo, name='historico_ativo'),
+    path("observacoes/<int:pk>/deletar/", views.deletar_observacao, name="deletar_observacao"),
 ]  

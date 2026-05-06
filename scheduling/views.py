@@ -22,8 +22,15 @@ import json
 import random
 
 def is_gestor(user):
-    return user.groups.filter(name='Gestores').exists() or user.is_superuser
-
+    if user.groups.filter(name='Expedicao').exists():
+        return True
+    elif user.groups.filter(name='RH').exists():
+        return True
+    elif user.groups.filter(name='Gestores').exists():
+        return True
+    else:
+        return False
+    
 @login_required(login_url='/login/')
 def index(request):
     return render(request, 'index.html')
@@ -244,6 +251,7 @@ def editar_agendamento(request, pk):
     return render(request, 'edicao_form.html', {'form': form, 'agendamento_id': pk})
 
 @login_required
+@user_passes_test(is_gestor, login_url='/')
 def veiculos(request):
     if request.method == 'POST':
         form = CadastroVeiculo(request.POST, request.FILES)
@@ -268,12 +276,14 @@ def veiculos(request):
 
 @login_required
 @require_POST
+@user_passes_test(is_gestor, login_url='/')
 def remover_veiculo(request, pk):
     get_object_or_404(Veiculo, pk=pk).delete()
     return HttpResponse('')
 
 @login_required
 @require_POST
+@user_passes_test(is_gestor, login_url='/')
 def editar_veiculo(request, pk):
     veiculo = get_object_or_404(Veiculo, pk=pk)
     form = CadastroVeiculo(request.POST, request.FILES, instance=veiculo)
@@ -316,6 +326,7 @@ def viagens(request):
     })
 
 @login_required
+@user_passes_test(is_gestor, login_url='/')
 def alterar_veiculo(request, pk):
     if request.method == 'POST':
         agendamento = get_object_or_404(Agendamento, pk=pk)
@@ -326,6 +337,7 @@ def alterar_veiculo(request, pk):
         return resposta
 
 @login_required
+@user_passes_test(is_gestor, login_url='/')
 def historico(request):
     todas_as_viagens = Agendamento.objects.order_by('-dataPartida')
     return render(request, 'transporte/historico_veiculos.html', {'todas_as_viagens': todas_as_viagens})
@@ -442,7 +454,6 @@ def comentarios(request):
     comentarios = Info.objects.all()
     return render(request, 'transporte/tab/comentarios.html', {'observacoes': comentarios})
 
-
 def ativos(request):
     return render(request, 'ativos/ativos.html')
 
@@ -457,6 +468,7 @@ def cadastrar_equipamento(request):
 
     return render(request, 'ativos/cadastrar_equipamento.html', {'form': form})
 
+@user_passes_test(is_gestor, login_url='/')
 def listar_ativos(request):
     ativos = Ativo.objects.all().order_by('-disponibilidade')
 
@@ -486,11 +498,11 @@ def listar_ativos(request):
     return render(request, 'ativos/listar_ativos.html', {'ativos': ativos, 'resumo_ativos': resumo})
 
 @login_required
+@user_passes_test(is_gestor, login_url='/')
 def detalhes_ativo(request, pk):
     ativo = get_object_or_404(Ativo, id=pk)
 
     solicitacao_ativa = None
-    # Se o ativo estiver em uso, buscamos a solicitação mais recente vinculada a ele e ao usuário atual
     if not ativo.disponibilidade and ativo.usuario:
         solicitacao_ativa = SolicitacaoAtivo.objects.filter(
             ativo_entregue=ativo,
@@ -520,6 +532,7 @@ def editar_ativo(request, pk):
     return render(request, 'partials/modal_editar_ativo.html', {'form': form, 'ativo': ativo})
 
 @login_required
+@user_passes_test(is_gestor, login_url='/')
 @require_POST
 def remover_ativo(request, pk):
     ativo = get_object_or_404(Ativo, id=pk)
@@ -529,6 +542,7 @@ def remover_ativo(request, pk):
     return resposta
 
 @login_required
+@user_passes_test(is_gestor, login_url='/')
 @require_POST
 def devolver_ativo(request, pk):
     ativo = get_object_or_404(Ativo, id=pk)
@@ -563,6 +577,7 @@ def solicitar_equipamento(request):
 
     return render(request, 'ativos/solicitar_equipamento.html', {'form': form})
 
+@user_passes_test(is_gestor, login_url='/')
 def aprovar_solicitacao(request, pk):
     if request.method == "POST":
         solicitacao = get_object_or_404(SolicitacaoAtivo, id=pk)
@@ -617,6 +632,7 @@ def menu_veiculos(request):
     return render(request, 'transporte/menu_veiculos.html')
 
 @login_required
+@user_passes_test(is_gestor, login_url='/')
 def ver_solicitacoes(request):
     solicitacoes = SolicitacaoAtivo.objects.filter(
         status=False
@@ -634,6 +650,7 @@ def ver_solicitacoes(request):
         'ativos_por_categoria_json': json.dumps(ativos_por_categoria),
     })
 
+@user_passes_test(is_gestor, login_url='/')
 def historico_ativo(request):
     solicitacoes_devolvidas = SolicitacaoAtivo.objects.filter(
         status=False,
@@ -643,3 +660,11 @@ def historico_ativo(request):
     return render(request, 'ativos/historico_ativo.html', {
         'solicitacoes': solicitacoes_devolvidas
     })
+
+@login_required
+def deletar_observacao(request, pk):
+    if request.method == "DELETE":
+        observacao = get_object_or_404(Info, pk=pk)
+        observacao.delete()
+        return HttpResponse("")
+    return JsonResponse({"erro": "Método inválido"}, status=405)

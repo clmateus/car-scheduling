@@ -5,19 +5,36 @@ body {
     background: #f9f9f9;
     padding-top: 56px;
     overflow: auto;
+    color: #000;
+}
+.text-muted {
+    color: #000;
 }
 
 body.dark {
     background: #363636;
+    color: #ffffff;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+body.dark .card {
+    background: #2a2a2a;
+    color: #f0f0f0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.text-muted.dark {
+    background: #2a2a2a;
+    color: #f0f0f0;
 }
 /* Botão Dark Mode - Estilo Navbar */
 #toggle-dark {
   /* Posicionamento e layout */
-  background: #808080;
+  background: #F5F5F5;
   border: none;
   cursor: pointer;
-  padding: 0.5rem 1rem;
-  margin: 0 0.5rem;
+  padding: 5px;
+  margin-left: auto;
+
   
   /* Tipografia */
   font-size: 0.9rem;
@@ -27,7 +44,7 @@ body.dark {
   
   /* Cores base (modo claro) */
   color: #ffffff;
-  background: #808080;
+  background: #363636;
   border-radius: 8px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   
@@ -54,7 +71,7 @@ body.dark {
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.1);
+  background: #DCDCDC;
   transform: translate(-50%, -50%);
   transition: width 0.6s, height 0.6s;
 }
@@ -66,21 +83,77 @@ body.dark {
 
 /* Estilo para o modo escuro (quando ativo) */
 body.dark #toggle-dark {
-  color: #ffffff;
-  background: #808080;
+  color: #000;
+  background: #F5F5F5;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 body.dark #toggle-dark:hover {
-  background: linear-gradient(135deg, #2c3e50 0%, #243342 100%);
+  background: #DCDCDC;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* Foco para acessibilidade */
 #toggle-dark:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.5);
+
 }
+/* ===========================
+   CORREÇÃO DO DARK MODE - APENAS ADICIONAR
+   =========================== */
+
+/* Forçar text-muted a funcionar no dark mode */
+body.dark .text-muted {
+    color: #a0a0a0 !important;
+}
+
+/* Ajustar cards no dark mode mantendo o estilo original */
+body.dark .card {
+    background: #2a2a2a !important;
+    border-color: #3a3a3a !important;
+}
+
+body.dark .card .text-muted {
+    color: #b0b0b0 !important;
+}
+body.dark .form-select {
+    background-color: #2a2a2a !important;
+    border-color: #3a3a3a !important;
+    color: #e0e0e0 !important;
+}
+
+/* Ajustar inputs mantendo o estilo original */
+body.dark input.form-control,
+body.dark .form-control {
+    background-color: #2a2a2a !important;
+    border-color: #3a3a3a !important;
+    color: #e0e0e0 !important;
+}
+
+body.dark .input-group-text {
+    background-color: #2a2a2a !important;
+    border-color: #3a3a3a !important;
+    color: #a0a0a0 !important;
+}
+
+/* Manter badges legíveis */
+body.dark .badge.bg-primary {
+    background-color: #0d6efd !important;
+}
+
+body.dark .badge.bg-success {
+    background-color: #198754 !important;
+}
+
+/* Alertas no dark mode */
+body.dark .alert-warning {
+    background-color: #2c2c1a !important;
+    border-color: #8a6d3b !important;
+    color: #ffd966 !important;
+}
+  #searchInput::placeholder {
+      color: #808080;
+  }
 
 /* Responsividade */
 @media (max-width: 768px) {
@@ -106,8 +179,8 @@ contai.row g-2
 .container-fluid {
 
     display: flex;
-    justify-content: center;
-    align-items: center;
+
+  
     min-height: 100vh;
     width: 100%;
 }
@@ -345,10 +418,31 @@ hr {
     padding: 7px;
 }
 
+body.dark .card-header {
+    background-color: #2a2a2a !important;
+    color: #e0e0e0 !important;
+    border-bottom: 1px solid #3a3a3a !important;
+}
+
+body.dark .card {
+    background-color: #2a2a2a !important;
+    border-color: #3a3a3a !important;
+}
+
+body.dark .card-body {
+    background-color: #2a2a2a !important;
+    color: #e0e0e0 !important;
+}
+
+body.dark .card-footer {
+    background-color: #2a2a2a !important;
+    border-top-color: #3a3a3a !important;
+}
+
 .card-title {
     font-size: 28px;
 }
-/* Imagem dentro do card */
+
 .card .img-fluid {
     border-top-left-radius: 12px;
     border-bottom-left-radius: 12px;
@@ -363,6 +457,11 @@ hr {
 .htmx-request.htmx-indicator {
     display: block;
 }
+canvas {
+  background-color: #F8F8FF;
+  border: 10px;
+}
+
 /* ===========================
    FORMULÁRIOS — LOGIN
    =========================== */
@@ -371,7 +470,7 @@ hr {
     color: #212529;
     padding: 5px;
     border-radius: 0.5rem;
-    border: 1px solid #F5F5F5;
+    border: none;
     max-width: 400px;
     margin: 0 auto;
     transform: translate(0%, -10%);
@@ -447,15 +546,6 @@ textarea {
 /* ===========================
    BOTÕES
    =========================== */
-.btn-primary {
-    border-color: #4f8e8d;
-    background-image: linear-gradient(to right, #213d5d, #4f8e8d);
-    border: none;
-    color: white;
-    padding: 7px 15px;
-    border-radius: 7px;
-    cursor: pointer;
-}
 
 .btn i {
     display: inline-block !important;
@@ -486,6 +576,26 @@ textarea {
 #calendar a {
     text-decoration: none;
     color: #000;
+}
+body.dark #calendar a {
+    text-decoration: none;
+    color: #fff;
+}
+/* Modo claro */
+th {
+    text-decoration: none;
+    color: #000;
+    background-color: #f8f9fa;
+}
+
+body.dark th {
+    text-decoration: none;
+    color: #ffffff;
+    background-color: #2a2a2a; 
+}
+
+body.dark .table th {
+    border-color: #3a3a3a;
 }
 .fc-event {
     cursor: pointer;
@@ -592,4 +702,95 @@ main {
     #signature-canvas {
         width: 100%;
     }
+}
+/* ===========================
+   MODALS DARK MODE - ESSENCIAL
+   =========================== */
+
+body.dark .modal-content {
+    background-color: #2a2a2a;
+    border: 1px solid #3a3a3a;
+}
+
+body.dark .modal-header {
+    background-color: #2a2a2a;
+    border-bottom: 1px solid #3a3a3a;
+}
+
+body.dark .modal-header .modal-title {
+    color: #e0e0e0;
+}
+
+body.dark .modal-header .btn-close {
+    filter: invert(1);
+}
+
+body.dark .modal-body {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+}
+
+body.dark .modal-footer {
+    background-color: #2a2a2a;
+    border-top: 1px solid #3a3a3a;
+}
+
+/* Inputs dentro do modal */
+body.dark .modal-body .form-control {
+    background-color: #1e1e2e;
+    border-color: #3a3a3a;
+    color: #e0e0e0;
+}
+
+body.dark .modal-body .form-label {
+    color: #a0a0a0;
+}
+/* ===========================
+   NAV-ITEM E NAV-LINK - DARK MODE
+   =========================== */
+
+/* Nav item no dark mode */
+body.dark .nav-item {
+    margin: 0 2px;
+}
+
+/* Nav link padrão no dark mode */
+body.dark .nav-link {
+    color: #b0b0b0 !important;
+    transition: all 0.3s ease;
+}
+
+/* Nav link hover */
+body.dark .nav-link:hover {
+    color: #ffffff !important;
+    background-color: rgba(74, 158, 255, 0.1);
+    border-radius: 6px;
+}
+
+/* Nav link ativo */
+body.dark .nav-link.active {
+    color: #4a9eff !important;
+    background-color: rgba(74, 158, 255, 0.15);
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+/* Nav link desabilitado */
+body.dark .nav-link.disabled {
+    color: #6c757d !important;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Nav link com dropdown */
+body.dark .nav-link.dropdown-toggle {
+    position: relative;
+}
+
+body.dark .nav-link.dropdown-toggle::after {
+    border-top-color: #b0b0b0;
+}
+
+body.dark .nav-link.dropdown-toggle:hover::after {
+    border-top-color: #ffffff;
 }

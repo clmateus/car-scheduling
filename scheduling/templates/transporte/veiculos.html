@@ -8,7 +8,7 @@
                     Adicionar um carro
                 </button>
             </h2>
-            <a class="btn btn-outline-primary px-4" href="{% url 'menu_veiculos' %}" title="Voltar para Menu">
+            <a class="btn btn-primary px-4" href="{% url 'menu_veiculos' %}" title="Voltar para Menu">
                 <i class="bi bi-arrow-left"></i> Voltar
             </a>
         </div>
@@ -42,7 +42,7 @@
                     
                     {% if user|has_group:'Gestores' %}
                     <div class="position-absolute bottom-0 end-0 mb-2 me-2">
-                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_editar_{{ veiculo.id }}">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_editar_{{ veiculo.id }}">
                             <i class="bi bi-pen"></i>
                         </button>
                         <form 
@@ -53,7 +53,7 @@
                             style="display: inline;"
                         >
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-danger">
+                            <button type="submit" class="btn btn-danger">
                                 <i class="bi bi-trash3"></i>
                             </button>
                         </form>

@@ -3,10 +3,9 @@
 {% block content %}
 
 <div class="container py-4">
-
     <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="mb-0 display-5"><b>Histórico de Ativos</b></h1>
-            <a class="btn btn-outline-primary px-4" href="{% url 'ativos' %}" title="Voltar para Ativos">
+            <a class="btn btn-primary px-4" href="{% url 'ativos' %}" title="Voltar para Ativos">
                 <i class="bi bi-arrow-left"></i> Voltar
             </a>
     </div>
@@ -21,7 +20,7 @@
         </div>
         <div class="col-12 col-md-6">
             <div class="d-flex justify-content-md-end gap-2">
-                <button class="btn btn-outline-secondary filter-btn active" data-filter="">Todos</button>
+                <button class="btn btn-secondary filter-btn active" data-filter="">Todos</button>
                 <button class="btn btn-outline-primary filter-btn" data-filter="celular">
                     <i class="bi bi-phone me-1"></i>Celular
                 </button>
@@ -46,7 +45,7 @@
             <div class="col ativo-col">
                 <div class="card h-100 shadow-sm border-0" style="border-radius: 12px;">
 
-                    <div class="card-header bg-transparent border-0 pt-3 pb-0 d-flex justify-content-between">
+                    <div class="card-header pt-3 pb-0 d-flex justify-content-between">
                         <span class="badge rounded-pill text-bg-primary fs-6">
                             {{ s.ativo_entregue.categoria }}
                         </span>
@@ -61,20 +60,20 @@
                         </h5>
                         <p class="text-muted mb-1">
                             <i class="bi bi-upc-scan me-2"></i>
-                            <strong>IMEI:</strong> {{ s.ativo_entregue.numero_de_serie }}
+                            <b>IMEI:</b> {{ s.ativo_entregue.numero_de_serie }}
                         </p>
                         <p class="text-muted mb-1">
                             <i class="bi bi-calendar-event me-2"></i>
-                            <strong>Solicitado em:</strong> {{ s.data_solicitacao|date:"d/m/Y H:i" }}
+                            <b>Solicitado em:</b> {{ s.data_solicitacao|date:"d/m/Y H:i" }}
                         </p>
                         <p class="text-muted mb-1">
                             <i class="bi bi-calendar-event me-2"></i>
-                            <strong>Devolvido em:</strong> {{ s.data_devolucao|date:"d/m/Y H:i" }}
+                            <b>Devolvido em:</b> {{ s.data_devolucao|date:"d/m/Y H:i" }}
                         </p>
                         {% if s.justificativa %}
                         <p class="text-muted mb-0">
                             <i class="bi bi-chat-text me-2"></i>
-                            <strong>Justificativa:</strong> {{ s.justificativa|truncatechars:60 }}
+                            <b>Justificativa:</b> {{ s.justificativa|truncatechars:60 }}
                         </p>
                         {% endif %}
                     </div>
@@ -83,7 +82,7 @@
                         {% if s.usuario %}
                         <div class="d-flex align-items-center text-secondary">
                             <i class="bi bi-person-circle fs-3 me-2 text-primary"></i>
-                            <span><strong>Utilizado por:</strong><br>
+                            <span><b>Utilizado por:</b><br>
                                 {{ s.usuario.get_full_name|default:s.usuario.username }}
                             </span>
                         </div>

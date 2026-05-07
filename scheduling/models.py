@@ -72,6 +72,7 @@ class Ativo(models.Model):
         CELULAR = 'Celular'
         TABLET = 'Tablet'
         NOTEBOOK = 'Notebook'
+        OUTROS = 'Outros'
     categoria = models.CharField(max_length=50, choices=Tipo.choices, default=Tipo.CELULAR)
     marca = models.CharField(max_length=100, default='')
     modelo = models.CharField(max_length=100)

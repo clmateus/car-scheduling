@@ -9,10 +9,9 @@
     </div>
 
     <div class="w-full">
-        <div class="flex justify-between items-center mt-4 mb-8">
+        <div class="flex justify-between items-center mt-4 {% if not itens_do_usuario %}mb-8{% else %}mb-0{% endif %}">
             <h2 class="text-3xl font-bold">Meus itens</h2>
         </div>
-
         {% if not itens_do_usuario %}
             <div class="alert alert-info shadow-sm rounded-2xl">
                 <i class="bi bi-inbox text-3xl"></i>
@@ -22,6 +21,7 @@
                 </div>
             </div>
         {% else %}
+            <p class="text-sm text-base-content/70 mb-4">Para devolver um item contate o RH.</p>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {% for item in itens_do_usuario %}
                     <div class="card bg-base-100 shadow-sm border border-base-200 hover:-translate-y-1 hover:shadow-md transition-all">

@@ -1,210 +1,174 @@
 {% extends '_base.html' %}
 {% load authenticate_user %}
 {% block content %}
-    <div class="container">
-        <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <h2 class="mb-0">Veículos
-                <button type="button" id="botao-adicionar" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#modal_insercao">
-                    Adicionar um carro
-                </button>
-            </h2>
-            <a class="btn btn-primary px-4" href="{% url 'menu_veiculos' %}" title="Voltar para Menu">
-                <i class="bi bi-arrow-left"></i> Voltar
-            </a>
+
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="{% url 'index' %}">Início</a></li>
+            <li>Veículos</li>
+            <li>Lista de Veículos</li>
+        </ul>
+    </div>
+
+    <div class="w-full">
+        <div class="flex justify-between items-center mt-4 mb-8">
+            <h2 class="text-3xl font-bold">Veículos</h2>
+            <button type="button" id="botao-adicionar" class="btn btn-primary text-white gap-2 shadow-sm" onclick="document.getElementById('modal_insercao').showModal()">
+                <i class="bi bi-plus-circle text-lg"></i> Adicionar
+            </button>
         </div>
-        <h3 class="mt-2">Todos os carros</h3>
 
-        <div class="veiculos-grid">
+        <!-- Grid de Cards de Veículos -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {% for veiculo in veiculos %}
-                <div class="card h-100" id="card_{{ veiculo.id }}">
+                <div class="card bg-base-100 shadow-sm border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden" id="card_{{ veiculo.id }}">
                     
-                    <div class="row g-0 h-100" style="cursor: pointer;" 
-                         data-bs-toggle="modal" 
-                         data-bs-target="#modal_carro"
-                         onclick="abrirModalCarro({{ veiculo.id }})">
-                        <div class="col-12 col-md-4 h-100">
-                            {% if veiculo.foto %}
-                                 <img src="{{ veiculo.foto.url }}" class="img-fluid rounded-start w-100 h-100" style="min-height: 180px; object-fit: cover;" alt="...">
-                            {% else %}
-                                <div class="bg-secondary text-white d-flex align-items-center justify-content-center rounded-start h-100" style="min-height: 180px;">
-                                    <span>Sem Imagem</span>
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div class="col-12 col-md-8">
-                            <div class="card-body pb-5">
-                                <h5 class="card-title">{{ veiculo.marca }} - {{ veiculo.modelo }}</h5>
-                                <p class="card-text">Placa: {{ veiculo.placa }}</p>
-                                <p class="card-text"><small class="text-body-secondary">Clique para ver mais</small></p>
+                    <!-- Área Clicável da Foto -->
+                    <figure class="cursor-pointer bg-base-200 h-52 relative group" onclick="document.getElementById('modal_carro').showModal(); abrirModalCarro({{ veiculo.id }})">
+                        {% if veiculo.foto %}
+                            <img src="{{ veiculo.foto.url }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ veiculo.modelo }}">
+                        {% else %}
+                            <div class="w-full h-full flex flex-col items-center justify-center text-base-content/30 group-hover:scale-105 transition-transform duration-500">
+                                <i class="bi bi-car-front text-6xl mb-2"></i>
+                                <span class="text-sm font-medium">Sem Imagem</span>
                             </div>
-                        </div>
-                    </div>
+                        {% endif %}
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
+                    </figure>
                     
-                    {% if user|has_group:'Gestores' %}
-                    <div class="position-absolute bottom-0 end-0 mb-2 me-2">
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_editar_{{ veiculo.id }}">
-                            <i class="bi bi-pen"></i>
-                        </button>
-                        <form 
-                            hx-post="{% url 'remover_veiculo' veiculo.id %}" 
-                            hx-confirm="Tem certeza que deseja remover esse veículo?" 
-                            hx-target="closest .card" 
-                            hx-swap="outerHTML" 
-                            style="display: inline;"
-                        >
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger">
-                                <i class="bi bi-trash3"></i>
+                    <!-- Corpo do Card -->
+                    <div class="card-body p-5">
+                        <h3 class="card-title text-xl cursor-pointer hover:text-primary transition-colors" onclick="document.getElementById('modal_carro').showModal(); abrirModalCarro({{ veiculo.id }})">
+                            {{ veiculo.marca }} {{ veiculo.modelo }}
+                        </h3>
+                        
+                        <div class="flex items-center justify-between mt-2 cursor-pointer" onclick="document.getElementById('modal_carro').showModal(); abrirModalCarro({{ veiculo.id }})">
+                            <div class="badge badge-neutral font-mono font-bold tracking-wider px-3 py-3">{{ veiculo.placa }}</div>
+                            <span class="text-xs text-primary font-semibold hover:underline">Detalhes <i class="bi bi-arrow-right"></i></span>
+                        </div>
+
+                        <!-- Botões de Ação (Apenas Gestores) -->
+                        {% if user|has_group:'Gestores' %}
+                        <div class="card-actions justify-end mt-4 pt-4 border-t border-base-200">
+                            <button class="btn btn-sm btn-ghost text-primary hover:bg-primary/10" onclick="document.getElementById('modal_editar_{{ veiculo.id }}').showModal()" title="Editar">
+                                <i class="bi bi-pen text-base"></i>
                             </button>
+                            <form hx-post="{% url 'remover_veiculo' veiculo.id %}" hx-confirm="Tem certeza que deseja remover esse veículo?" hx-target="#card_{{ veiculo.id }}" hx-swap="outerHTML" class="m-0 inline-block">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-ghost text-error hover:bg-error/10" title="Excluir">
+                                    <i class="bi bi-trash3 text-base"></i>
+                                </button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div> 
+                
+                <dialog id="modal_editar_{{ veiculo.id }}" class="modal">
+                    <div class="modal-box w-11/12 max-w-2xl">
+                        <form method="dialog">
+                            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                         </form>
-                    </div>
-                    {% endif %}
-                </div> <div class="modal fade" id="modal_editar_{{ veiculo.id }}">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="tituloEvento">Editar {{ veiculo.modelo }}</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form 
-                                    hx-post="{% url 'editar_veiculo' veiculo.id %}" 
-                                    hx-target="#card_{{ veiculo.id }}" 
-                                    hx-swap="outerHTML"
-                                    hx-encoding="multipart/form-data"
-                                    _="on htmx:xhr:progress(loaded, total) log loaded set #progress_{{ veiculo.id }}.value to (loaded/total)*100"
-                                    class="form-control"
-                                >
-                                    {% csrf_token %}
-                                    <label class="form-label">Modelo</label>
-                                    <input type="text"
-                                            name="modelo"
-                                            value="{{ veiculo.modelo }}"
-                                            class="form-control"
-                                            required>
-                                    
-                                    <label class="form-label">Marca</label>
-                                    <input type="text"
-                                            name="marca"
-                                            value="{{ veiculo.marca }}"
-                                            class="form-control"
-                                            required>
-                                    
-                                    <label class="form-label">Placa</label>
-                                    <input type="text"
-                                            name="placa"
-                                            value="{{ veiculo.placa }}"
-                                            class="form-control"
-                                            required>
-
-                                    <label class="form-label">Foto</label>
-                                    <input type="file" name="foto" class="form-control">
-
-                                    <label class="form-label">Ano</label>
-                                    <input type="number"
-                                            name="ano"
-                                            value="{{ veiculo.ano }}"
-                                            class="form-control">
-
-                                    <label class="form-label">Cor</label>
-                                    <input type="text"
-                                            name="cor"
-                                            value="{{ veiculo.cor }}"
-                                            class="form-control">
-
-                                    <label class="form-label">Chassi</label>
-                                    <input type="text"
-                                            name="chassi"
-                                            value="{{ veiculo.chassi }}"
-                                            class="form-control">
-
-                                    <label class="form-label">Renavam</label>
-                                    <input type="number"
-                                            name="renavam"
-                                            value="{{ veiculo.renavam }}"
-                                            class="form-control">
-
-                                    <label class="form-label">Versão</label>
-                                    <input type="text"
-                                            name="versao"
-                                            value="{{ veiculo.versao }}"
-                                            class="form-control">
-
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="submit" class="btn btn-success">Salvar Alterações</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div> {% endfor %}
-        </div> 
-        <div class="modal fade" id="modal_carro" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Ficha do Veículo</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-
-                        <div class="modal-body pb-0">
-                            <!-- Abas de navegação -->
-                            <ul class="nav nav-tabs mb-3" id="abas-veiculo">
-                                <li class="nav-item">
-                                    <button class="nav-link active" data-aba="identificacao" onclick="trocarAba(this)">Identificação</button>
-                                </li>
-
-                                <li class="nav-item">
-                                    <button class="nav-link" data-aba="documentacao" onclick="trocarAba(this)">Seguro</button>
-                                </li>
-
-                                <li class="nav-item">
-                                    <button class="nav-link" data-aba="info" onclick="trocarAba(this)">Info</button>
-                                </li>
-                                
-                                {% if user|has_group:'Gestores' %}
-                                 <li class="nav-item">
-                                    <button class="nav-link" data-aba="comentarios" onclick="trocarAba(this)">Comentários</button>
-                                </li>
-                                {% endif %}
-
-                            </ul>
-
-                            <div id="tab-body">
-                                <div class="text-center p-4">
-                                    <div class="spinner-border text-primary" role="status"></div>
-                                    <p class="mt-2 text-muted">Carregando dados do banco...</p>
+                        <h3 class="font-bold text-xl mb-6">Editar {{ veiculo.modelo }}</h3>
+                        
+                        <form hx-post="{% url 'editar_veiculo' veiculo.id %}" hx-target="#card_{{ veiculo.id }}" hx-swap="outerHTML" hx-encoding="multipart/form-data" class="space-y-4">
+                            {% csrf_token %}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="form-control w-full">
+                                    <label class="label"><span class="label-text font-medium">Marca</span></label>
+                                    <input type="text" name="marca" value="{{ veiculo.marca }}" class="input input-bordered w-full" required>
+                                </div>
+                                <div class="form-control w-full">
+                                    <label class="label"><span class="label-text font-medium">Modelo</span></label>
+                                    <input type="text" name="modelo" value="{{ veiculo.modelo }}" class="input input-bordered w-full" required>
+                                </div>
+                                <div class="form-control w-full">
+                                    <label class="label"><span class="label-text font-medium">Placa</span></label>
+                                    <input type="text" name="placa" value="{{ veiculo.placa }}" class="input input-bordered w-full" required>
+                                </div>
+                                <div class="form-control w-full">
+                                    <label class="label"><span class="label-text font-medium">Ano</span></label>
+                                    <input type="number" name="ano" value="{{ veiculo.ano|default_if_none:'' }}" class="input input-bordered w-full">
+                                </div>
+                                <div class="form-control w-full">
+                                    <label class="label"><span class="label-text font-medium">Cor</span></label>
+                                    <input type="text" name="cor" value="{{ veiculo.cor }}" class="input input-bordered w-full">
+                                </div>
+                                <div class="form-control w-full">
+                                    <label class="label"><span class="label-text font-medium">Chassi</span></label>
+                                    <input type="text" name="chassi" value="{{ veiculo.chassi }}" class="input input-bordered w-full">
+                                </div>
+                                <div class="form-control w-full">
+                                    <label class="label"><span class="label-text font-medium">Renavam</span></label>
+                                    <input type="number" name="renavam" value="{{ veiculo.renavam|default_if_none:'' }}" class="input input-bordered w-full">
+                                </div>
+                                <div class="form-control w-full">
+                                    <label class="label"><span class="label-text font-medium">Versão</span></label>
+                                    <input type="text" name="versao" value="{{ veiculo.versao }}" class="input input-bordered w-full">
                                 </div>
                             </div>
-                        </div>
+                            <div class="form-control w-full mt-4">
+                                <label class="label"><span class="label-text font-medium">Foto do Veículo</span></label>
+                                <input type="file" name="foto" class="file-input file-input-bordered w-full">
+                            </div>
 
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        <div class="modal fade" id="modal_insercao">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="tituloEvento">Adicionar um carro</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form method="post" class="form-control" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            {{ form.as_p }}
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-success">Confirmar</button>
+                            <div class="modal-action mt-8">
+                                <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal_editar_{{ veiculo.id }}').close()">Cancelar</button>
+                                <button type="submit" class="btn btn-success text-white px-6">Salvar Alterações</button>
                             </div>
                         </form>
                     </div>
+                    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+                </dialog>
+            {% endfor %}
+        </div> 
+        
+        <dialog id="modal_carro" class="modal">
+            <div class="modal-box w-11/12 max-w-4xl h-[85vh] flex flex-col">
+                <form method="dialog">
+                    <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                </form>
+                <h3 class="font-bold text-2xl mb-6">Ficha do Veículo</h3>
+
+                <!-- Abas de navegação (DaisyUI) -->
+                <div role="tablist" class="tabs tabs-bordered mb-6" id="abas-veiculo">
+                    <a role="tab" class="tab tab-active text-base" data-aba="identificacao" onclick="trocarAba(this)">Identificação</a>
+                    <a role="tab" class="tab text-base" data-aba="documentacao" onclick="trocarAba(this)">Seguro</a>
+                    <a role="tab" class="tab text-base" data-aba="info" onclick="trocarAba(this)">Info</a>
+                    {% if user|has_group:'Gestores' %}
+                        <a role="tab" class="tab text-base" data-aba="comentarios" onclick="trocarAba(this)">Comentários</a>
+                    {% endif %}
+                </div>
+
+                <div id="tab-body" class="flex-grow overflow-auto p-1">
+                    <div class="flex flex-col items-center justify-center h-full text-base-content/50">
+                        <span class="loading loading-spinner text-primary loading-lg"></span>
+                        <p class="mt-4 font-medium">Carregando dados do banco...</p>
+                    </div>
                 </div>
             </div>
-        </div> 
+            <form method="dialog" class="modal-backdrop"><button>close</button></form>
+        </dialog>
+
+        <dialog id="modal_insercao" class="modal">
+            <div class="modal-box w-11/12 max-w-md">
+                <form method="dialog">
+                    <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                </form>
+                <h3 class="font-bold text-2xl mb-6">Adicionar Veículo</h3>
+                <form method="post" class="space-y-4" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <!-- Mantido o django form.as_p mas envolto num grupo customizável de margem -->
+                    <div class="form-control w-full space-y-2">
+                        {{ form.as_p }}
+                    </div>
+                    <div class="modal-action mt-8">
+                        <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal_insercao').close()">Cancelar</button>
+                        <button type="submit" class="btn btn-success text-white px-8 shadow-sm">Confirmar</button>
+                    </div>
+                </form>
+            </div>
+            <form method="dialog" class="modal-backdrop"><button>close</button></form>
+        </dialog>
     </div> 
-        {% endblock %}
+{% endblock %}

@@ -1,16 +1,45 @@
 {% extends '_base.html' %}
 {% block content %}
-    <div class="container">
-        <div class='d-flex justify-content-between align-items-center mb-4'>
-                <h1>Cadastrar Equipamento</h1>
-                <a class="btn btn-primary px-1 mt-1" href="{% url 'ativos' %}" title="Ativos">Voltar</a>
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li>
+                <a href="{% url 'index' %}" class="inline-flex items-center gap-2 hover:text-primary transition-colors">
+                    <i class="bi bi-house-door text-lg"></i> Início
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'listar_ativos' %}" class="inline-flex items-center gap-2 hover:text-primary transition-colors">
+                    <i class="fa fa-cubes text-base"></i> Ativos
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'listar_ativos' %}" class="inline-flex items-center gap-2 hover:text-primary transition-colors">
+                    <i class="fa-solid fa-list text-base"></i> Aparelhos
+                </a>
+            </li>
+            <li class="inline-flex items-center gap-2 font-semibold text-base-content/70">
+                <i class="bi bi-plus-circle text-base"></i> Cadastrar Equipamento
+            </li>
+        </ul>
+    </div>
+
+    <div class="w-full max-w-2xl mx-auto">
+        <div class="flex justify-between items-center mt-4 mb-8">
+            <h2 class="text-3xl font-bold">Cadastrar Equipamento</h2>
         </div>
-        <form method="POST">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type='submit' class='btn btn-success'>
-                Cadastrar
-            </button>
-        </form>
+        
+        <div class="card bg-base-100 shadow-sm border border-base-200">
+            <div class="card-body p-6 md:p-10">
+                <form method="POST" class="space-y-4">
+                    {% csrf_token %}
+                    <div class="form-control w-full space-y-2">
+                        {{ form.as_p }}
+                    </div>
+                    <div class="card-actions justify-end mt-8 border-t border-base-200 pt-6">
+                        <button type='submit' class='btn btn-success text-white px-8'>Cadastrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 {% endblock %}

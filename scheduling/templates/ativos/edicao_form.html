@@ -1,8 +1,8 @@
-<form hx-post="{% url 'editar_agendamento' agendamento_id %}" hx-target="#modalEdicaoBody" hx-swap="innerHTML">
+<form hx-post="{% url 'editar_agendamento' agendamento_id %}" hx-target="#modalEdicaoBody" hx-swap="innerHTML" class="space-y-4">
   {% csrf_token %}
   {{ form.as_p }}
-  <div class="modal-footer mt-3 px-0 pb-0">
-    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-    <button type="submit" class="btn btn-success">Salvar Alterações</button>
+  <div class="modal-action mt-6">
+    <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal_edicao').close()">Cancelar</button>
+    <button type="submit" class="btn btn-success text-white">Salvar Alterações</button>
   </div>
 </form>

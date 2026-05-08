@@ -2,109 +2,133 @@
 {% load authenticate_user %}
 {% block content %}
 
-  <div class="container">
-    <div class="d-flex justify-content-between align-items-center mt-3 mb-4">
-    <h2 class="mb-0">Agendar Viagem</h2>
-    <a class="btn btn-primary px-4" href="{% url 'menu_veiculos' %}" title="Voltar para Menu">
-        <i class="bi bi-arrow-left"></i> Voltar
-    </a>
-</div>
+  <div class="breadcrumbs text-sm mb-6">
+    <ul>
+      <li><a href="{% url 'index' %}">Início</a></li>
+      <li>Veículos</li>
+      <li>Agendar Viagem</li>
+    </ul>
+  </div>
+
+  <div class="w-full">
+    <div class="flex justify-between items-center mt-4 mb-6">
+      <h2 class="text-2xl font-bold">Agendar Viagem</h2>
+      <button type="button" class="btn btn-primary text-white" onclick="document.getElementById('modal_insercao').showModal()">
+        <i class="bi bi-plus-circle"></i> Nova Viagem
+      </button>
+    </div>
 
     <div id="calendar"></div>
   </div>
   
   <!-- Modal do Evento -->
-   <div class="modal fade" id="modal_evento">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="tituloEvento"></h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <p class="text">
-              <span id="carroAtribuido"></span>
-            </p>
-            <p class="text">
-              <span id="inicioEvento"></span>
-            </p>
-            <p class="text">
-              <span id="fimEvento"></span>
-            </p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-            <button type="button" class="btn btn-primary" style="display: none;"
-                    id="btnEditarEvento"
-                    data-bs-toggle="modal" 
-                    data-bs-target="#modal_edicao"
-                    data-bs-dismiss="modal"
-                    hx-get=""
-                    hx-target="#modalEdicaoBody"
-                    hx-swap="innerHTML">
-                Editar
-            </button>
-            <form id="formRemoverAgendamento" hx-post="" hx-swap="none">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-danger" id="btnRemoverEvento" style="display: none;" data-bs-dismiss="modal">Excluir</button>
-            </form>
-          </div>
+  <dialog id="modal_evento" class="modal">
+    <div class="modal-box">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <h3 class="font-bold text-xl mb-4" id="tituloEvento"></h3>
+      <div class="py-2 space-y-3">
+        <div class="flex items-center gap-3">
+          <i class="bi bi-car-front text-primary text-xl"></i>
+          <span id="carroAtribuido" class="text-base-content/80 font-medium"></span>
+        </div>
+        <div class="flex items-center gap-3">
+          <i class="bi bi-play-circle text-success text-xl"></i>
+          <span id="inicioEvento" class="text-base-content/80"></span>
+        </div>
+        <div class="flex items-center gap-3">
+          <i class="bi bi-stop-circle text-error text-xl"></i>
+          <span id="fimEvento" class="text-base-content/80"></span>
         </div>
       </div>
-   </div>
-
-   <!-- Modal de Inserção -->
-    <div class="modal fade" id="modal_insercao">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="tituloEvento">Criar nova viagem</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form hx-post="{% url 'agendar' %}" hx-target="#resultadoModal" hx-swap="innerHTML" class="form-control">
-              {% csrf_token %}
-              <label for="motorista" class="form-label">Nome do motorista</label>
-              <input type="text" class="form-control" name="motorista" id="motorista">
-              <label for="dataHoraPartida" class="form-label">Data e hora de Partida</label>
-              <input type="datetime-local" class="form-control" name="dataHoraPartida" id="dataHoraPartida">
-              <label for="dataHoraChegada" class="form-label">Data e hora da Volta</label>
-              <input type="datetime-local" class="form-control" name="dataHoraChegada" id="dataHoraChegada">
-              <label for="destino" class="form-label">Destino</label>
-              <input type="text" class="form-control" name="destino" id="destino">
-              <label for="passageiros" class="form-label">Quantidade de Passageiros</label>
-              <input type="number" class="form-control" name="passageiros" id="passageiros" min=1 max=5 value=1>
-              <div id="resultadoModal" class="mt-3"></div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn btn-success">Agendar</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-   </div>
-
-    <!-- Toast Sucesso -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
-      <div id="liveToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-          <div class="toast-body">
-            ✅ Reserva realizada com sucesso!
-          </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      <div class="modal-action mt-6">
+        <button type="button" class="btn btn-primary text-white" style="display: none;"
+                id="btnEditarEvento"
+                onclick="document.getElementById('modal_evento').close(); document.getElementById('modal_edicao').showModal();"
+                hx-get=""
+                hx-target="#modalEdicaoBody"
+                hx-swap="innerHTML">
+            <i class="bi bi-pencil-square"></i> Editar
+        </button>
+        <form id="formRemoverAgendamento" hx-post="" hx-swap="none" class="m-0 inline-block">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-error text-white" id="btnRemoverEvento" style="display: none;" onclick="document.getElementById('modal_evento').close()">
+            <i class="bi bi-trash"></i> Excluir
+          </button>
+        </form>
       </div>
     </div>
-    <!-- Toast Cancelado -->
-    <div id="liveToastCancelado" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="d-flex">
-        <div class="toast-body">
-          ❌ Sua reserva foi cancelada.
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
+
+  <!-- Modal de Inserção -->
+  <dialog id="modal_insercao" class="modal">
+    <div class="modal-box w-11/12 max-w-lg">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <h3 class="font-bold text-xl mb-6">Criar nova viagem</h3>
+      <form hx-post="{% url 'agendar' %}" hx-target="#resultadoModal" hx-swap="innerHTML" class="space-y-4">
+        {% csrf_token %}
+        <div class="form-control w-full">
+          <label for="motorista" class="label"><span class="label-text font-medium">Nome do motorista</span></label>
+          <input type="text" class="input input-bordered w-full" name="motorista" id="motorista" required>
         </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="form-control w-full">
+            <label for="dataHoraPartida" class="label"><span class="label-text font-medium">Partida</span></label>
+            <input type="datetime-local" class="input input-bordered w-full" name="dataHoraPartida" id="dataHoraPartida" required>
+          </div>
+          <div class="form-control w-full">
+            <label for="dataHoraChegada" class="label"><span class="label-text font-medium">Volta</span></label>
+            <input type="datetime-local" class="input input-bordered w-full" name="dataHoraChegada" id="dataHoraChegada" required>
+          </div>
+        </div>
+        <div class="form-control w-full">
+          <label for="destino" class="label"><span class="label-text font-medium">Destino</span></label>
+          <input type="text" class="input input-bordered w-full" name="destino" id="destino" required>
+        </div>
+        <div class="form-control w-full">
+          <label for="passageiros" class="label"><span class="label-text font-medium">Qtd. Passageiros</span></label>
+          <input type="number" class="input input-bordered w-full" name="passageiros" id="passageiros" min="1" max="5" value="1" required>
+        </div>
+        <div id="resultadoModal" class="mt-2"></div>
+        <div class="modal-action mt-6">
+          <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal_insercao').close()">Cancelar</button>
+          <button type="submit" class="btn btn-success text-white px-8">Agendar</button>
+        </div>
+      </form>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
+
+  <!-- Modal de Edição (Retornado pelo HTMX) -->
+  <dialog id="modal_edicao" class="modal">
+    <div class="modal-box w-11/12 max-w-lg">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <h3 class="font-bold text-xl mb-4">Editar Agendamento</h3>
+      <div id="modalEdicaoBody">
+        <div class="flex justify-center p-8">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
+        </div>
       </div>
     </div>
-</div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
+
+  <!-- Toasts / Notificações -->
+  <div class="toast toast-end z-[1100]">
+    <div id="liveToast" class="alert alert-success hidden shadow-lg text-white">
+      <span>✅ Reserva realizada com sucesso!</span>
+    </div>
+    <div id="liveToastCancelado" class="alert alert-error hidden shadow-lg text-white">
+      <span>❌ Sua reserva foi cancelada.</span>
+    </div>
+  </div>
+
 <script>
     document.body.addEventListener('htmx:configRequest', function(event) {
         event.detail.headers['X-CSRFToken'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');

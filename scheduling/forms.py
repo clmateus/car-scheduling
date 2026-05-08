@@ -111,8 +111,8 @@ class SolicitarAtivoForm(forms.ModelForm):
         model = SolicitacaoAtivo
         fields = ['usuario', 'categoria', 'justificativa', 'assinatura']
         widgets = {
-            'categoria': forms.Select(attrs={'class': 'form-select'}),
-            'justificativa': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'style': 'resize: none;', 'rows': '2'}),
+            'categoria': forms.Select(attrs={'class': 'select select-bordered w-full text-base'}),
+            'justificativa': forms.Textarea(attrs={'class': 'textarea textarea-bordered w-full text-base', 'style': 'resize: none;', 'rows': '3', 'placeholder': 'Explique brevemente a necessidade deste equipamento...'}),
             'assinatura': forms.HiddenInput(),
         }
         labels = {
@@ -123,7 +123,7 @@ class SolicitarAtivoForm(forms.ModelForm):
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         
-        self.fields['usuario'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['usuario'].widget = forms.TextInput(attrs={'class': 'input input-bordered w-full font-semibold text-base-content/70'})
         self.fields['usuario'].disabled = True
         
         if user:

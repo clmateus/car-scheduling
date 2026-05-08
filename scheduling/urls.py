@@ -24,7 +24,6 @@ urlpatterns = [
     path('transporte/enviar/', views.enviar_texto, name='enviar_texto'),
     path('transporte/seguro_veiculo/<int:pk>/', views.upload_arquivos, name='upload_arquivos'),  
     path('transporte/comentarios/', views.comentarios, name='comentarios'),
-    path('ativos/ativos/', views.ativos, name='ativos'),
     path('ativos/cadastrar_equipamento/', views.cadastrar_equipamento, name='cadastrar_equipamento'),
     path('ativos/listar_ativos/', views.listar_ativos, name='listar_ativos'),
     path('ativos/solicitar_equipamento/', views.solicitar_equipamento, name='solicitar_equipamento'),
@@ -35,7 +34,6 @@ urlpatterns = [
     path('ativos/editar_ativo/<int:pk>/', views.editar_ativo, name='editar_ativo'),
     path('ativos/remover_ativo/<int:pk>/', views.remover_ativo, name='remover_ativo'),
     path('devolver_ativo/<int:pk>/', views.devolver_ativo, name='devolver_ativo'),
-    path('transporte/menu_veiculos/', views.menu_veiculos, name="menu_veiculos"),
     path('ativos/historico_ativo/', views.historico_ativo, name='historico_ativo'),
     path("observacoes/<int:pk>/deletar/", views.deletar_observacao, name="deletar_observacao"),
 ]  

@@ -13,51 +13,51 @@
         hx-target="#tab-body"
         hx-swap="innerHTML"
         hx-encoding="multipart/form-data"
-        class="form-control"
+        class="input input-bordered w-full"
     >
         {% csrf_token %}
 
-    <div class="row">
-        <div class="col-md-6 mb-3">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
             <label class="form-label">Modelo</label>
-            <input type="text" class="form-control" value="{{ veiculo.modelo }}" disabled>
+            <input type="text" class="input input-bordered w-full" value="{{ veiculo.modelo }}" disabled>
         </div>
-        <div class="col-md-6 mb-3">
+        
             <label class="form-label">Marca</label>
-            <input type="text" class="form-control" value="{{ veiculo.marca }}" disabled>
+            <input type="text" class="input input-bordered w-full" value="{{ veiculo.marca }}" disabled>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-6 mb-3">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
             <label class="form-label">Placa</label>
-            <input type="text" class="form-control" value="{{ veiculo.placa }}" disabled>
+            <input type="text" class="input input-bordered w-full" value="{{ veiculo.placa }}" disabled>
         </div>
-        <div class="col-md-6 mb-3">
+        
             <label class="form-label">Ano</label>
-            <input type="number" class="form-control" value="{{ veiculo.ano }}" disabled>
+            <input type="number" class="input input-bordered w-full" value="{{ veiculo.ano }}" disabled>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-6 mb-3">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+     
             <label class="form-label">Cor</label>
-            <input type="text" class="form-control" value="{{ veiculo.cor }}" disabled>
+            <input type="text" class="input input-bordered w-full" value="{{ veiculo.cor }}" disabled>
         </div>
-        <div class="col-md-6 mb-3">
+        
             <label class="form-label">Chassi</label>
-            <input type="text" class="form-control" value="{{ veiculo.chassi }}" disabled>
+            <input type="text" class="input input-bordered w-full" value="{{ veiculo.chassi }}" disabled>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-6 mb-3">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
             <label class="form-label">Renavam</label>
-            <input type="number" class="form-control" value="{{ veiculo.renavam }}" disabled>
+            <input type="number" class="input input-bordered w-full" value="{{ veiculo.renavam }}" disabled>
         </div>
-        <div class="col-md-6 mb-3">
+        
             <label class="form-label">Versão</label>
-            <input type="text" class="form-control" value="{{ veiculo.versao }}" disabled>
+            <input type="text" class="input input-bordered w-full" value="{{ veiculo.versao }}" disabled>
         </div>
     </div>
     </form>

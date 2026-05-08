@@ -212,7 +212,7 @@ def editar_agendamento(request, pk):
 
             if dataPartida >= dataChegada:
                 form.add_error(None, 'A data de partida deve ser menor que a data de chegada.')
-                return render(request, 'edicao_form.html', {'form': form, 'agendamento_id': pk})
+                return render(request, 'ativos/edicao_form.html', {'form': form, 'agendamento_id': pk})
 
             if agendamento.veiculo:
                 conflito = Agendamento.objects.filter(
@@ -223,7 +223,7 @@ def editar_agendamento(request, pk):
 
                 if conflito:
                     form.add_error(None, 'O veículo já possui agendamento neste horário.')
-                    return render(request, 'edicao_form.html', {'form': form, 'agendamento_id': pk})
+                    return render(request, 'ativos/edicao_form.html', {'form': form, 'agendamento_id': pk})
 
             form.save()
             response = HttpResponse()
@@ -245,10 +245,10 @@ def editar_agendamento(request, pk):
 
             return response
 
-        return render(request, 'edicao_form.html', {'form': form, 'agendamento_id': pk})
+        return render(request, 'ativos/edicao_form.html', {'form': form, 'agendamento_id': pk})
 
     form = EdicaoForm(instance=agendamento)
-    return render(request, 'edicao_form.html', {'form': form, 'agendamento_id': pk})
+    return render(request, 'ativos/edicao_form.html', {'form': form, 'agendamento_id': pk})
 
 @login_required
 @user_passes_test(is_gestor, login_url='/')
@@ -454,9 +454,6 @@ def comentarios(request):
     comentarios = Info.objects.all()
     return render(request, 'transporte/tab/comentarios.html', {'observacoes': comentarios})
 
-def ativos(request):
-    return render(request, 'ativos/ativos.html')
-
 def cadastrar_equipamento(request):
     if request.method == 'POST':
         form = AtivoForm(request.POST)
@@ -571,7 +568,7 @@ def solicitar_equipamento(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Solicitação realizada com sucesso")
-            return redirect('ativos')
+            return redirect('meus_itens')
     else:
         form = SolicitarAtivoForm(user=(f'{request.user.first_name} {request.user.last_name}'))
 
@@ -617,19 +614,16 @@ def aprovar_solicitacao(request, pk):
         except Exception as e:
             messages.error(request, f'Ocorreu o seguinte erro ao tentar salvar: {str(e)}')
 
-        return redirect('ativos')
+        return redirect('ver_solicitacoes')
 
     else:
         messages.warning(request, 'Acesso negado.')
-        return redirect('ativos')
+        return redirect('ver_solicitacoes')
 
 def meus_itens(request):
     itens_do_usuario = Ativo.objects.filter(usuario=request.user)
     return render(request, 'ativos/meus_itens.html', {'itens_do_usuario': itens_do_usuario})
 
-
-def menu_veiculos(request):
-    return render(request, 'transporte/menu_veiculos.html')
 
 @login_required
 @user_passes_test(is_gestor, login_url='/')

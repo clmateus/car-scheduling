@@ -18,7 +18,7 @@
     <div class="row" >
         <div class="form-label">
             <label>Usuário</label>
-            <input type="text" class="form-control" value="{{user.first_name}} {{user.last_name}}" disabled>
+            <input type="text" class="input input-bordered w-full" value="{{user.first_name}} {{user.last_name}}" disabled>
         </div>
         <label><strong>Observação</strong></label>
         <form method="POST" 
@@ -28,7 +28,7 @@
               hx-swap="innerHTML">
                   {% csrf_token %}
             <input type="hidden" name="veiculo_id" value="{{ veiculo.id }}">
-                <textarea name="mensagem" class="form-control"placeholder="Escreva aqui embaixo alguma informação do veículo"></textarea>
+                <textarea name="mensagem" class="textarea textarea-bordered w-full" placeholder="Escreva aqui embaixo alguma informação do veículo"></textarea>
             <button type="submit" class="btn btn-primary mt-2">Enviar Observação</button>
         </form>
     </div>

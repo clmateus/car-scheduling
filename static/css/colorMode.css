@@ -1,4 +1,7 @@
-
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: all;
+}
 /* Quando o tema for dark, altera o corpo do modal */
 [data-theme='dark'] .modal-content {
     background-color: var(--card-bg) !important;

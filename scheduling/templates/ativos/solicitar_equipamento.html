@@ -1,50 +1,80 @@
 {% extends "_base.html" %}
 {% block content %}
-    <style>
-        @media (max-width: 425px) {
-            #btnSolicitar {
-                margin-top: 12px;
-                width: 100%;
-            }
-        }
-    </style>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@5.1.3/dist/signature_pad.umd.min.js"></script>
-    <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="mb-0 display-5"><b>Solicitar Ativo</b></h1>
-            <a class="btn btn-primary px-4" href="{% url 'ativos' %}" title="Voltar para Ativos">
-                <i class="bi bi-arrow-left"></i> Voltar
-            </a>
-        </div>
-        <form method="post" class="form-control">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <div class="text-center">
-                <p>Ao solicitar esse equipamento você está concordando com os 
-                    <a href="https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf" target=_blank>termos de uso</a>.</p>
-                <p>Assine abaixo</p>
-                <canvas id="signature-canvas" style="border: 1px solid black"></canvas>
-                <div>
-                    <button id="btnResetarCanvas" class="btn btn-warning">Limpar</button>
-                </div>                
-            </div>
-            <button type='submit' class='btn btn-success' id="btnSolicitar">Solicitar</button>
-        </form>
+
+    <div class="breadcrumbs text-sm mb-6">
+        <ul>
+            <li><a href="{% url 'index' %}">Início</a></li>
+            <li>Ativos</li>
+            <li>Solicitar Ativo</li>
+        </ul>
     </div>
 
-    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
-      <div id="liveToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-          <div class="toast-body">
-            ✅ Solicitação realizada com sucesso!
-          </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
+    <div class="w-full max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mt-4 mb-8">
+            <h2 class="text-3xl font-bold">Solicitar Ativo</h2>
+        </div>
+        
+        <div class="card bg-base-100 shadow-sm border border-base-200">
+            <div class="card-body p-6 md:p-10">
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    <!-- Layout customizado e elegante para o formulário -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-control w-full">
+                            <label class="label"><span class="label-text font-medium text-base">Solicitante</span></label>
+                            {{ form.usuario }}
+                        </div>
+                        <div class="form-control w-full">
+                            <label class="label"><span class="label-text font-medium text-base">Categoria do Equipamento</span></label>
+                            {{ form.categoria }}
+                        </div>
+                    </div>
+                    
+                    <div class="form-control w-full">
+                        <label class="label"><span class="label-text font-medium text-base">Justificativa</span></label>
+                        {{ form.justificativa }}
+                    </div>
+                    {{ form.assinatura }}
+                    
+                    <div class="divider text-base-content/50 my-8">Assinatura do Termo de Uso</div>
+                    
+                    <div class="flex flex-col items-center gap-4">
+                        <p class="text-center text-sm text-base-content/70 max-w-lg">
+                            Ao solicitar esse equipamento você está concordando integralmente com os 
+                            <a href="https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf" target="_blank" class="link link-primary font-medium">termos de uso estabelecidos</a>. Assine abaixo para confirmar:
+                        </p>
+                        
+                        <div class="relative mt-2">
+                            <canvas id="signature-canvas" width="400" height="200" class="bg-white rounded-box border-2 border-dashed border-gray-300 cursor-crosshair max-w-full touch-none shadow-inner"></canvas>
+                            <button id="btnResetarCanvas" type="button" class="btn btn-sm btn-ghost text-error absolute top-2 right-2 z-10" title="Apagar Assinatura">
+                                <i class="bi bi-eraser-fill text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="card-actions justify-end mt-10 pt-6 border-t border-base-200">
+                        <button type='submit' class='btn btn-success text-white w-full sm:w-auto px-8' id="btnSolicitar">
+                            <i class="bi bi-check2-circle text-lg"></i> Enviar Solicitação
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast toast-end z-[1100]">
+        <div id="liveToast" class="alert alert-success hidden shadow-lg text-white">
+            <span>✅ Solicitação realizada com sucesso!</span>
+        </div>
     </div>
 
     <script>
         const canvas = document.getElementById("signature-canvas")
-        const signaturePad = new SignaturePad(canvas)
+        const signaturePad = new SignaturePad(canvas, {
+            backgroundColor: 'rgb(255, 255, 255)' // Garante fundo branco ao salvar
+        })
 
         document.getElementById("btnResetarCanvas").addEventListener('click', (e) => {
             e.preventDefault()
@@ -65,8 +95,8 @@
             {% for message in messages %}
                 {% if 'sucesso' in message.tags or message.level >= 25 %}
                     const toastEl = document.getElementById('liveToast');
-                    const toast = bootstrap.Toast.getOrCreateInstance(toastEl);
-                    toast.show();
+                    toastEl.classList.remove('hidden');
+                    setTimeout(() => toastEl.classList.add('hidden'), 4000);
                 {% endif %}
             {% endfor %}
         {% endif %}

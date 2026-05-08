@@ -1,24 +1,41 @@
 <!DOCTYPE html>
 {% load static %}
-
-<html lang="pt-br">
+<html lang="pt-br" data-theme="garden">
     <head>
         {% include 'partials/head.html' %}
     </head>
-
-    <body class="d-flex flex-column vh-100">
-        <div class="d-flex flex-nowrap flex-grow-1">
-            
-            {% if user.is_authenticated %}
-                {% include 'partials/navbar.html' %}
-            {% endif %}
-            
-            <main class="flex-grow-1 p-4 overflow-auto main-content">
-                {% block content %}
-                {% endblock content %}
+    <body class="bg-base-200 text-base-content min-h-screen font-sans">
+        {% if user.is_authenticated %}
+            <div class="drawer lg:drawer-open">
+                <input id="main-drawer" type="checkbox" class="drawer-toggle" />
+                
+                <div class="drawer-content flex flex-col p-4 sm:p-6 lg:p-8 gap-6 h-screen overflow-hidden">
+                    <!-- Barra mobile -->
+                    <div class="lg:hidden flex items-center justify-between bg-base-200 rounded-2xl p-4 shadow-sm">
+                        <label for="main-drawer" class="btn btn-square btn-ghost drawer-button">
+                            <i class="fas fa-bars text-xl"></i>
+                        </label>
+                        <span class="font-bold text-lg">Ativos & Veículos</span>
+                    </div>
+                    
+                    <!-- Conteúdo em Ilha (Island) -->
+                    <main class="flex-grow overflow-auto p-4 sm:p-6 lg:p-8">
+                        {% block content %}{% endblock content %}
+                    </main>
+                </div>
+                
+                <div class="drawer-side z-50 lg:p-8 lg:pr-0">
+                    <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+                    {% include 'partials/navbar.html' %}
+                </div>
+            </div>
+        {% else %}
+            <!-- Area sem autenticação (ex: Login) -->
+            <main class="min-h-screen bg-base-200 flex items-center justify-center p-4 sm:p-8">
+                {% block content_unauthenticated %}{% endblock content_unauthenticated %}
             </main>
+        {% endif %}
         
-        </div>
         {% include 'partials/scripts.html' %}
     </body>
 </html>

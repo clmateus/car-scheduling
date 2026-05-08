@@ -6,11 +6,11 @@ function abrirModalCarro(veiculoId) {
     abaAtiva = 'identificacao';
 
     // Marca aba Identificação como ativa
-    document.querySelectorAll('#abas-veiculo .nav-link')
-        .forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('#abas-veiculo .tab')
+        .forEach(btn => btn.classList.remove('tab-active'));
 
     const btnIdentificacao = document.querySelector('#abas-veiculo [data-aba="identificacao"]');
-    if (btnIdentificacao) btnIdentificacao.classList.add('active');
+    if (btnIdentificacao) btnIdentificacao.classList.add('tab-active');
 
     carregarAba('identificacao', veiculoId);  // ← mudado: sem prefixo
 }
@@ -18,10 +18,10 @@ function abrirModalCarro(veiculoId) {
 function trocarAba(btn) {
     if (!veiculoAtivoId) return;
 
-    document.querySelectorAll('#abas-veiculo .nav-link')
-        .forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#abas-veiculo .tab')
+        .forEach(b => b.classList.remove('tab-active'));
 
-    btn.classList.add('active');
+    btn.classList.add('tab-active');
 
     abaAtiva = btn.dataset.aba;
     carregarAba(abaAtiva, veiculoAtivoId);  // ← agora abaAtiva é 'identificacao', 'documentacao', etc.
@@ -39,11 +39,11 @@ function carregarAba(aba, veiculoId) {
 document.body.addEventListener('refreshIdentificacao', function () {
     if (!veiculoAtivoId) return;
 
-    document.querySelectorAll('#abas-veiculo .nav-link')
-        .forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#abas-veiculo .tab')
+        .forEach(b => b.classList.remove('tab-active'));
 
     const btnIdentificacao = document.querySelector('#abas-veiculo [data-aba="identificacao"]');
-    if (btnIdentificacao) btnIdentificacao.classList.add('active');
+    if (btnIdentificacao) btnIdentificacao.classList.add('tab-active');
 
     carregarAba('identificacao', veiculoAtivoId);  // ← mudado: sem prefixo
 });

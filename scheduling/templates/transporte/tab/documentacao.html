@@ -21,39 +21,39 @@
         hx-swap="innerHTML"
         hx-encoding="multipart/form-data"
         enctype="multipart/form-data"  
-        class="form-control"
+        class="input input-bordered w-full"
     >
         {% csrf_token %}
 
-        <div class="row">
-            <div class="col-md-6 mb-3">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
                 <label class="form-label">Seguro</label>
                 <input type="text" 
-                       class="form-control" 
+                       class="input input-bordered w-full" 
                        name="seguro" 
                        value="{{ seguro.seguro|default:'' }}" 
                        {% if user|has_group:'Gestores' %}required{% else %}disabled{% endif %}>
             </div>
-            <div class="col-md-6 mb-3">
+            
                 <label class="form-label">Nº da apólice</label>
                 <input type="number" 
-                       class="form-control" 
+                       class="input input-bordered w-full" 
                        name="num_apolice" 
                        value="{{ seguro.num_apolice|default:'' }}" 
                        {% if user|has_group:'Gestores' %}required{% else %}disabled{% endif %}>
             </div>
-            <div class="col-md-6 mb-3">
+            
                 <label class="form-label">Início da Vigência</label>
                 <input type="date" 
-                       class="form-control" 
+                       class="input input-bordered w-full" 
                        name="inicio_vigencia" 
                        value="{{ seguro.inicio_vigencia|date:'Y-m-d\TH:i'|default:'' }}" 
                        {% if user|has_group:'Gestores' %}required{% else %}disabled{% endif %}>
             </div>
-            <div class="col-md-6 mb-3">
+            
                 <label class="form-label">Fim da Vigência</label>
                 <input type="date" 
-                       class="form-control" 
+                       class="input input-bordered w-full" 
                        name="final_vigencia" 
                        value="{{ seguro.final_vigencia|date:'Y-m-d\TH:i'|default:'' }}" 
                        {% if user|has_group:'Gestores' %}required{% else %}disabled{% endif %}>
@@ -65,10 +65,10 @@
                 <input 
                     type="file" 
                     name="apolice" 
-                    class="form-control"
+                    class="input input-bordered w-full"
                     accept=".pdf,.png,.jpg,.jpeg">
                 {% if seguro.apolice %}
-                    <small class="text-muted mt-1 d-block">
+                    <small class="text-gray-500 mt-1 d-block">
                         Arquivo atual: {{ seguro.apolice.name }}
                     </small>
                 {% endif %}

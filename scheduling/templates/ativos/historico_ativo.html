@@ -2,97 +2,143 @@
 {% load authenticate_user %}
 {% block content %}
 
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="mb-0 display-5"><b>Histórico de Ativos</b></h1>
-            <a class="btn btn-primary px-4" href="{% url 'ativos' %}" title="Voltar para Ativos">
-                <i class="bi bi-arrow-left"></i> Voltar
+<div class="breadcrumbs text-sm mb-6">
+    <ul>
+        <li>
+            <a href="{% url 'index' %}" class="inline-flex items-center gap-2 hover:text-primary transition-colors">
+                <i class="bi bi-house-door text-lg"></i> Início
             </a>
+        </li>
+        <li>
+            <a href="{% url 'listar_ativos' %}" class="inline-flex items-center gap-2 hover:text-primary transition-colors">
+                <i class="fa fa-cubes text-base"></i> Ativos
+            </a>
+        </li>
+        <li class="inline-flex items-center gap-2 font-semibold text-base-content/70">
+            <i class="bi bi-clock-history text-base"></i> Histórico de Ativos
+        </li>
+    </ul>
+</div>
+
+<div class="w-full">
+    <div class="flex justify-between items-center mt-4 mb-8">
+        <h2 class="text-3xl font-bold">Histórico de Ativos</h2>
     </div>
-    <div class="row mb-4 align-items-center g-3">
-        <div class="col-12 col-md-6">
-            <div class="input-group shadow-sm">
-                <span class="input-group-text bg-white border-end-0 text-muted">
-                    <i class="bi bi-search"></i>
-                </span>
-                <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Filtrar por marca, modelo, usuário...">
-            </div>
-        </div>
-        <div class="col-12 col-md-6">
-            <div class="d-flex justify-content-md-end gap-2">
-                <button class="btn btn-secondary filter-btn active" data-filter="">Todos</button>
-                <button class="btn btn-outline-primary filter-btn" data-filter="celular">
-                    <i class="bi bi-phone me-1"></i>Celular
-                </button>
-                <button class="btn btn-outline-primary filter-btn" data-filter="notebook">
-                    <i class="bi bi-laptop me-1"></i>Notebook
-                </button>
-                <button class="btn btn-outline-primary filter-btn" data-filter="tablet">
-                    <i class="bi bi-tablet me-1"></i>Tablet
-                </button>
-            </div>
+    
+    <!-- Filtros e Busca -->
+    <div class="flex flex-col lg:flex-row justify-between items-center gap-4 mb-6 bg-base-100 p-4 rounded-2xl shadow-sm border border-base-200">
+        <label class="input input-bordered flex items-center gap-2 w-full lg:max-w-sm">
+            <i class="bi bi-search text-base-content/50"></i>
+            <input type="text" id="searchInput" class="grow" placeholder="Filtrar marca, modelo, usuário..." />
+        </label>
+        <div class="flex flex-wrap gap-2 w-full lg:w-auto justify-center">
+            <button type="button" class="btn btn-sm filter-btn active" data-filter="">Todos</button>
+            <button type="button" class="btn btn-sm filter-btn" data-filter="celular"><i class="bi bi-phone"></i> Celular</button>
+            <button type="button" class="btn btn-sm filter-btn" data-filter="notebook"><i class="bi bi-laptop"></i> Notebook</button>
+            <button type="button" class="btn btn-sm filter-btn" data-filter="tablet"><i class="bi bi-tablet"></i> Tablet</button>
         </div>
     </div>
 
     <!-- Cards -->
     {% if not solicitacoes %}
-        <div class="alert alert-warning text-center">
-            <i class="bi bi-info-circle me-2"></i> Nenhum ativo devolvido encontrado.
+        <div class="alert alert-info shadow-sm rounded-2xl">
+            <i class="bi bi-info-circle text-2xl"></i>
+            <div>
+                <h3 class="font-bold">Nada por aqui!</h3>
+                <div class="text-xs">Nenhum ativo devolvido encontrado no histórico.</div>
+            </div>
         </div>
     {% else %}
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
              {% for s in solicitacoes %} {% comment %} AQUI INFORMA QUE O S REPRESENTARÁ SOLICITAÇÕES {% endcomment %}
-            <div class="col ativo-col">
-                <div class="card h-100 shadow-sm border-0" style="border-radius: 12px;">
+            <div class="card bg-base-100 shadow-sm border border-base-200 hover:shadow-md hover:border-primary/30 transition-all duration-300 ativo-col group h-full">
 
-                    <div class="card-header pt-3 pb-0 d-flex justify-content-between">
-                        <span class="badge rounded-pill text-bg-primary fs-6">
-                            {{ s.ativo_entregue.categoria }}
-                        </span>
-                        <span class="badge rounded-pill text-bg-success d-flex justify-content-center align-items-center">
-                            <i class="bi bi-check-circle me-1"></i>Devolvido
-                        </span>
-                    </div>
-
-                    <div class="card-body">
-                        <h5 class="fw-bold mb-3">
-                            {{ s.ativo_entregue.marca }} - {{ s.ativo_entregue.modelo }}
-                        </h5>
-                        <p class="text-muted mb-1">
-                            <i class="bi bi-upc-scan me-2"></i>
-                            <b>IMEI:</b> {{ s.ativo_entregue.numero_de_serie }}
-                        </p>
-                        <p class="text-muted mb-1">
-                            <i class="bi bi-calendar-event me-2"></i>
-                            <b>Solicitado em:</b> {{ s.data_solicitacao|date:"d/m/Y H:i" }}
-                        </p>
-                        <p class="text-muted mb-1">
-                            <i class="bi bi-calendar-event me-2"></i>
-                            <b>Devolvido em:</b> {{ s.data_devolucao|date:"d/m/Y H:i" }}
-                        </p>
-                        {% if s.justificativa %}
-                        <p class="text-muted mb-0">
-                            <i class="bi bi-chat-text me-2"></i>
-                            <b>Justificativa:</b> {{ s.justificativa|truncatechars:60 }}
-                        </p>
-                        {% endif %}
-                    </div>
-
-                    <div class="card-footer bg-transparent border-0 pb-3">
+                    <div class="card-body p-5 flex flex-col h-full">
+                        
+                        <div class="flex justify-between items-start mb-3 gap-2">
+                            <div class="badge badge-neutral font-semibold">{{ s.ativo_entregue.categoria }}</div>
+                            <div class="badge badge-success gap-1 text-white border-0 shadow-sm"><i class="bi bi-check-circle-fill text-[10px]"></i> Devolvido</div>
+                        </div>
+                        
+                        <h3 class="card-title text-lg leading-tight mb-0 group-hover:text-primary transition-colors">
+                            {{ s.ativo_entregue.marca }} {{ s.ativo_entregue.modelo }}
+                        </h3>
+                        
+                        <div class="divider mt-2 mb-3 opacity-30"></div>
+                        
+                        <div class="space-y-3 text-sm flex-grow">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-base-200 flex items-center justify-center shrink-0">
+                                    <i class="bi bi-upc-scan text-base-content/70 text-sm"></i>
+                                </div>
+                                <span class="font-mono text-xs text-base-content/80">{{ s.ativo_entregue.numero_de_serie }}</span>
+                            </div>
+                            
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-info/10 flex items-center justify-center shrink-0">
+                                    <i class="bi bi-calendar-event text-info text-sm"></i>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] text-base-content/50 font-semibold uppercase">Solicitado</span>
+                                    <span class="font-medium text-base-content/90">{{ s.data_solicitacao|date:"d/m/Y" }} <span class="opacity-50 mx-1">|</span> {{ s.data_solicitacao|date:"H:i" }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center shrink-0">
+                                    <i class="bi bi-calendar-check text-success text-sm"></i>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] text-base-content/50 font-semibold uppercase">Devolvido</span>
+                                    <span class="font-medium text-base-content/90">{{ s.data_devolucao|date:"d/m/Y" }} <span class="opacity-50 mx-1">|</span> {{ s.data_devolucao|date:"H:i" }}</span>
+                                </div>
+                            </div>
+                            
+                            {% if s.justificativa %}
+                            <div class="flex items-start gap-3 pt-1">
+                                <div class="w-8 h-8 rounded-full bg-warning/10 flex items-center justify-center shrink-0">
+                                    <i class="bi bi-chat-text text-warning text-sm"></i>
+                                </div>
+                                <span class="text-xs text-base-content/70 mt-1 leading-snug">{{ s.justificativa|truncatechars:60 }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
                         {% if s.usuario %}
-                        <div class="d-flex align-items-center text-secondary">
-                            <i class="bi bi-person-circle fs-3 me-2 text-primary"></i>
-                            <span><b>Utilizado por:</b><br>
-                                {{ s.usuario.get_full_name|default:s.usuario.username }}
-                            </span>
+                        <div class="mt-4 pt-4 border-t border-base-200 flex items-center gap-3">
+                            <div class="avatar placeholder">
+                                <div class="bg-primary/10 text-primary rounded-full w-8 flex items-center justify-center">
+                                    <i class="bi bi-person text-lg leading-none"></i>
+                                </div>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-[10px] text-base-content/50 font-semibold uppercase">Utilizado por</span>
+                                <span class="text-sm font-medium truncate text-base-content/80">{{ s.usuario.get_full_name|default:s.usuario.username }}</span>
+                            </div>
                         </div>
                         {% endif %}
                     </div>
 
-                </div>
             </div>
             {% endfor %}
         </div>
     {% endif %}
+    
+    <style>
+        /* Estilo para integrar os botões de filtro antigos do JS com DaisyUI */
+        .filter-btn {
+            background-color: transparent;
+            color: oklch(var(--bc));
+            border: 1px solid oklch(var(--b3));
+        }
+        .filter-btn:hover {
+            background-color: oklch(var(--b2));
+        }
+        .filter-btn.active {
+            background-color: oklch(var(--p)) !important;
+            color: oklch(var(--pc)) !important;
+            border-color: oklch(var(--p)) !important;
+        }
+    </style>
 </div>
 {% endblock %}

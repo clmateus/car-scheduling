@@ -9,16 +9,22 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-from django_htmx.middleware import HtmxMiddleware
-from django.conf.global_settings import LOGOUT_REDIRECT_URL
+
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from django.apps import AppConfig
 
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+class MyAppConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'scheduling'
+
+    def ready(self):
+        import scheduling.signals
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -45,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'scheduling.apps.MyAppConfig',
     'scheduling',
     'django_htmx',
     'django_q',

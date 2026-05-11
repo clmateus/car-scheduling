@@ -35,11 +35,9 @@ def is_gestor(user):
 def index(request):
     return render(request, 'index.html')
 
-
 @login_required
 def agendamento(request):
     return render(request, 'transporte/agendamento.html')
-
 
 @login_required
 def agendar(request):

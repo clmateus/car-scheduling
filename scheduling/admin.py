@@ -16,6 +16,11 @@ class ProfileInline(admin.StackedInline):
 class UserAdmin(BaseUserAdmin):
     inlines = (ProfileInline,)
 
+    def get_inline_instances(self, request, obj=None):
+        if not obj:
+            return list()
+        return super(UserAdmin, self).get_inline_instances(request, obj)
+
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 admin.site.register(Veiculo)

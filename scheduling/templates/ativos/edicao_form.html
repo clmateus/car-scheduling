@@ -1,8 +1,137 @@
-<form hx-post="{% url 'editar_agendamento' agendamento_id %}" hx-target="#modalEdicaoBody" hx-swap="innerHTML" class="space-y-4">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <div class="modal-action mt-6">
-    <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal_edicao').close()">Cancelar</button>
-    <button type="submit" class="btn btn-success text-white">Salvar Alterações</button>
-  </div>
-</form>
+<!-- templates/ativos/edicao_form.html -->
+<div class="space-y-6">
+    <form id="formEdicao" method="post" hx-post="{% url 'editar_agendamento' agendamento_id %}" hx-swap="none" class="space-y-2">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div class="alert alert-error shadow-lg rounded-xl mb-4">
+                <i class="bi bi-exclamation-triangle-fill text-xl"></i>
+                <div class="flex-1">
+                    <span class="font-bold">Erro!</span>
+                    <span>{{ form.non_field_errors }}</span>
+                </div>
+            </div>
+        {% endif %}
+        
+        <!-- Destino -->
+<div class="form-control w-full">
+    <label class="label">
+        <span class="label-text font-semibold flex items-center gap-2">
+            <i class="bi bi-geo-alt-fill text-primary"></i>
+            Destino
+        </span>
+    </label>
+    
+    <div class="destino-estilizado">
+        {{ form.destino }}
+    </div>
+
+    {% if form.destino.errors %}
+        <label class="label">
+            <span class="label-text-alt text-error">{{ form.destino.errors }}</span>
+        </label>
+    {% endif %}
+</div>
+        
+<!-- Veículo -->
+<div class="form-control w-full">
+    {{ form.veiculo }}
+    {% if form.veiculo.errors %}
+        <label class="label">
+            <span class="label-text-alt text-error">{{ form.veiculo.errors }}</span>
+        </label>
+    {% endif %}
+</div>
+        
+<!-- Datas em grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="form-control w-full">
+        <label class="label">
+            <span class="label-text font-semibold flex items-center gap-2">
+                <i class="bi bi-calendar-event text-primary"></i>
+                Data de Partida
+            </span>
+        </label>
+        <input type="datetime-local" name="dataPartida" 
+                value="{{ form.dataPartida.value|date:'Y-m-d\TH:i' }}" 
+                class="input input-bordered w-full focus:input-primary transition-all">
+        {% if form.dataPartida.errors %}
+            <label class="label">
+                <span class="label-text-alt text-error">{{ form.dataPartida.errors }}</span>
+            </label>
+        {% endif %}
+    </div>
+    
+    <div class="form-control w-full">
+       <label class="label">
+          <span class="label-text font-semibold flex items-center gap-2">
+            <i class="bi bi-calendar-check text-primary"></i>
+              Data de Chegada
+            </span>
+        </label>
+        <input type="datetime-local" name="dataChegada" 
+          value="{{ form.dataChegada.value|date:'Y-m-d\TH:i' }}" 
+          class="input input-bordered w-full focus:input-primary transition-all">
+        {% if form.dataChegada.errors %}
+          <label class="label">
+            <span class="label-text-alt text-error">{{ form.dataChegada.errors }}</span>
+          </label>
+        {% endif %}
+    </div>
+</div>
+        
+        <!-- Botões -->
+    <div class="modal-action mt-6 pt-4 border-t border-base-200">
+      <button type="button" class="btn btn-ghost" onclick="document.getElementById('modalEdicao').close()">
+        <i class="bi bi-x-lg"></i>
+          Cancelar
+      </button>
+      <button type="submit" class="btn btn-primary text-white">
+          <i class="bi bi-check-lg"></i>
+          Salvar Alterações
+      </button>
+    </div>
+    </form>
+</div>
+<style>
+    /* Este CSS força o input do Django a herdar o estilo do DaisyUI */
+    .destino-estilizado input, 
+    .destino-estilizado select {
+        width: 100% !important;
+        height: 3rem !important; /* Altura padrão do DaisyUI */
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        border-radius: 0.5rem !important;
+        border: 1px solid rgba(156, 163, 175, 0.2) !important; /* Borda discreta */
+        background-color: transparent !important;
+        outline: none !important;
+        transition: all 0.2s !important;
+    }
+
+    .destino-estilizado input:focus {
+        border-color: oklch(var(--p)) !important; /* Cor primária do seu tema */
+        box-shadow: 0 0 0 2px oklch(var(--p) / 0.2) !important;
+    }
+</style>
+<script>
+    (function() {
+        const form = document.getElementById('formEdicao');
+        if (!form) return;
+        
+        form.addEventListener('htmx:afterRequest', function(evt) {
+            if (evt.detail.successful && evt.detail.xhr.status === 200) {
+                // Fecha o modal
+                const modal = document.getElementById('modalEdicao');
+                if (modal) modal.close();
+                // Recarrega a página para atualizar os cards
+                window.location.reload();
+            } else if (evt.detail.xhr.status === 400) {
+                // Erro de validação - mantém o modal aberto e mostra os erros
+                const modalBody = document.getElementById('modalEdicaoBody');
+                if (modalBody) {
+                    modalBody.scrollTop = 0;
+                }
+            }
+        });
+    })();
+</script>

@@ -5,7 +5,7 @@ from django.db import models
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    empresa = models.CharField(max_length=255)
+    # empresa = models.CharField(max_length=255, null=True, blank=True)
 
 class Veiculo(models.Model):
     modelo = models.CharField(max_length=100)
@@ -17,6 +17,7 @@ class Veiculo(models.Model):
     chassi = models.CharField(max_length=50, null=True, blank=True)
     renavam = models.IntegerField(default=1)
     versao = models.CharField(max_length=250, null=True, blank=True)
+    quilometragem = models.IntegerField(default=0, null=True, blank=True)
     
     def __str__(self):
         return f'{self.modelo} - {self.marca} - {self.placa}'
@@ -29,6 +30,12 @@ class Agendamento(models.Model):
     dataChegada = models.DateTimeField()
     destino = models.TextField(blank=True)
     passageiros = models.IntegerField(default=1)
+    
+    checkout_realizado = models.BooleanField(default=False)
+    quilometragem_checkout = models.IntegerField(null=True, blank=True)
+    observacao_checkout = models.TextField(blank=True, null=True)
+    foto_checkout = models.TextField(blank=True, null=True)
+    assinatura_checkout = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f'{self.destino} - {self.motorista} - {self.dataPartida} - {self.dataChegada}'

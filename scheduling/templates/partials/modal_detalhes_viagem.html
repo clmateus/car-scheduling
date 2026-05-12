@@ -1,0 +1,72 @@
+<div>
+    <h3 class="font-bold text-2xl mb-4 flex items-center gap-2">
+        <i class="bi bi-info-circle text-primary"></i>
+        Detalhes da Viagem #{{ viagem.id }}
+    </h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-sm bg-base-200 p-4 rounded-xl">
+        <div>
+            <span class="font-semibold text-base-content/60">Motorista:</span>
+            <p class="font-medium text-base">{{ viagem.motorista }}</p>
+        </div>
+        <div>
+            <span class="font-semibold text-base-content/60">Veículo:</span>
+            <p class="font-medium text-base">{{ viagem.veiculo.modelo|default:"Não atribuído" }} {% if viagem.veiculo.placa %}({{ viagem.veiculo.placa }}){% endif %}</p>
+        </div>
+        <div>
+            <span class="font-semibold text-base-content/60">Partida:</span>
+            <p class="font-medium text-base">{{ viagem.dataPartida|date:"d/m/Y H:i" }}</p>
+        </div>
+        <div>
+            <span class="font-semibold text-base-content/60">Chegada:</span>
+            <p class="font-medium text-base">{{ viagem.dataChegada|date:"d/m/Y H:i" }}</p>
+        </div>
+        <div class="md:col-span-2">
+            <span class="font-semibold text-base-content/60">Destino:</span>
+            <p class="font-medium text-base">{{ viagem.destino }}</p>
+        </div>
+    </div>
+
+    <div class="divider text-base-content/50 text-sm font-semibold uppercase tracking-wider">Informações do Checkout</div>
+
+    {% if viagem.checkout_realizado %}
+        <div class="space-y-4">
+            <div>
+                <span class="font-semibold text-base-content/60">Quilometragem Informada no Retorno:</span>
+                <p class="font-medium text-base badge badge-neutral badge-lg mt-1 py-4">{{ viagem.quilometragem_checkout|default:"Não informada" }} km</p>
+            </div>
+            
+            {% if viagem.observacao_checkout %}
+                <div>
+                    <span class="font-semibold text-base-content/60">Observações do Motorista:</span>
+                    <p class="bg-base-200 p-3 rounded-lg mt-1 text-sm border border-base-300">{{ viagem.observacao_checkout }}</p>
+                </div>
+            {% endif %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                {% if viagem.foto_checkout %}
+                    <div>
+                        <span class="font-semibold text-base-content/60 block mb-2"><i class="bi bi-camera me-1"></i> Evidência Fotográfica:</span>
+                        <img src="{{ viagem.foto_checkout }}" alt="Foto da Evidência" class="w-full h-48 object-cover rounded-xl border-2 border-base-300 shadow-sm cursor-pointer hover:opacity-90 transition" onclick="window.open(this.src)">
+                    </div>
+                {% endif %}
+                {% if viagem.assinatura_checkout %}
+                    <div>
+                        <span class="font-semibold text-base-content/60 block mb-2"><i class="bi bi-pen me-1"></i> Assinatura do Motorista:</span>
+                        <div class="bg-white rounded-xl border-2 border-base-300 p-2 shadow-sm flex items-center justify-center h-48">
+                            <img src="{{ viagem.assinatura_checkout }}" alt="Assinatura" class="max-w-full max-h-full">
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-warning shadow-sm border border-warning/20">
+            <i class="bi bi-exclamation-triangle text-2xl"></i>
+            <div>
+                <h3 class="font-bold">Checkout não realizado</h3>
+                <div class="text-sm">As informações de retorno e checklist desta viagem ainda não foram registradas.</div>
+            </div>
+        </div>
+    {% endif %}
+</div>

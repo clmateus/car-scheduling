@@ -1,5 +1,6 @@
 {% extends '_base.html' %}
 {% block content %}
+{% load authenticate_user %}
 {% load meus_filtros %}
 
 <div class="breadcrumbs text-sm mb-6">
@@ -49,19 +50,10 @@
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6" id="viagensGrid">
         {% for viagem in todas_as_viagens %}
         <div class="card bg-base-100 shadow-sm border border-base-200 hover:shadow-md hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 cursor-pointer ativo-col group h-full" 
-                 data-bs-toggle="modal" 
-                 data-bs-target="#detalhesModal"
-                 data-viagem='{
-                     "id": {{ viagem.id }},
-                     "motorista": "{{ viagem.motorista|escapejs }}",
-                     "veiculo": "{{ viagem.veiculo.modelo|escapejs }}",
-                     "placa": "{{ viagem.veiculo.placa|escapejs }}",
-                     "dataPartida": "{{ viagem.dataPartida|date:'d/m/Y H:i:s' }}",
-                     "dataChegada": "{{ viagem.dataChegada|date:'d/m/Y H:i:s' }}",
-                     "destino": "{{ viagem.destino|escapejs }}",
-                     "passageiros": "{{ viagem.passageiros|escapejs }}",
-                     "usuario": "{{ viagem.usuario.get_full_name|default:viagem.usuario|escapejs }}"
-                 }'>
+                 onclick="document.getElementById('modalDetalhesBody').innerHTML = '<div class=\'flex justify-center items-center py-10\'><span class=\'loading loading-spinner loading-lg text-primary\'></span></div>'; document.getElementById('modalDetalhesViagem').showModal()"
+                 hx-get="{% url 'detalhes_viagem' viagem.id %}"
+                 hx-target="#modalDetalhesBody"
+                 hx-swap="innerHTML">
                 
             <div class="card-body p-5 flex flex-col h-full">
                 <!-- Cabeçalho do Card -->
@@ -101,6 +93,19 @@
                         <span class="text-base-content/80 font-medium">{{ viagem.dataPartida|date:"H:i" }} <span class="mx-1 text-xs opacity-60">&rarr;</span> {{ viagem.dataChegada|date:"H:i" }}</span>
                     </div>
                 </div>
+
+                <!-- Ações do Card -->
+                <div class="card-actions justify-end mt-4 pt-3 border-t border-base-200 w-full" onclick="event.stopPropagation();">
+                    {% if not viagem.checkout_realizado %}
+                        {% if user|has_group:'Gestores' or user|has_group:'RH' or user|has_group:'Expedição' %}
+                            <a href="{% url 'checkout_viagem' viagem.id %}" class="btn btn-primary btn-sm text-white shadow-sm w-full sm:w-auto">
+                                <i class="bi bi-clipboard-check"></i> Realizar Checkout
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <span class="badge badge-success gap-1 text-white py-3 px-3 w-full sm:w-auto font-semibold"><i class="bi bi-check-circle"></i> Checkout Concluído</span>
+                    {% endif %}
+                </div>
             </div>
         </div>
         {% empty %}
@@ -116,4 +121,19 @@
         {% endfor %}
     </div>
 </div>
+
+<!-- Modal Detalhes Viagem -->
+<dialog id="modalDetalhesViagem" class="modal">
+    <div class="modal-box w-11/12 max-w-3xl backdrop-blur-sm bg-base-100/95">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-error">✕</button>
+        </form>
+        <div id="modalDetalhesBody">
+            <!-- Conteúdo carregado via HTMX -->
+        </div>
+    </div>
+    <form method="dialog" class="modal-backdrop bg-black/60">
+        <button>fechar</button>
+    </form>
+</dialog>
 {% endblock %}

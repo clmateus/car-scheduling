@@ -1,5 +1,8 @@
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
+from django.conf import settings # Adicione isso
+from django.conf.urls.static import static # Adicione isso
+
 from . import views
 
 urlpatterns = [
@@ -44,3 +47,6 @@ urlpatterns = [
     path('transporte/veiculos/tab/seguro/<int:veiculo_id>/', views.tab_seguro, name='tab_seguro'),
     path('transporte/veiculos/tab/info/<int:veiculo_id>/', views.tab_info, name='tab_info'),
 ]  
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])

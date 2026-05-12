@@ -1,6 +1,6 @@
 {% load authenticate_user %}
 <div class="text-center mb-4">
-    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 64px; height: 64px;">
+    <div class="bg-base bg-opacity-10 text-primary rounded-circle d-inline-flex justify-content-center align-items-center mb-3">
         {% if 'celular' in ativo.categoria|stringformat:"s"|lower %}
             <i class="bi bi-phone fs-1"></i>
         {% elif 'notebook' in ativo.categoria|stringformat:"s"|lower %}
@@ -47,7 +47,7 @@
             {% if solicitacao_ativa %}
             <li class="pt-3" style="border-color: var(--border-color) !important;">
                 <span class="text-gray-500 d-block mb-1" style="font-size: 0.85rem;">Detalhes da Solicitação</span>
-                <div class="bg-white p-2 rounded border" style="font-size: 0.9rem;">
+                <div class="p-2 rounded border" style="font-size: 0.9rem;">
                     <strong>Data:</strong> {{ solicitacao_ativa.data_solicitacao|date:"d/m/Y H:i" }}<br>
                     <strong class="d-block mt-2">Justificativa:</strong> 
                     <span class="text-gray-500">{{ solicitacao_ativa.justificativa|default:"Nenhuma justificativa informada." }}</span>

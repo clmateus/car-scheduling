@@ -1,4 +1,6 @@
-<!-- templates/ativos/edicao_form.html -->
+{% extends '_base.html' %}
+{% load authenticate_user %}
+{% block content %}
 <div class="space-y-6">
     <form id="formEdicao" method="post" hx-post="{% url 'editar_agendamento' agendamento_id %}" hx-swap="none" class="space-y-2">
         {% csrf_token %}

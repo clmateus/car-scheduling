@@ -1,3 +1,9 @@
+{% extends "_base.html" %}
+{% load authenticate_user %}
+{% block content %}
+
+{% block content %}
+
 <form hx-post="{% url 'seguro_veiculo' veiculo_id %}" hx-target="#modalEdicaoBody" hx-swap="innerHTML">
   {% csrf_token %}
   {{ form.as_p }}

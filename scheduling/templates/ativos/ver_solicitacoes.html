@@ -91,6 +91,10 @@
                         <button type="submit" class="btn btn-success text-white">Confirmar</button>
                     </div>
             </form>
+            <form method="POST" id="formRecusarSolicitacao" action="" onsubmit="return confirm('Tem certeza que deseja recusar essa solicitação?');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-error w-full mt-2">Recusar Solicitação</button>
+            </form>
         </div>
     </div>
     <form method="dialog" class="modal-backdrop"><button>close</button></form>
@@ -157,6 +161,9 @@
 
         const form = modalUnico.querySelector('#formAssociarAtivo');
         form.action = `/aprovar_solicitacao/${idSolicitacao}/`;
+        
+        const formRecusar = modalUnico.querySelector('#formRecusarSolicitacao');
+        formRecusar.action = `/recusar_solicitacao/${idSolicitacao}/`;
         
         modalUnico.showModal();
     }

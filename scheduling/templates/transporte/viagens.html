@@ -95,51 +95,77 @@
                                         <i class="bi bi-chat-dots"></i> Contato
                                     </a>
                                 {% endif %}
+
                                 {% if user|has_group:'Gestores' or user|has_group:'RH' or user|has_group:'Expedição' %}
-                                    <button class="btn btn-sm btn-ghost text-primary hover:bg-primary/10" onclick="document.getElementById('modalAlterarVeiculo{{ viagem.id }}').showModal()" title="Alterar Veículo">
+                                    <button class="btn btn-sm btn-ghost text-primary hover:bg-primary/10"
+                                     onclick="document.getElementById('modalAlterarVeiculo{{ viagem.id }}').showModal()" title="Alterar Veículo">
                                         <i class="bi bi-car-front text-base"></i>
                                     </button>
                                 {% endif %}
+
                                 {% if user|has_group:'Gestores' or viagem.usuario == user or user|has_group:'RH' or user|has_group:'Expedição' %}
-                                    <button type="button" class="btn btn-sm btn-ghost text-primary hover:bg-primary/10" onclick="document.getElementById('modalEdicao').showModal()" hx-get="{% url 'editar_agendamento' viagem.id %}" hx-target="#modalEdicaoBody" hx-swap="innerHTML" title="Editar">
+                                    <button type="button" class="btn btn-sm btn-ghost text-primary hover:bg-primary/10"
+                                     onclick="document.getElementById('modalEdicao').showModal()" hx-get="{% url 'editar_agendamento' viagem.id %}"
+                                     hx-target="#modalEdicaoBody" hx-swap="innerHTML" title="Editar">
                                         <i class="bi bi-pen text-base"></i>
                                     </button>
+
                                     <form hx-post="{% url 'remover_agendamento' viagem.id %}" hx-confirm="Tem certeza que deseja remover este agendamento?" hx-target="#cardViagem{{ viagem.id }}" hx-swap="outerHTML" class="inline-block m-0">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-sm btn-ghost text-error hover:bg-error/10" title="Excluir">
                                             <i class="bi bi-trash3 text-base"></i>
                                         </button>
                                     </form>
-                                {% endif %}
+
                             {% endif %}
+                        {% else %}
+                            {% if not viagem.checkout_realizado %}
+                                {% if user|has_group:'Gestores' or user|has_group:'RH' or user|has_group:'Expedição' %}
+                                    <a href="{% url 'checkout_viagem' viagem.id %}" class="btn btn-primary btn-sm text-white shadow-sm">
+                                        <i class="bi bi-clipboard-check"></i> Realizar Checkout
+                                    </a>
+                                {% endif %}
+                            {% else %}
+                                <span class="badge badge-success gap-1 text-white py-3 px-3 font-semibold"><i class="bi bi-check-circle"></i> Checkout Concluído</span>
+                            {% endif %}
+                        {% endif %}
                         </div>
                     </div>
                 </div>
                 
-                <dialog id="modalAlterarVeiculo{{ viagem.id }}" class="modal">
-                    <div class="modal-box">
-                        <form method="dialog">
-                            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                        </form>
-                        <h3 class="font-bold text-lg mb-4">Alterar o veículo da viagem</h3>
-                            <form hx-post="{% url 'alterar_veiculo' viagem.id %}" hx-swap="none" class="space-y-4">
-                                {% csrf_token %}
-                                    <select name="selectVeiculos" class="select select-bordered w-full">
-                                        {% for veiculo in veiculos %}
-                                            <option value="{{ veiculo.id }}"
-                                                {% if viagem.veiculo_id == veiculo.id %}selected{% endif %}>
-                                                {{ veiculo.modelo }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
-                                <div class="modal-action mt-6">
-                                    <button type="button" class="btn btn-ghost" onclick="document.getElementById('modalAlterarVeiculo{{ viagem.id }}').close()">Fechar</button>
-                                    <button type="submit" class="btn btn-primary text-white">Salvar Alterações</button>
-                                </div>
-                            </form>
-                    </div>
-                    <form method="dialog" class="modal-backdrop"><button>close</button></form>
-                </dialog>
+            <dialog id="modalAlterarVeiculo{{ viagem.id }}" class="modal">
+                <div class="modal-box backdrop-blur-sm bg-base-100/95">
+                    <form method="dialog">
+                        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-error">✕</button>
+                    </form>
+                    <h3 class="font-bold text-lg flex items-center ">
+                        Alterar o veículo da viagem
+                    </h3>
+                    <form hx-post="{% url 'alterar_veiculo' viagem.id %}" hx-swap="none" class="space-y-4">
+                        {% csrf_token %}
+                        <select name="selectVeiculos" class="select select-bordered w-full focus:select-primary">
+                            {% for veiculo in veiculos %}
+                                <option value="{{ veiculo.id }}"
+                                    {% if viagem.veiculo_id == veiculo.id %}selected{% endif %}>
+                                    {{ veiculo.modelo }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <div class="modal-action mt-6">
+                            <button type="button" class="btn btn-outline" onclick="this.closest('dialog').close()">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-primary text-white">
+                                <i class="bi bi-check-lg"></i>
+                                Salvar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <form method="dialog" class="modal-backdrop bg-black/60">
+                    <button>fechar</button>
+                </form>
+            </dialog>
             {% endfor %}
         </div>
     {% else %}
@@ -153,18 +179,28 @@
     {% endif %}
     
     <!-- Modal de Edição -->
-    <dialog id="modalEdicao" class="modal">
-        <div class="modal-box w-11/12 max-w-lg">
-            <form method="dialog">
-                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-            </form>
-            <h3 class="font-bold text-xl mb-4" id="modalEdicaoLabel">Editar Agendamento</h3>
-            <div id="modalEdicaoBody">
-                <div class="flex justify-center p-8"><span class="loading loading-spinner text-primary loading-lg"></span></div>
+
+<dialog id="modalEdicao" class="modal">
+    <div class="modal-box backdrop-blur-sm bg-base-100/95 w-11/12 max-w-lg rounded-xl p-0 overflow-hidden border border-primary/30 shadow-2xl">
+        <div class="sticky top-0 bg-base-100/95 backdrop-blur-sm z-10 px-6 pt-4 pb-4 border-b border-base-200">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-xl flex items-center gap-2" id="modalEdicaoLabel">
+                    <i class="bi bi-pencil-square text-primary"></i>
+                    Editar Agendamento
+                </h3>
+                <form method="dialog">
+                    <button class="btn btn-sm btn-circle btn-ghost text-error">✕</button>
+                </form>
             </div>
         </div>
-        <form method="dialog" class="modal-backdrop"><button>close</button></form>
-    </dialog>
+        
+        <div id="modalEdicaoBody" class="p-6">
+            </div>
+    </div>
+    <form method="dialog" class="modal-backdrop bg-black/60">
+        <button>fechar</button>
+    </form>
+</dialog>
 </div>
 
 <style>

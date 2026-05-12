@@ -341,6 +341,58 @@ def historico(request):
     return render(request, 'transporte/historico_veiculos.html', {'todas_as_viagens': todas_as_viagens})
 
 @login_required
+def checkout_viagem(request, pk):
+    agendamento = get_object_or_404(Agendamento, pk=pk)
+
+    # Apenas o gestor pode realizar o checkout
+    if not is_gestor(request.user):
+        messages.warning(request, 'Você não tem permissão para acessar este checkout.')
+        return redirect('historico')
+
+    if request.method == 'POST':
+        quilometragem = request.POST.get('quilometragem')
+        observacao = request.POST.get('observacao')
+        foto = request.POST.get('foto_base64')
+        assinatura = request.POST.get('assinatura')
+
+        if not assinatura:
+            messages.error(request, 'A assinatura é obrigatória.')
+            return render(request, 'transporte/checkout_viagem.html', {'agendamento': agendamento})
+
+        try:
+            if quilometragem:
+                nova_km = int(quilometragem)
+                km_atual = agendamento.veiculo.quilometragem if agendamento.veiculo and agendamento.veiculo.quilometragem else 0
+                
+                if nova_km < km_atual:
+                    messages.error(request, 'A quilometragem inserida não pode ser menor que a atual.')
+                    return render(request, 'transporte/checkout_viagem.html', {'agendamento': agendamento})
+                
+                agendamento.quilometragem_checkout = nova_km
+                if agendamento.veiculo:
+                    agendamento.veiculo.quilometragem = nova_km
+                    agendamento.veiculo.save()
+            
+            agendamento.observacao_checkout = observacao
+            if foto:
+                agendamento.foto_checkout = foto
+            agendamento.assinatura_checkout = assinatura
+            agendamento.checkout_realizado = True
+            agendamento.save()
+
+            messages.success(request, 'Checkout finalizado com sucesso!')
+            return redirect('historico')
+        except Exception as e:
+            messages.error(request, f'Ocorreu um erro: {str(e)}')
+
+    return render(request, 'transporte/checkout_viagem.html', {'agendamento': agendamento})
+
+@login_required
+def detalhes_viagem(request, pk):
+    viagem = get_object_or_404(Agendamento, pk=pk)
+    return render(request, 'partials/modal_detalhes_viagem.html', {'viagem': viagem})
+
+@login_required
 def carregar_aba(request, aba, veiculo_id):
     """Carrega o conteúdo da aba solicitada via HTMX."""
     veiculo = get_object_or_404(Veiculo, id=veiculo_id)
@@ -543,14 +595,16 @@ def devolver_ativo(request, pk):
     ativo = get_object_or_404(Ativo, id=pk)
 
     if ativo.usuario:
-        SolicitacaoAtivo.objects.filter(
+        solicitacoes = SolicitacaoAtivo.objects.filter(
             ativo_entregue=ativo,
             usuario=ativo.usuario,
             status=True
-        ).update(
+        )
+        
+        solicitacoes.update(
             status=False,
             data_devolucao=timezone.now()
-            )
+        )
 
     ativo.disponibilidade = True
     ativo.usuario = None
@@ -618,6 +672,35 @@ def aprovar_solicitacao(request, pk):
         messages.warning(request, 'Acesso negado.')
         return redirect('ver_solicitacoes')
 
+@user_passes_test(is_gestor, login_url='/')
+def recusar_solicitacao(request, pk):
+    if request.method == "POST":
+        solicitacao = get_object_or_404(SolicitacaoAtivo, id=pk)
+        
+        if not solicitacao.status and solicitacao.ativo_entregue is None:
+            categoria = solicitacao.categoria
+            email_usuario = solicitacao.usuario.email
+            
+            solicitacao.delete()
+            
+            async_task(
+                send_mail,
+                "Solicitação de ativo recusada",
+                f"A sua solicitação de {categoria} foi recusada pelo gestor.\nPara mais detalhes, procure a equipe responsável.",
+                "lanmax.carscheduling@gmail.com",
+                [email_usuario],
+                fail_silently=False
+            )
+            
+            messages.success(request, 'Solicitação recusada e removida com sucesso.')
+        else:
+            messages.error(request, 'Não é possível recusar uma solicitação já processada.')
+            
+        return redirect('ver_solicitacoes')
+    else:
+        messages.warning(request, 'Acesso negado.')
+        return redirect('ver_solicitacoes')
+
 def meus_itens(request):
     itens_do_usuario = Ativo.objects.filter(usuario=request.user)
     return render(request, 'ativos/meus_itens.html', {'itens_do_usuario': itens_do_usuario})
@@ -627,7 +710,8 @@ def meus_itens(request):
 @user_passes_test(is_gestor, login_url='/')
 def ver_solicitacoes(request):
     solicitacoes = SolicitacaoAtivo.objects.filter(
-        status=False
+        status=False,
+        ativo_entregue__isnull=True
         ).select_related('usuario')
 
     ativos_por_categoria = {}

@@ -1,0 +1,137 @@
+{% extends '_base.html' %}
+{% block content %}
+<div class="breadcrumbs text-sm mb-6">
+    <ul>
+        <li><a href="{% url 'index' %}">Início</a></li>
+        <li><a href="{% url 'historico' %}">Histórico de Viagens</a></li>
+        <li>Checkout da Viagem</li>
+    </ul>
+</div>
+
+<div class="max-w-3xl mx-auto bg-base-100 shadow-xl rounded-2xl p-6 md:p-8">
+    <h2 class="text-3xl font-bold mb-6 text-center">Checkout de Retorno</h2>
+    
+    <div class="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 bg-base-200 rounded-xl text-sm">
+        <p><strong><i class="bi bi-person me-2"></i> Motorista:</strong> <br><span class="text-base-content/80">{{ agendamento.motorista }}</span></p>
+        <p><strong><i class="bi bi-geo-alt me-2"></i> Destino:</strong> <br><span class="text-base-content/80">{{ agendamento.destino }}</span></p>
+        <p class="sm:col-span-2"><strong><i class="bi bi-car-front me-2"></i> Veículo:</strong> <br><span class="text-base-content/80">{{ agendamento.veiculo|default:"Não atribuído" }}</span></p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-control w-full">
+                <label class="label"><span class="label-text font-semibold">Nova Quilometragem</span></label>
+                <input type="number" name="quilometragem" placeholder="Ex: 54000" class="input input-bordered w-full" value="{{ agendamento.veiculo.quilometragem|default_if_none:'' }}" min="{{ agendamento.veiculo.quilometragem|default_if_none:'0' }}">
+                <label class="label"><span class="label-text-alt text-base-content/50">Atualiza o odômetro do veículo (Opcional)</span></label>
+            </div>
+
+            <div class="form-control w-full">
+                <label class="label"><span class="label-text font-semibold">Evidência Fotográfica (Opcional)</span></label>
+                <input type="file" id="foto-input" accept="image/*" class="file-input file-input-bordered w-full" />
+                <input type="hidden" name="foto_base64" id="foto_base64_input">
+            </div>
+        </div>
+
+        <div class="form-control w-full">
+            <label class="label"><span class="label-text font-semibold">Observações do Motorista (Opcional)</span></label>
+            <textarea name="observacao" class="textarea textarea-bordered h-24" placeholder="Alguma avaria, problema mecânico, ou imprevisto a relatar?"></textarea>
+        </div>
+
+        <div class="form-control w-full">
+            <label class="label"><span class="label-text font-semibold text-lg">Assinatura <span class="text-error">*</span></span></label>
+            <div class="border-2 border-dashed border-base-300 rounded-xl bg-base-100 p-2 text-center relative h-64 w-full" id="assinatura-container">
+                <canvas id="assinatura-pad" class="w-full h-full cursor-crosshair rounded-lg touch-none"></canvas>
+            </div>
+            <div class="flex justify-between mt-2">
+                <span class="text-xs text-base-content/60">Assine dentro da área delimitada</span>
+                <button type="button" class="btn btn-sm btn-ghost text-error" onclick="limparAssinatura()">
+                    <i class="bi bi-eraser me-1"></i> Limpar
+                </button>
+            </div>
+            <input type="hidden" name="assinatura" id="assinatura-input" required>
+        </div>
+
+        <div class="mt-8 flex gap-4 pt-4 border-t border-base-200">
+            <a href="{% url 'historico' %}" class="btn btn-ghost flex-1">Cancelar</a>
+            <button type="submit" class="btn btn-primary flex-1 text-white shadow-md" onclick="salvarAssinatura(event)">
+                <i class="bi bi-check2-circle me-2"></i> Finalizar Checkout
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    const canvas = document.getElementById('assinatura-pad');
+    const ctx = canvas.getContext('2d');
+    let desenhando = false;
+
+    // Ajusta o tamanho do canvas para lidar com densidade de tela e não perder qualidade
+    function resizeCanvas() {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // Mouse events
+    canvas.addEventListener('mousedown', (e) => { desenhando = true; desenhar(e); });
+    canvas.addEventListener('mouseup', () => { desenhando = false; ctx.beginPath(); });
+    canvas.addEventListener('mousemove', desenhar);
+
+    // Touch events (para mobile)
+    canvas.addEventListener('touchstart', (e) => { desenhando = true; desenhar(e.touches[0]); e.preventDefault(); });
+    canvas.addEventListener('touchend', () => { desenhando = false; ctx.beginPath(); });
+    canvas.addEventListener('touchmove', (e) => { desenhar(e.touches[0]); e.preventDefault(); });
+
+    function desenhar(e) {
+        if (!desenhando) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#000';
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+    }
+
+    function limparAssinatura() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        document.getElementById('assinatura-input').value = "";
+    }
+
+    function salvarAssinatura(event) {
+        const input = document.getElementById('assinatura-input');
+        
+        // Só armazena o valor se não estiver vazio
+        const blank = document.createElement('canvas');
+        blank.width = canvas.width;
+        blank.height = canvas.height;
+        
+        if(canvas.toDataURL() === blank.toDataURL()) {
+            input.value = ""; 
+        } else {
+            input.value = canvas.toDataURL('image/png');
+        }
+    }
+
+    // Converte o arquivo de imagem selecionado para Base64 antes de submeter
+    document.getElementById('foto-input').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('foto_base64_input').value = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            document.getElementById('foto_base64_input').value = '';
+        }
+    });
+</script>
+{% endblock %}

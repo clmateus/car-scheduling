@@ -1,17 +1,27 @@
 {% load authenticate_user %}
 {% load static %}
-<div class="modal-body">
 
+<div class="space-y-6">
+    <!-- Mensagens de Feedback -->
     {% if mensagem_sucesso %}
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ mensagem_sucesso }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="alert alert-success shadow-lg rounded-xl">
+            <i class="bi bi-check-circle-fill text-xl"></i>
+            <div class="flex-1">
+                <span class="font-bold">Sucesso!</span>
+                <span>{{ mensagem_sucesso }}</span>
+            </div>
+            <button class="btn btn-sm btn-ghost" onclick="this.parentElement.remove()">✕</button>
         </div>
     {% endif %}
+    
     {% if mensagem_erro %}
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ mensagem_erro }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="alert alert-error shadow-lg rounded-xl">
+            <i class="bi bi-exclamation-triangle-fill text-xl"></i>
+            <div class="flex-1">
+                <span class="font-bold">Erro!</span>
+                <span>{{ mensagem_erro }}</span>
+            </div>
+            <button class="btn btn-sm btn-ghost" onclick="this.parentElement.remove()">✕</button>
         </div>
     {% endif %}
 
@@ -20,77 +30,211 @@
         hx-target="#tab-body"
         hx-swap="innerHTML"
         hx-encoding="multipart/form-data"
-        enctype="multipart/form-data"  
-        class="input input-bordered w-full"
+        enctype="multipart/form-data"
+        id="formSeguro"
+        class="space-y-5"
     >
         {% csrf_token %}
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Título da Seção -->
+        <div class="flex items-center gap-3 pb-3 border-b border-base-200">
+            <div class="w-1 h-8 bg-primary rounded-full"></div>
+            <h3 class="text-xl font-bold flex items-center gap-2">
+                <i class="bi bi-shield-shaded text-primary text-2xl"></i>
+                Informações do Seguro
+            </h3>
+        </div>
 
-                <label class="form-label">Seguro</label>
+        <!-- Grid de Campos -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <!-- Seguradora -->
+            <div class="form-control w-full">
+                <label class="label">
+                    <span class="label-text font-semibold flex items-center gap-2">
+                        <i class="bi bi-building text-primary text-sm"></i>
+                        Seguradora
+                    </span>
+                </label>
                 <input type="text" 
-                       class="input input-bordered w-full" 
+                       class="input input-bordered w-full {% if not user|has_group:'Gestores' %}bg-base-200/50{% endif %}" 
                        name="seguro" 
                        value="{{ seguro.seguro|default:'' }}" 
+                       placeholder="Nome da seguradora"
                        {% if user|has_group:'Gestores' %}required{% else %}disabled{% endif %}>
+                {% if not user|has_group:'Gestores' %}
+                    <label class="label">
+                        <span class="label-text-alt text-base-content/50">Campo editável apenas por Gestores</span>
+                    </label>
+                {% endif %}
             </div>
-            
-                <label class="form-label">Nº da apólice</label>
-                <input type="number" 
-                       class="input input-bordered w-full" 
+
+            <!-- Número da Apólice -->
+            <div class="form-control w-full">
+                <label class="label">
+                    <span class="label-text font-semibold flex items-center gap-2">
+                        <i class="bi bi-card-text text-primary text-sm"></i>
+                        Nº da Apólice
+                    </span>
+                </label>
+                <input type="text" 
+                       class="input input-bordered w-full font-mono {% if not user|has_group:'Gestores' %}bg-base-200/50{% endif %}" 
                        name="num_apolice" 
                        value="{{ seguro.num_apolice|default:'' }}" 
-                       {% if user|has_group:'Gestores' %}required{% else %}disabled{% endif %}>
-            </div>
-            
-                <label class="form-label">Início da Vigência</label>
-                <input type="date" 
-                       class="input input-bordered w-full" 
-                       name="inicio_vigencia" 
-                       value="{{ seguro.inicio_vigencia|date:'Y-m-d\TH:i'|default:'' }}" 
-                       {% if user|has_group:'Gestores' %}required{% else %}disabled{% endif %}>
-            </div>
-            
-                <label class="form-label">Fim da Vigência</label>
-                <input type="date" 
-                       class="input input-bordered w-full" 
-                       name="final_vigencia" 
-                       value="{{ seguro.final_vigencia|date:'Y-m-d\TH:i'|default:'' }}" 
+                       placeholder="Ex: 123456789"
                        {% if user|has_group:'Gestores' %}required{% else %}disabled{% endif %}>
             </div>
 
-            {% if user|has_group:'Gestores' %}
-            <div class="col-12 mb-3">
-                <label class="form-label">Arquivo da Apólice (PDF, PNG ou JPEG)</label>
+            <!-- Início da Vigência -->
+            <div class="form-control w-full">
+                <label class="label">
+                    <span class="label-text font-semibold flex items-center gap-2">
+                        <i class="bi bi-calendar-plus text-primary text-sm"></i>
+                        Início da Vigência
+                    </span>
+                </label>
+                <input type="date" 
+                       class="input input-bordered w-full {% if not user|has_group:'Gestores' %}bg-base-200/50{% endif %}" 
+                       name="inicio_vigencia" 
+                       value="{{ seguro.inicio_vigencia|date:'Y-m-d'|default:'' }}" 
+                       {% if user|has_group:'Gestores' %}required{% else %}disabled{% endif %}>
+            </div>
+
+            <!-- Fim da Vigência -->
+            <div class="form-control w-full">
+                <label class="label">
+                    <span class="label-text font-semibold flex items-center gap-2">
+                        <i class="bi bi-calendar-x text-primary text-sm"></i>
+                        Fim da Vigência
+                    </span>
+                </label>
+                <input type="date" 
+                       class="input input-bordered w-full {% if not user|has_group:'Gestores' %}bg-base-200/50{% endif %}" 
+                       name="final_vigencia" 
+                       value="{{ seguro.final_vigencia|date:'Y-m-d'|default:'' }}" 
+                       {% if user|has_group:'Gestores' %}required{% else %}disabled{% endif %}>
+            </div>
+        </div>
+
+        <!-- Upload  -->
+        {% if user|has_group:'Gestores' %}
+        <div class="form-control w-full">
+            <label class="label">
+                <span class="label-text font-semibold flex items-center gap-2">
+                    <i class="bi bi-file-pdf text-primary text-sm"></i>
+                    Arquivo da Apólice
+                </span>
+            </label>
+            
+            <div class="border-2 border-dashed border-base-300 rounded-xl p-6 text-center hover:border-primary transition-colors">
                 <input 
                     type="file" 
                     name="apolice" 
-                    class="input input-bordered w-full"
-                    accept=".pdf,.png,.jpg,.jpeg">
-                {% if seguro.apolice %}
-                    <small class="text-gray-500 mt-1 d-block">
-                        Arquivo atual: {{ seguro.apolice.name }}
-                    </small>
-                {% endif %}
+                    id="fileInput"
+                    class="hidden"
+                    accept=".pdf,.png,.jpg,.jpeg"
+                    onchange="atualizarNomeArquivo(this)">
+                
+                <label for="fileInput" class="cursor-pointer flex flex-col items-center gap-2">
+                    <i class="bi bi-cloud-upload text-4xl text-base-content/40"></i>
+                    <span class="font-medium">Clique para selecionar o arquivo</span>
+                    <span class="text-sm text-base-content/50"></span>
+                </label>
+                
+                <div id="nomeArquivo" class="mt-3 text-sm text-primary hidden">
+                    <i class="bi bi-file-earmark-check"></i>
+                    <span id="nomeArquivoTexto"></span>
+                </div>
             </div>
+            
+            {% if seguro.apolice %}
+                <div class="mt-2 flex items-center gap-2 text-sm">
+                    <i class="bi bi-paperclip text-primary"></i>
+                    <span>Arquivo atual:</span>
+                    <span class="font-mono">{{ seguro.apolice.name|truncatechars:40 }}</span>
+                </div>
             {% endif %}
         </div>
+        {% endif %}
 
+        <!-- Download  -->
         {% if seguro.apolice %}
-        <div class="mb-3">
+        <div class="flex justify-start">
             <a href="{{ seguro.apolice.url }}" 
-               class="btn btn-primary" 
-               target="_blank">
-                Baixar Arquivo da Apólice
+               class="btn btn-outline btn-primary gap-2" 
+               target="_blank"
+               rel="noopener noreferrer">
+                <i class="bi bi-download"></i>
+                Baixar Apólice
             </a>
         </div>
         {% endif %}
 
-        {% if user|has_group:'Gestores' %}
-        <div class="mt-4 mb-3">
-            <button type="submit" class="btn btn-primary w-100">Salvar Alterações</button>
+        <!-- Botões de Ação -->
+        <div class="flex justify-end gap-3 pt-4 mt-4 border-t border-base-200">
+            {% if user|has_group:'Gestores' %}
+                <button type="button" class="btn btn-ghost" onclick="fecharModalAtual()">
+                    <i class="bi bi-x-lg"></i>
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn-primary text-white gap-2">
+                    <i class="bi bi-save"></i>
+                    Salvar Alterações
+                </button>
+            {% else %}
+                <button type="button" class="btn btn-ghost" onclick="fecharModalAtual()">
+                    Fechar
+                </button>
+            {% endif %}
         </div>
-        {% endif %}
-
     </form>
 </div>
+
+<script>
+    function atualizarNomeArquivo(input) {
+        const nomeArquivoDiv = document.getElementById('nomeArquivo');
+        const nomeArquivoTexto = document.getElementById('nomeArquivoTexto');
+        
+        if (input.files && input.files[0]) {
+            nomeArquivoTexto.textContent = input.files[0].name;
+            nomeArquivoDiv.classList.remove('hidden');
+        } else {
+            nomeArquivoDiv.classList.add('hidden');
+        }
+    }
+    
+    function fecharModalAtual() {
+        // Fecha o modal atual
+        const modal = document.querySelector('dialog.modal[open]');
+        if (modal) modal.close();
+        
+        // Dispara evento opcional
+        document.body.dispatchEvent(new CustomEvent('fecharModalSeguro'));
+    }
+    
+    // Após submit do HTMX
+    const form = document.getElementById('formSeguro');
+    if (form) {
+        form.addEventListener('htmx:afterRequest', function(evt) {
+            if (evt.detail.successful) {
+                // Rola para o topo e mostra mensagem de sucesso
+                const modalBody = document.getElementById('tab-body');
+                if (modalBody) modalBody.scrollTop = 0;
+                
+                // Opcional: recarregar dados da tabela
+                document.body.dispatchEvent(new CustomEvent('seguroAtualizado'));
+                
+                // Fecha modal após 2 segundos (opcional)
+                setTimeout(function() {
+                    fecharModalAtual();
+                }, 3000);
+            }
+        });
+    }
+</script>
+
+<style>
+    /* Estilo adicional para o input file */
+    .border-dashed {
+        border-style: dashed;
+    }
+</style>

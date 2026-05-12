@@ -13,8 +13,7 @@
         hx-target="#tab-body"
         hx-swap="innerHTML"
         hx-encoding="multipart/form-data"
-        id="formIdentificacao"
-    >
+        id="formIdentificacao">
         {% csrf_token %}
 
         <!-- Título da Seção -->
@@ -130,6 +129,7 @@
                 <input type="text" class="input input-bordered w-full bg-base-200/50" value="{{ veiculo.versao }}" disabled>
             </div>
         </div>
+
         <!-- Botões de Ação -->
         <div class="flex justify-end gap-3 pt-4 border-t border-base-200">
             <button type="button" class="btn btn-ghost" onclick="fecharModalGlobal()">
@@ -145,27 +145,3 @@
         </div>
     </form>
 </div>
-
-<script>
-    function fecharModalGlobal() {
-        // Fecha qualquer modal aberto
-        document.querySelectorAll('dialog.modal[open]').forEach(modal => {
-            modal.close();
-        });
-        // Opcional: recarregar página ou trigger específico
-        document.body.dispatchEvent(new CustomEvent('fecharModal'));
-    }
-
-    // Handle do HTMX após submit
-    const form = document.getElementById('formIdentificacao');
-    if (form) {
-        form.addEventListener('htmx:afterRequest', function(evt) {
-            if (evt.detail.successful) {
-                // Se sucesso, fecha o modal após 1.5 segundos
-                setTimeout(function() {
-                    fecharModalGlobal();
-                }, 1500);
-            }
-        });
-    }
-</script>

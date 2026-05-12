@@ -1,53 +1,35 @@
+// Script para abas
 let veiculoAtivoId = null;
-let abaAtiva = 'identificacao';  // ← mudado: sem o prefixo transporte/
 
 function abrirModalCarro(veiculoId) {
     veiculoAtivoId = veiculoId;
-    abaAtiva = 'identificacao';
-
-    // Marca aba Identificação como ativa
-    document.querySelectorAll('#abas-veiculo .tab')
-        .forEach(btn => btn.classList.remove('tab-active'));
-
-    const btnIdentificacao = document.querySelector('#abas-veiculo [data-aba="identificacao"]');
-    if (btnIdentificacao) btnIdentificacao.classList.add('tab-active');
-
-    carregarAba('identificacao', veiculoId);  // ← mudado: sem prefixo
+    carregarAba('identificacao', veiculoId);
 }
 
-function trocarAba(btn) {
-    if (!veiculoAtivoId) return;
-
-    document.querySelectorAll('#abas-veiculo .tab')
-        .forEach(b => b.classList.remove('tab-active'));
-
-    btn.classList.add('tab-active');
-
-    abaAtiva = btn.dataset.aba;
-    carregarAba(abaAtiva, veiculoAtivoId);  // ← agora abaAtiva é 'identificacao', 'documentacao', etc.
+function trocarAba(elemento) {
+    const aba = elemento.dataset.aba;
+    if (aba && veiculoAtivoId) {
+        // Atualiza visual
+        document.querySelectorAll('#abas-veiculo .tab').forEach(tab => {
+            tab.classList.remove('tab-active');
+        });
+        elemento.classList.add('tab-active');
+        
+        // Carrega conteúdo
+        carregarAba(aba, veiculoAtivoId);
+    }
 }
 
 function carregarAba(aba, veiculoId) {
-    // Adicione a barra no início para URL absoluta
-    htmx.ajax('GET', `/transporte/veiculos/tab/${aba}/${veiculoId}/`, {
-        target: '#tab-body',
-        swap: 'innerHTML'
-    });
+    const target = document.getElementById('tab-body');
+    if (!target) return;
+    
+    target.innerHTML = '<div class="flex justify-center p-12"><div class="loading loading-spinner loading-lg"></div></div>';
+    
+    fetch(`/transporte/veiculos/tab/${aba}/${veiculoId}/`)
+        .then(response => response.text())
+        .then(html => { target.innerHTML = html; })
+        .catch(error => {
+            target.innerHTML = `<div class="alert alert-error m-4">Erro: ${error}</div>`;
+        });
 }
-
-// Ao salvar a documentação com sucesso, recarrega a aba Identificação automaticamente
-document.body.addEventListener('refreshIdentificacao', function () {
-    if (!veiculoAtivoId) return;
-
-    document.querySelectorAll('#abas-veiculo .tab')
-        .forEach(b => b.classList.remove('tab-active'));
-
-    const btnIdentificacao = document.querySelector('#abas-veiculo [data-aba="identificacao"]');
-    if (btnIdentificacao) btnIdentificacao.classList.add('tab-active');
-
-    carregarAba('identificacao', veiculoAtivoId);  // ← mudado: sem prefixo
-});
-
-document.body.addEventListener('atualizarComentarios', function () {
-    // força clicar na aba comentários
-});

@@ -37,7 +37,10 @@ urlpatterns = [
     path('detalhes_ativo/<int:pk>/', views.detalhes_ativo, name='detalhes_ativo'),
     path('ativos/editar_ativo/<int:pk>/', views.editar_ativo, name='editar_ativo'),
     path('ativos/remover_ativo/<int:pk>/', views.remover_ativo, name='remover_ativo'),
+    path('ativos/atribuir/<int:pk>/', views.atribuir_ativo, name='atribuir_ativo'),
     path('devolver_ativo/<int:pk>/', views.devolver_ativo, name='devolver_ativo'),
     path('ativos/historico_ativo/', views.historico_ativo, name='historico_ativo'),
     path("observacoes/<int:pk>/deletar/", views.deletar_observacao, name="deletar_observacao"),
+    path('transporte/veiculos/tab/seguro/<int:veiculo_id>/', views.tab_seguro, name='tab_seguro'),
+    path('transporte/veiculos/tab/info/<int:veiculo_id>/', views.tab_info, name='tab_info'),
 ]  

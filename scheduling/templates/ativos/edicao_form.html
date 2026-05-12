@@ -22,9 +22,16 @@
         </span>
     </label>
     
-    <div class="destino-estilizado">
+    <div id="containerDestino">
         {{ form.destino }}
     </div>
+
+    {% if form.destino.errors %}
+        <label class="label">
+            <span class="label-text-alt text-error">{{ form.destino.errors }}</span>
+        </label>
+    {% endif %}
+</div>
 
     {% if form.destino.errors %}
         <label class="label">
@@ -114,23 +121,25 @@
     }
 </style>
 <script>
-    (function() {
+(function() {
+// Adicione isso dentro do <script> que já existe no seu edicao_form.html
+(function() {
+    // Procura o input de destino e aplica as classes de borda do DaisyUI
+    const destinoInput = document.querySelector('input[name="destino"]');
+    if (destinoInput) {
+        destinoInput.classList.add('input', 'input-bordered', 'w-full', 'focus:input-primary');
+    }
+})();
+
+        // --- Seu código HTMX existente ---
         const form = document.getElementById('formEdicao');
         if (!form) return;
         
         form.addEventListener('htmx:afterRequest', function(evt) {
             if (evt.detail.successful && evt.detail.xhr.status === 200) {
-                // Fecha o modal
                 const modal = document.getElementById('modalEdicao');
                 if (modal) modal.close();
-                // Recarrega a página para atualizar os cards
                 window.location.reload();
-            } else if (evt.detail.xhr.status === 400) {
-                // Erro de validação - mantém o modal aberto e mostra os erros
-                const modalBody = document.getElementById('modalEdicaoBody');
-                if (modalBody) {
-                    modalBody.scrollTop = 0;
-                }
             }
         });
     })();

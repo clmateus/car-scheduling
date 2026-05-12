@@ -9,6 +9,7 @@ from django.http import JsonResponse, HttpResponse
 from django.core.mail import send_mail
 from django_q.tasks import async_task
 from django.contrib import messages
+from django.contrib.auth.models import User
 from .models import (
     Agendamento, Veiculo, Seguro, Info, Ativo, SolicitacaoAtivo
 )
@@ -394,9 +395,7 @@ def detalhes_viagem(request, pk):
 
 @login_required
 def carregar_aba(request, aba, veiculo_id):
-    """Carrega o conteúdo da aba solicitada via HTMX."""
     veiculo = get_object_or_404(Veiculo, id=veiculo_id)
-
     templates = {
         'identificacao': 'transporte/tab/identificacao.html',
         'documentacao': 'transporte/tab/documentacao.html',
@@ -412,6 +411,45 @@ def carregar_aba(request, aba, veiculo_id):
         context['observacoes'] = Info.objects.filter(veiculo=veiculo).order_by('-id')
 
     return render(request, templates.get(aba, 'transporte/tab/identificacao.html'), context)
+
+@login_required
+def tab_identificacao(request, veiculo_id):
+    veiculo = get_object_or_404(Veiculo, id=veiculo_id)
+    context = {
+        'veiculo': veiculo,
+        'pode_editar': request.user.groups.filter(name='Gestores').exists(),
+    }
+    return render(request, 'transporte/veiculos/tab/identificacao.html', context)
+    
+
+def tab_seguro(request, veiculo_id):
+    """Carrega a aba de seguro do veículo"""
+    veiculo = get_object_or_404(Veiculo, id=veiculo_id)
+    seguro = Seguro.objects.filter(veiculo=veiculo).first()
+    context = {
+        'veiculo': veiculo,
+        'seguro': seguro,
+        'user': request.user
+    }
+    return render(request, 'veiculos/tab/seguro.html', context)
+
+def tab_info(request, veiculo_id):
+    """Carrega a aba de informações adicionais"""
+    veiculo = get_object_or_404(Veiculo, id=veiculo_id)
+    context = {
+        'veiculo': veiculo,
+        'user': request.user
+    }
+    return render(request, 'veiculos/tab/info.html', context)
+
+def tab_comentarios(request, veiculo_id):
+    """Carrega a aba de comentários (apenas para gestores)"""
+    veiculo = get_object_or_404(Veiculo, id=veiculo_id)
+    context = {
+        'veiculo': veiculo,
+        'user': request.user,
+    }
+    return render(request, 'veiculos/tab/comentarios.html', context)
 
 @login_required
 def salvar_aba_identificacao(request, veiculo_id):
@@ -518,6 +556,7 @@ def cadastrar_equipamento(request):
 @user_passes_test(is_gestor, login_url='/')
 def listar_ativos(request):
     ativos = Ativo.objects.all().order_by('-disponibilidade')
+    usuarios = User.objects.filter(is_active=True).order_by('first_name')
 
     resumo = [
         {'nome': 'Celulares', 'total': 0, 'disponiveis': 0, 'em_uso': 0, 'icon': 'bi-phone'},
@@ -542,7 +581,7 @@ def listar_ativos(request):
             else:
                 resumo[idx]['em_uso'] += 1
 
-    return render(request, 'ativos/listar_ativos.html', {'ativos': ativos, 'resumo_ativos': resumo})
+    return render(request, 'ativos/listar_ativos.html', {'ativos': ativos, 'resumo_ativos': resumo, 'usuarios': usuarios})
 
 @login_required
 @user_passes_test(is_gestor, login_url='/')
@@ -577,6 +616,33 @@ def editar_ativo(request, pk):
         form = AtivoForm(instance=ativo)
 
     return render(request, 'partials/modal_editar_ativo.html', {'form': form, 'ativo': ativo})
+
+@login_required
+@require_POST
+@user_passes_test(is_gestor, login_url='/')
+def atribuir_ativo(request, pk):
+    ativo = get_object_or_404(Ativo, id=pk)
+    usuario_id = request.POST.get('usuario_id')
+    
+    if usuario_id and ativo.disponibilidade:
+        usuario = get_object_or_404(User, id=usuario_id)
+        
+        with transaction.atomic():
+            ativo.usuario = usuario
+            ativo.disponibilidade = False
+            ativo.save()
+
+            # Cria uma solicitação aprovada silenciosamente para manter o histórico
+            SolicitacaoAtivo.objects.create(
+                usuario=usuario,
+                categoria=ativo.categoria,
+                ativo_entregue=ativo,
+                status=True,
+                justificativa="Atribuição direta realizada pelo gestor."
+            )
+            
+        messages.success(request, f'Aparelho atribuído a {usuario.get_full_name() or usuario.username} com sucesso!')
+    return redirect('listar_ativos')
 
 @login_required
 @user_passes_test(is_gestor, login_url='/')

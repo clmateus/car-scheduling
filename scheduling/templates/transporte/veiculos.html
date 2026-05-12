@@ -131,14 +131,42 @@
                 <h3 class="font-bold text-2xl mb-6">Ficha do Veículo</h3>
 
                 <!-- Abas de navegação (DaisyUI) -->
-                <div role="tablist" class="tabs tabs-bordered mb-6" id="abas-veiculo">
-                    <a role="tab" class="tab tab-active text-base" data-aba="identificacao" onclick="trocarAba(this)">Identificação</a>
-                    <a role="tab" class="tab text-base" data-aba="documentacao" onclick="trocarAba(this)">Seguro</a>
-                    <a role="tab" class="tab text-base" data-aba="info" onclick="trocarAba(this)">Info</a>
-                    {% if user|has_group:'Gestores' %}
-                        <a role="tab" class="tab text-base" data-aba="comentarios" onclick="trocarAba(this)">Comentários</a>
-                    {% endif %}
-                </div>
+<div role="tablist" class="tabs tabs-bordered mb-6" id="abas-veiculo">
+    <a role="tab" 
+       class="tab text-base font-semibold" 
+       data-aba="identificacao" 
+       onclick="trocarAba(this)"
+       style="cursor: pointer;">
+        <i class="bi bi-car-front mr-2"></i>
+        Identificação
+    </a>
+    <a role="tab" 
+       class="tab text-base font-semibold" 
+       data-aba="documentacao" 
+       onclick="trocarAba(this)"
+       style="cursor: pointer;">
+        <i class="bi bi-shield-shaded mr-2"></i>
+        Seguro
+    </a>
+    <a role="tab" 
+       class="tab text-base font-semibold" 
+       data-aba="info" 
+       onclick="trocarAba(this)"
+       style="cursor: pointer;">
+        <i class="bi bi-info-circle mr-2"></i>
+        Info
+    </a>
+    {% if user|has_group:'Gestores' %}
+    <a role="tab" 
+       class="tab text-base font-semibold" 
+       data-aba="comentarios" 
+       onclick="trocarAba(this)"
+       style="cursor: pointer;">
+        <i class="bi bi-chat-dots mr-2"></i>
+        Comentários
+    </a>
+    {% endif %}
+</div>
 
                 <div id="tab-body" class="flex-grow overflow-auto p-1">
                     <div class="flex flex-col items-center justify-center h-full text-base-content/50">
@@ -171,4 +199,25 @@
             <form method="dialog" class="modal-backdrop"><button>close</button></form>
         </dialog>
     </div> 
+    <style>
+    /* Garantia de que a aba ativa terá estilo visível */
+    #abas-veiculo .tab {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    #abas-veiculo .tab-active {
+        border-bottom-width: 2px;
+        border-bottom-style: solid;
+        border-bottom-color: var(--fallback-p, oklch(var(--p)));
+        color: var(--fallback-p, oklch(var(--p)));
+        font-weight: 600;
+    }
+    
+    #abas-veiculo .tab:not(.tab-active):hover {
+        border-bottom-color: var(--fallback-bc, oklch(var(--bc)));
+        border-bottom-width: 2px;
+        border-bottom-style: solid;
+    }
+</style>
 {% endblock %}

@@ -1,137 +1,401 @@
 {% extends '_base.html' %}
 {% block content %}
-<div class="breadcrumbs text-sm mb-6">
-    <ul>
-        <li><a href="{% url 'index' %}">Início</a></li>
-        <li><a href="{% url 'historico' %}">Histórico de Viagens</a></li>
-        <li>Checkout da Viagem</li>
-    </ul>
-</div>
+<div class="bg-base-100 min-h-screen from-slate-50 to-gray-100 py-8 px-4">
+    <div class="max-w-4xl mx-auto">
+        <!-- Breadcrumbs Estilizados -->
+        <div class="mb-6">
+            <div class="breadcrumbs text-sm">
+                <ul class="bg-base-100">
+                    <li><a href="{% url 'index' %}" class="hover:text-primary transition-colors"><i class="bi bi-house-door me-1"></i>Início</a></li>
+                    <li><a href="{% url 'historico' %}" class="hover:text-primary transition-colors"><i class="bi bi-clock-history me-1"></i>Histórico de Viagens</a></li>
+                    <li class="text-gray-400"><i class="bi bi-check2-circle me-1"></i>Checkout da Viagem</li>
+                </ul>
+            </div>
+        </div>
 
-<div class="max-w-3xl mx-auto bg-base-100 shadow-xl rounded-2xl p-6 md:p-8">
-    <h2 class="text-3xl font-bold mb-6 text-center">Checkout de Retorno</h2>
-    
-    <div class="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 bg-base-200 rounded-xl text-sm">
-        <p><strong><i class="bi bi-person me-2"></i> Motorista:</strong> <br><span class="text-base-content/80">{{ agendamento.motorista }}</span></p>
-        <p><strong><i class="bi bi-geo-alt me-2"></i> Destino:</strong> <br><span class="text-base-content/80">{{ agendamento.destino }}</span></p>
-        <p class="sm:col-span-2"><strong><i class="bi bi-car-front me-2"></i> Veículo:</strong> <br><span class="text-base-content/80">{{ agendamento.veiculo|default:"Não atribuído" }}</span></p>
+        <!-- Card Principal -->
+        <div class="bg-base-800 rounded-3xl shadow-2xl overflow-hidden">
+            <!-- Header Gradient -->
+            <div class="bg-base-800 from-blue-600 to-indigo-700 px-8 py-6">
+                <div class="flex items-center justify-between flex-wrap gap-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-base-800 backdrop-blur-sm p-3 rounded-xl">
+                            <i class="bi bi-arrow-return-left text-white text-2xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-bold bg-base-800">Checkout de Retorno</h2>
+                            <p class="text-blue-100 text-sm mt-1">Finalize a viagem e registre o retorno do veículo</p>
+                        </div>
+                    </div>
+                    <div class="bg-base-100 backdrop-blur-sm px-4 py-2 rounded-xl">
+                        <i class="bi bi-calendar-check text-white me-2"></i>
+                        <span class="text-white text-sm">{% now "d/m/Y H:i" %}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conteúdo -->
+            <div class="p-6 md:p-8">
+                <!-- Card de Informações da Viagem -->
+                <div class="mb-8 bg-base-100r from-gray-50 to-blue-50/30 rounded-2xl p-6 border border-gray-100">
+                    <h3 class="text-lg font-semibold bg-base-100 mb-4 flex items-center">
+                        <i class="bi bi-info-circle-fill text-base me-2"></i>
+                        Informações da Viagem
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-base-100 p-2 rounded-lg">
+                                <i class="bi bi-person text-base-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-wide">Motorista</p>
+                                <p class="font-semibold text-base-800">{{ agendamento.motorista }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-base-100 p-2 rounded-lg">
+                                <i class="bi bi-geo-alt text-base-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-wide">Destino</p>
+                                <p class="font-semibold text-base-800">{{ agendamento.destino }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3 md:col-span-2">
+                            <div class="bg-base-100 p-2 rounded-lg">
+                                <i class="bi bi-car-front text-base-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-wide">Veículo</p>
+                                <p class="font-semibold text-base-800">{{ agendamento.veiculo|default:"Não atribuído" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulário -->
+                <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    <!-- Quilometragem e Foto -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Quilometragem -->
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold text-base-700">
+                                    <i class="bi bi-speedometer2 me-1"></i>
+                                    Nova Quilometragem
+                                </span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-base-400">km</span>
+                                <input type="number" name="quilometragem" placeholder="Ex: 54000" 
+                                       class="input input-bordered w-full pl-12 focus:ring-2 focus:ring-blue-300 transition-all" 
+                                       value="{{ agendamento.veiculo.quilometragem|default_if_none:'' }}" 
+                                       min="{{ agendamento.veiculo.quilometragem|default_if_none:'0' }}">
+                            </div>
+                            <label class="label">
+                                <span class="label-text-alt text-base-400 text-xs">
+                                    <i class="bi bi-info-circle"></i>
+                                    Atualiza o odômetro do veículo (Opcional)
+                                </span>
+                            </label>
+                        </div>
+
+                        <!-- Evidência Fotográfica -->
+                        <div class="form-control">
+                            <label for="fileInput" class="cursor-pointer flex flex-col items-center gap-2">
+                                <span class="font-medium">Clique para selecionar o arquivo</span>
+                                <span class="text-sm text-base-content/50"></span>
+                                    <i class="bi bi-camera me-1"></i>
+                                    Evidência Fotográfica
+                                </span>
+                            </label>
+                            <div id="nomeArquivo" class="mt-3 text-sm text-primary hidden">
+                                <input type="file" id="foto-input" accept="image/*" 
+                                       class="file-input file-input-bordered w-full file-input-primary focus:outline-none" />
+                                <input type="hidden" name="foto_base64" id="foto_base64_input">
+                            </div>
+
+                {% comment %} 
+<div class="border-2 border-dashed border-base-300 rounded-xl p-6 text-center hover:border-primary transition-colors">
+                <input 
+                    type="file" 
+                    name="apolice" 
+                    id="fileInput"
+                    class="hidden"
+                    accept=".pdf,.png,.jpg,.jpeg"
+                    onchange="atualizarNomeArquivo(this)">
+                
+                <label for="fileInput" class="cursor-pointer flex flex-col items-center gap-2">
+                    <i class="bi bi-cloud-upload text-4xl text-base-content/40"></i>
+                    <span class="font-medium">Clique para selecionar o arquivo</span>
+                    <span class="text-sm text-base-content/50"></span>
+                </label>
+                
+                <div id="nomeArquivo" class="mt-3 text-sm text-primary hidden">
+                    <i class="bi bi-file-earmark-check"></i>
+                    <span id="nomeArquivoTexto"></span>
+                </div>
+            </div>
+                 {% endcomment %}
+
+
+
+
+                            <label class="label">
+                                <span class="label-text-alt text-base-400 text-xs">
+                                    <i class="bi bi-image"></i>
+                                    Tire uma foto do veículo no destino (Opcional)
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Observações -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold text-base-700">
+                                <i class="bi bi-chat-text me-1"></i>
+                                Observações do Motorista
+                            </span>
+                        </label>
+                        <textarea name="observacao" class="textarea textarea-bordered h-28 focus:ring-2 focus:ring-blue-300 transition-all resize-none" 
+                                  placeholder="Alguma avaria, problema mecânico, ou imprevisto a relatar?"></textarea>
+                        <label class="label">
+                            <span class="label-text-alt text-base-400 text-xs">
+                                <i class="bi bi-pencil"></i>
+                                Descreva qualquer ocorrência durante a viagem (Opcional)
+                            </span>
+                        </label>
+                    </div>
+
+                    <!-- Assinatura -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold text-base-700 text-lg">
+                                <i class="bi bi-pen me-1"></i>
+                                Assinatura
+                                <span class="text-red-500 ml-1">*</span>
+                            </span>
+                        </label>
+                        
+                        <!-- Canvas de Assinatura -->
+                        <div class="relative group">
+                            <canvas id="signature-canvas" width="600" height="200" 
+                                    class="bg-base-100 rounded-xl border-2 border-gray-200 cursor-crosshair w-full h-auto shadow-inner transition-all group-hover:border-blue-300"
+                                    style="touch-action: none;"></canvas>
+                            
+                            <!-- Botão Limpar -->
+                            <button id="btnResetarCanvas" type="button" 
+                                    class="btn btn-sm btn-ghost absolute top-3 right-3 text-base-400 hover:text-base-500 transition-all duration-300"
+                                    title="Apagar Assinatura">
+                                <i class="bi bi-eraser-fill text-lg"></i>
+                                <span class="text-xs ml-1 hidden md:inline">Limpar</span>
+                            </button>
+                            
+                            <!-- Instrução -->
+                            <div class="absolute bottom-3 left-1/2 transform -translate-x-1/2 text-center pointer-events-none">
+                                <p class="text-xs text-gray-400 bg-base-100 px-3 py-1 rounded-full">
+                                    <i class="bi bi-hand-index"></i> Assine acima
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" name="assinatura" id="assinatura-input" required>
+                    </div>
+
+                    <!-- Botões de Ação -->
+                    <div class="mt-8 flex flex-col sm:flex-row gap-4 pt-6 border-t-2 border-gray-100">
+                        <a href="{% url 'historico' %}" 
+                           class="btn btn-outline flex-1 gap-2 hover:bg-base-100 transition-all duration-300">
+                            <i class="bi bi-x-lg"></i>
+                            Cancelar
+                        </a>
+                        <button type="submit" 
+                                class="btn btn-outline flex-1 gap-2 hover:bg-base-100 transition-all duration-30"
+                                onclick="salvarAssinatura(event)">
+                            <i class="bi bi-check2-circle text-lg"></i>
+                            Finalizar Checkout
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-
-    <form method="POST" enctype="multipart/form-data" class="space-y-6">
-        {% csrf_token %}
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="form-control w-full">
-                <label class="label"><span class="label-text font-semibold">Nova Quilometragem</span></label>
-                <input type="number" name="quilometragem" placeholder="Ex: 54000" class="input input-bordered w-full" value="{{ agendamento.veiculo.quilometragem|default_if_none:'' }}" min="{{ agendamento.veiculo.quilometragem|default_if_none:'0' }}">
-                <label class="label"><span class="label-text-alt text-base-content/50">Atualiza o odômetro do veículo (Opcional)</span></label>
-            </div>
-
-            <div class="form-control w-full">
-                <label class="label"><span class="label-text font-semibold">Evidência Fotográfica (Opcional)</span></label>
-                <input type="file" id="foto-input" accept="image/*" class="file-input file-input-bordered w-full" />
-                <input type="hidden" name="foto_base64" id="foto_base64_input">
-            </div>
-        </div>
-
-        <div class="form-control w-full">
-            <label class="label"><span class="label-text font-semibold">Observações do Motorista (Opcional)</span></label>
-            <textarea name="observacao" class="textarea textarea-bordered h-24" placeholder="Alguma avaria, problema mecânico, ou imprevisto a relatar?"></textarea>
-        </div>
-
-        <div class="form-control w-full">
-            <label class="label"><span class="label-text font-semibold text-lg">Assinatura <span class="text-error">*</span></span></label>
-            <div class="border-2 border-dashed border-base-300 rounded-xl bg-base-100 p-2 text-center relative h-64 w-full" id="assinatura-container">
-                <canvas id="assinatura-pad" class="w-full h-full cursor-crosshair rounded-lg touch-none"></canvas>
-            </div>
-            <div class="flex justify-between mt-2">
-                <span class="text-xs text-base-content/60">Assine dentro da área delimitada</span>
-                <button type="button" class="btn btn-sm btn-ghost text-error" onclick="limparAssinatura()">
-                    <i class="bi bi-eraser me-1"></i> Limpar
-                </button>
-            </div>
-            <input type="hidden" name="assinatura" id="assinatura-input" required>
-        </div>
-
-        <div class="mt-8 flex gap-4 pt-4 border-t border-base-200">
-            <a href="{% url 'historico' %}" class="btn btn-ghost flex-1">Cancelar</a>
-            <button type="submit" class="btn btn-primary flex-1 text-white shadow-md" onclick="salvarAssinatura(event)">
-                <i class="bi bi-check2-circle me-2"></i> Finalizar Checkout
-            </button>
-        </div>
-    </form>
 </div>
+
+<style>
+    /* Estilos adicionais para o canvas */
+    #signature-canvas {
+        cursor: crosshair;
+    }
+    
+    #signature-canvas:active {
+        cursor: crosshair;
+    }
+    
+    /* Animação suave para inputs */
+    .input, .textarea, .file-input {
+        transition: all 0.2s ease;
+    }
+    
+    .input:focus, .textarea:focus {
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    /* Estilo para o file input */
+    .file-input::file-selector-button {
+        transition: all 0.2s ease;
+    }
+</style>
 
 <script>
-    const canvas = document.getElementById('assinatura-pad');
+    // Configuração do Canvas de Assinatura
+    const canvas = document.getElementById('signature-canvas');
     const ctx = canvas.getContext('2d');
     let desenhando = false;
-
-    // Ajusta o tamanho do canvas para lidar com densidade de tela e não perder qualidade
-    function resizeCanvas() {
-        canvas.width = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight;
+    
+    // Ajusta o tamanho real do canvas
+    function setupCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+        
+        // Configurações iniciais do contexto
+        ctx.lineWidth = 2.5;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = '#1f2937';
+        ctx.fillStyle = '#f9fafb';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    // Mouse events
-    canvas.addEventListener('mousedown', (e) => { desenhando = true; desenhar(e); });
-    canvas.addEventListener('mouseup', () => { desenhando = false; ctx.beginPath(); });
-    canvas.addEventListener('mousemove', desenhar);
-
-    // Touch events (para mobile)
-    canvas.addEventListener('touchstart', (e) => { desenhando = true; desenhar(e.touches[0]); e.preventDefault(); });
-    canvas.addEventListener('touchend', () => { desenhando = false; ctx.beginPath(); });
-    canvas.addEventListener('touchmove', (e) => { desenhar(e.touches[0]); e.preventDefault(); });
-
+    
+    // Função para desenhar
     function desenhar(e) {
         if (!desenhando) return;
+        
+        e.preventDefault();
+        
         const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        ctx.lineWidth = 3;
-        ctx.lineCap = 'round';
-        ctx.strokeStyle = '#000';
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        
+        let clientX, clientY;
+        
+        if (e.touches) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        } else {
+            clientX = e.clientX;
+            clientY = e.clientY;
+        }
+        
+        const x = (clientX - rect.left) * scaleX;
+        const y = (clientY - rect.top) * scaleY;
+        
         ctx.lineTo(x, y);
         ctx.stroke();
         ctx.beginPath();
         ctx.moveTo(x, y);
     }
-
-    function limparAssinatura() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        document.getElementById('assinatura-input').value = "";
+    
+    function iniciarDesenho(e) {
+        desenhando = true;
+        desenhar(e);
+        ctx.beginPath();
     }
-
+    
+    function pararDesenho() {
+        desenhando = false;
+        ctx.beginPath();
+    }
+    
+    // Eventos do mouse
+    canvas.addEventListener('mousedown', iniciarDesenho);
+    canvas.addEventListener('mouseup', pararDesenho);
+    canvas.addEventListener('mousemove', desenhar);
+    
+    // Eventos touch para mobile
+    canvas.addEventListener('touchstart', iniciarDesenho);
+    canvas.addEventListener('touchend', pararDesenho);
+    canvas.addEventListener('touchmove', desenhar);
+    
+    // Limpar assinatura
+    document.getElementById('btnResetarCanvas').addEventListener('click', function() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#f9fafb';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        document.getElementById('assinatura-input').value = '';
+    });
+    
+    // Salvar assinatura em Base64
     function salvarAssinatura(event) {
         const input = document.getElementById('assinatura-input');
         
-        // Só armazena o valor se não estiver vazio
-        const blank = document.createElement('canvas');
-        blank.width = canvas.width;
-        blank.height = canvas.height;
+        // Verifica se o canvas está vazio
+        const canvasData = canvas.toDataURL('image/png');
+        const blankCanvas = document.createElement('canvas');
+        blankCanvas.width = canvas.width;
+        blankCanvas.height = canvas.height;
+        const blankCtx = blankCanvas.getContext('2d');
+        blankCtx.fillStyle = '#f9fafb';
+        blankCtx.fillRect(0, 0, blankCanvas.width, blankCanvas.height);
         
-        if(canvas.toDataURL() === blank.toDataURL()) {
-            input.value = ""; 
+        if(canvasData === blankCanvas.toDataURL('image/png')) {
+            event.preventDefault();
+            alert('Por favor, assine no campo acima antes de finalizar.');
+            input.value = "";
+            return false;
         } else {
-            input.value = canvas.toDataURL('image/png');
+            input.value = canvasData;
         }
     }
-
-    // Converte o arquivo de imagem selecionado para Base64 antes de submeter
+    
+    // Converter foto para Base64
     document.getElementById('foto-input').addEventListener('change', function(event) {
         const file = event.target.files[0];
         if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                alert('A imagem não pode ter mais que 5MB.');
+                this.value = '';
+                return;
+            }
+            
             const reader = new FileReader();
             reader.onload = function(e) {
                 document.getElementById('foto_base64_input').value = e.target.result;
+            };
+            reader.onerror = function() {
+                alert('Erro ao ler o arquivo. Tente novamente.');
             };
             reader.readAsDataURL(file);
         } else {
             document.getElementById('foto_base64_input').value = '';
         }
+    });
+    
+    // Inicializar canvas quando a página carregar
+    window.addEventListener('load', function() {
+        setupCanvas();
+        // Reajustar quando a janela for redimensionada
+        let resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(function() {
+                const oldData = canvas.toDataURL();
+                setupCanvas();
+                // Restaurar assinatura se existir
+                if (oldData && oldData !== canvas.toDataURL()) {
+                    const img = new Image();
+                    img.onload = function() {
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    };
+                    img.src = oldData;
+                }
+            }, 250);
+        });
     });
 </script>
 {% endblock %}

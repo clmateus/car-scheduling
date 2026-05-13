@@ -1,5 +1,6 @@
 from django import forms
 from .models import *
+from django.contrib.auth.models import User
 
 class CadastroVeiculo(forms.ModelForm):
     class Meta:
@@ -40,7 +41,6 @@ class EdicaoForm(forms.ModelForm):
         model = Agendamento
         fields = ['motorista', 'dataPartida', 'dataChegada', 'destino', 'passageiros']    
         widgets = {
-            'motorista': forms.TextInput(attrs={'class': 'form-control'}),
             'dataPartida': forms.DateTimeInput(format='%Y-%m-%dT%H:%M', attrs={'type': 'datetime-local', 'class': 'form-control'}),
             'dataChegada': forms.DateTimeInput(format='%Y-%m-%dT%H:%M', attrs={'type': 'datetime-local', 'class': 'form-control'}),
             'destino': forms.TextInput(attrs={'class': 'form-control'}),
@@ -56,6 +56,13 @@ class EdicaoForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        usuarios = User.objects.filter(is_active=True).order_by('first_name')
+        choices = [('', 'Selecione um motorista...')] + [(u.get_full_name() or u.username, u.get_full_name() or u.username) for u in usuarios]
+        if self.instance and self.instance.motorista and self.instance.motorista not in dict(choices):
+            choices.append((self.instance.motorista, f"{self.instance.motorista} (Não registrado)"))
+            
+        self.fields['motorista'] = forms.ChoiceField(choices=choices, widget=forms.Select(attrs={'class': 'form-control', 'required': True}), label='Nome do motorista')
         self.fields['dataPartida'].input_formats = ('%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M')
         self.fields['dataChegada'].input_formats = ('%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M')
 
@@ -90,12 +97,12 @@ class AtivoForm(forms.ModelForm):
         model = Ativo
         fields = ['categoria', 'marca', 'modelo', 'numero_de_serie', 'conta_google', 'senha_conta_google']
         widgets = {
-            'categoria': forms.Select(attrs={'class': 'form-select'}),
-            'marca': forms.TextInput(attrs={'class': 'form-control'}),
-            'modelo': forms.TextInput(attrs={'class': 'form-control'}),
-            'numero_de_serie': forms.TextInput(attrs={'class': 'form-control'}),
-            'conta_google': forms.TextInput(attrs={'class': 'form-control'}),
-            'senha_conta_google': forms.TextInput(attrs={'class': 'form-control'})
+            'categoria': forms.Select(attrs={'class': 'select select-bordered w-full text-base'}),
+            'marca': forms.TextInput(attrs={'class': 'input input-bordered w-full text-base'}),
+            'modelo': forms.TextInput(attrs={'class': 'input input-bordered w-full text-base'}),
+            'numero_de_serie': forms.TextInput(attrs={'class': 'input input-bordered w-full text-base'}),
+            'conta_google': forms.TextInput(attrs={'class': 'input input-bordered w-full text-base'}),
+            'senha_conta_google': forms.TextInput(attrs={'class': 'input input-bordered w-full text-base'})
         }
         labels = {
             'categoria': 'Categoria',

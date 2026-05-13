@@ -38,7 +38,11 @@ def index(request):
 
 @login_required
 def agendamento(request):
-    return render(request, 'transporte/agendamento.html')
+    usuarios = User.objects.filter(is_active=True).order_by('first_name')
+    return render(request, 'transporte/agendamento.html', {
+        'usuarios': usuarios,
+        'is_gestor': is_gestor(request.user)
+    })
 
 @login_required
 def agendar(request):
@@ -110,7 +114,11 @@ def agendar(request):
 
         return resposta
 
-    return render(request, 'agendamento.html')
+    usuarios = User.objects.filter(is_active=True).order_by('first_name')
+    return render(request, 'transporte/agendamento.html', {
+        'usuarios': usuarios,
+        'is_gestor': is_gestor(request.user)
+    })
 
 @login_required
 def mudar_dia_agendamento(request):

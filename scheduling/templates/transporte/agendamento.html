@@ -73,7 +73,17 @@
         {% csrf_token %}
         <div class="form-control w-full">
           <label for="motorista" class="label"><span class="label-text font-medium">Nome do motorista</span></label>
-          <input type="text" class="input input-bordered w-full" name="motorista" id="motorista" required>
+          {% if is_gestor %}
+            <select class="select select-bordered w-full" name="motorista" id="motorista" required>
+              <option value="" disabled selected>Selecione um motorista...</option>
+              {% for usuario in usuarios %}
+                <option value="{{ usuario.get_full_name|default:usuario.username }}">{{ usuario.get_full_name|default:usuario.username }}</option>
+              {% endfor %}
+            </select>
+          {% else %}
+            <input type="hidden" name="motorista" value="{{ user.get_full_name|default:user.username }}">
+            <input type="text" class="input input-bordered w-full font-semibold text-base-content/70" value="{{ user.get_full_name|default:user.username }}" disabled>
+          {% endif %}
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="form-control w-full">

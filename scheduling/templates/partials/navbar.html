@@ -71,7 +71,7 @@
                     <ul>
                         <li><a href="{% url 'agendamento' %}"><i class="fas fa-calendar-plus w-5"></i> Agendar Viagem</a></li>
                         <li><a href="{% url 'viagens' %}"><i class="fas fa-calendar-alt w-5"></i> Próximas Viagens</a></li>
-                        {% if user|has_group:'Gestores' or user|has_group:'RH' %}
+                        {% if user|has_group:'Gestores' or user|has_group:'RH' or user|has_group:'Expedicao'%}
                         <li><a href="{% url 'veiculos' %}"><i class="bi bi-car-front w-5"></i> Veículos</a></li>
                         <li><a href="{% url 'historico' %}"><i class="bi bi-clock-history w-5"></i> Histórico</a></li>
                         {% endif %}

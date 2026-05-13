@@ -1,4 +1,8 @@
-<form method="post" class="card bg-base-100 shadow-xl p-6 max-w-lg mx-auto">
+<form hx-post="{% url 'editar_ativo' ativo.id %}"
+      hx-target="#modalDetalhesAtivoBody"
+      hx-swap="innerHTML"
+      enctype="multipart/form-data"
+      class="card bg-base-100 shadow-xl p-6 max-w-lg mx-auto">
   {% csrf_token %}
 
   {% for field in form %}
@@ -17,7 +21,14 @@
     </div>
   {% endfor %}
 
-  <div class="mt-6">
-    <button type="submit" class="btn btn-primary w-full">Salvar</button>
+  <div class="mt-6 flex gap-2">
+    <button type="button"
+            class="btn btn-ghost w-1/2"
+            hx-get="{% url 'detalhes_ativo' ativo.id %}"
+            hx-target="#modalDetalhesAtivoBody"
+            hx-swap="innerHTML">
+      Cancelar
+    </button>
+    <button type="submit" class="btn btn-primary w-1/2">Salvar</button>
   </div>
 </form>

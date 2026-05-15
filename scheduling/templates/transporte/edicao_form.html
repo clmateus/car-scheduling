@@ -32,21 +32,6 @@
     {% endif %}
 </div>
         
-<div class="form-control w-full">
-    <label class="label">
-        <span class="label-text font-semibold flex items-center gap-2">
-            <i class="bi bi-car-front text-primary"></i>
-            Veículo
-        </span>
-    </label>
-    {{ form.veiculo }}
-    {% if form.veiculo.errors %}
-        <label class="label">
-            <span class="label-text-alt text-error">{{ form.veiculo.errors }}</span>
-        </label>
-    {% endif %}
-</div>
-        
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div class="form-control w-full">
         <label class="label">

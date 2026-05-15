@@ -72,16 +72,27 @@
                          hx-target="#modalDetalhesAtivoBody"
                          hx-swap="innerHTML">
                         
-                        <div class="card-body">
+                    <div class="card-body">
                             <!-- Categoria & Status -->
-                            <div class="flex justify-between items-start mb-2">
-                                <div class="badge badge-neutral badge-sm font-semibold">{{ ativo.categoria }}</div>
-                                {% if ativo.disponibilidade == True %}
-                                    <div class="badge badge-success badge-sm gap-1 text-white"><i class="bi bi-check-circle-fill text-[10px]"></i> Livre</div>
-                                {% else %}
-                                    <div class="badge badge-error badge-sm gap-1 text-white"><i class="bi bi-x-circle-fill text-[10px]"></i> Em uso</div>
-                                {% endif %}
-                            </div>
+                    <div class="flex justify-between items-start mb-2">
+                    {% if ativo.categoria == "Celular" %}
+                        <i class="bi bi-phone text-3xl text-base-content/50"></i>
+                    {% elif ativo.categoria == "Tablet" %}
+                        <i class="bi bi-tablet text-3xl text-base-content/50"></i>
+                    {% elif ativo.categoria == "Notebook" %}
+                        <i class="bi bi-laptop text-3xl text-base-content/50"></i>
+                    {% else %}
+                        <i class="bi bi-hdd text-3xl text-base-content/50"></i>
+                    {% endif %}
+                        <div class="bg bg-base badge-sm flex justify-between font-semibold gap-2">{{ ativo.categoria }}
+                            {% if ativo.disponibilidade == True %}
+                                <div class="badge badge-success flex justify-between badge-sm gap-1 text-white">
+                                    <i class="bi bi-check-circle-fill text-[10px]"></i> Livre</div>
+                            {% else %}
+                                <div class="badge badge-error flex justify-between badge-sm gap-1 text-white">
+                                    <i class="bi bi-x-circle-fill text-[10px]"></i> Em uso</div>
+                            {% endif %}</div>
+                        </div>
                             
                             <!-- Informações Principais -->
                             <h3 class="card-title text-base leading-tight mb-0 mt-1">{{ ativo.marca }} {{ ativo.modelo }}</h3>

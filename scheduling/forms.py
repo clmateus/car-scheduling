@@ -98,7 +98,7 @@ class AtivoForm(forms.ModelForm):
         fields = ['categoria', 'marca', 'modelo', 'numero_de_serie', 'conta_google', 'senha_conta_google']
         widgets = {
             'categoria': forms.Select(attrs={'class': 'select select-bordered w-full text-base'}),
-            'marca': forms.TextInput(attrs={'class': 'input input-bordered w-full text-base'}),
+            'marca': forms.Select(attrs={'class': 'select select-bordered w-full text-base'}),
             'modelo': forms.TextInput(attrs={'class': 'input input-bordered w-full text-base'}),
             'numero_de_serie': forms.TextInput(attrs={'class': 'input input-bordered w-full text-base'}),
             'conta_google': forms.TextInput(attrs={'class': 'input input-bordered w-full text-base'}),
@@ -109,8 +109,8 @@ class AtivoForm(forms.ModelForm):
             'marca': 'Marca',
             'modelo': 'Modelo',
             'numero_de_serie': 'IMEI',
-            'conta_google': 'Conta Google (opcional)',
-            'senha_conta_google': 'Senha da conta Google (opcional)',
+            'conta_google': 'Conta Google',
+            'senha_conta_google': 'Senha da conta Google',
         }
 
 class SolicitarAtivoForm(forms.ModelForm):

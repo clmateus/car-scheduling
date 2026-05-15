@@ -71,14 +71,41 @@ class Ativo(models.Model):
         TABLET = 'Tablet'
         NOTEBOOK = 'Notebook'
         OUTROS = 'Outros'
-    categoria = models.CharField(max_length=50, choices=Tipo.choices, default=Tipo.CELULAR)
-    marca = models.CharField(max_length=100, default='')
-    modelo = models.CharField(max_length=100)
-    numero_de_serie = models.CharField(max_length=100)
+    class Marca(models.TextChoices):
+        ACER = 'Acer'
+        APPLE = 'Apple'
+        ASUS = 'Asus'
+        DELL = 'Dell'
+        EPSON = 'Epson'
+        GOOGLE = 'Google'
+        HP = 'HP'
+        HUAWEI = 'Huawei'
+        JABRA = 'Jabra'
+        KENSINGTON = 'Kensington'
+        LENOVO = 'Lenovo'
+        LG = 'LG'
+        LOGITECH = 'Logitech'
+        MOTOROLA = 'Motorola'
+        NOKIA = 'Nokia'
+        ONEPLUS = 'OnePlus'
+        OPPO = 'Oppo'
+        PHILIPS = 'Philips'
+        REALME = 'Realme'
+        SAMSUNG = 'Samsung'
+        SONY = 'Sony'
+        TCL = 'TCL'
+        VAIO = 'Vaio'
+        VIVO = 'Vivo'
+        XIAOMI = 'Xiaomi'
+        OUTROS = 'Outros'
+    categoria = models.CharField(max_length=50, choices=Tipo.choices, default=Tipo.CELULAR, help_text='Selecione a categoria')
+    marca = models.CharField(max_length=100,choices=Marca.choices, default=Marca.LENOVO, help_text='Selecione a marca')
+    modelo = models.CharField(max_length=100, help_text='Selecione o modelo')
+    numero_de_serie = models.CharField(max_length=100,help_text='Ex: SN123456789')
     disponibilidade = models.BooleanField(default=True)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    conta_google = models.CharField(max_length=255, default='', null=True, blank=True)
-    senha_conta_google = models.CharField(max_length=255, default='', null=True, blank=True)
+    conta_google = models.CharField(max_length=255, default='', help_text='Opcional', null=True, blank=True)
+    senha_conta_google = models.CharField(max_length=255, default='',help_text='Opcional', null=True, blank=True)
 
     def __str__(self):
         return f'{self.marca} - {self.modelo}'

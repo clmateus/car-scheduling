@@ -96,14 +96,14 @@
                                     </a>
                                 {% endif %}
 
-                                {% if user|has_group:'Gestores' or user|has_group:'RH' or user|has_group:'Expedição' %}
+                                {% if user|has_group:'Gestores' or user|has_group:'RH' or user|has_group:'Expedicao' %}
                                     <button class="btn btn-sm btn-ghost text-primary hover:bg-primary/10"
                                      onclick="document.getElementById('modalAlterarVeiculo{{ viagem.id }}').showModal()" title="Alterar Veículo">
                                         <i class="bi bi-car-front text-base"></i>
                                     </button>
                                 {% endif %}
 
-                                {% if user|has_group:'Gestores' or viagem.usuario == user or user|has_group:'RH' or user|has_group:'Expedição' %}
+                                {% if user|has_group:'Gestores' or viagem.usuario == user or user|has_group:'RH' or user|has_group:'Expedicao' %}
                                     <button type="button" class="btn btn-sm btn-ghost text-primary hover:bg-primary/10"
                                      onclick="document.getElementById('modalEdicao').showModal()" hx-get="{% url 'editar_agendamento' viagem.id %}"
                                      hx-target="#modalEdicaoBody" hx-swap="innerHTML" title="Editar">
@@ -120,7 +120,7 @@
                             {% endif %}
                         {% else %}
                             {% if not viagem.checkout_realizado %}
-                                {% if user|has_group:'Gestores' or user|has_group:'RH' or user|has_group:'Expedição' %}
+                                {% if user|has_group:'Gestores' or user|has_group:'RH' or user|has_group:'Expedicao' %}
                                     <a href="{% url 'checkout_viagem' viagem.id %}" class="btn btn-primary btn-sm text-white shadow-sm">
                                         <i class="bi bi-clipboard-check"></i> Realizar Checkout
                                     </a>

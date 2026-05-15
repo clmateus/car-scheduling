@@ -1,6 +1,4 @@
-{% extends '_base.html' %}
 {% load authenticate_user %}
-{% block content %}
 <div class="space-y-6">
     <form id="formEdicao" method="post" hx-post="{% url 'editar_agendamento' agendamento_id %}" hx-swap="none" class="space-y-2">
         {% csrf_token %}
@@ -15,7 +13,6 @@
             </div>
         {% endif %}
         
-        <!-- Destino -->
 <div class="form-control w-full">
     <label class="label">
         <span class="label-text font-semibold flex items-center gap-2">
@@ -34,16 +31,14 @@
         </label>
     {% endif %}
 </div>
-
-    {% if form.destino.errors %}
-        <label class="label">
-            <span class="label-text-alt text-error">{{ form.destino.errors }}</span>
-        </label>
-    {% endif %}
-</div>
         
-<!-- Veículo -->
 <div class="form-control w-full">
+    <label class="label">
+        <span class="label-text font-semibold flex items-center gap-2">
+            <i class="bi bi-car-front text-primary"></i>
+            Veículo
+        </span>
+    </label>
     {{ form.veiculo }}
     {% if form.veiculo.errors %}
         <label class="label">
@@ -52,7 +47,6 @@
     {% endif %}
 </div>
         
-<!-- Datas em grid -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div class="form-control w-full">
         <label class="label">
@@ -89,9 +83,8 @@
     </div>
 </div>
         
-        <!-- Botões -->
     <div class="modal-action mt-6 pt-4 border-t border-base-200">
-      <button type="button" class="btn btn-ghost" onclick="document.getElementById('modalEdicao').close()">
+      <button type="button" class="btn btn-ghost" onclick="this.closest('dialog').close()">
         <i class="bi bi-x-lg"></i>
           Cancelar
       </button>
@@ -124,16 +117,13 @@
 </style>
 <script>
 (function() {
-// Adicione isso dentro do <script> que já existe no seu edicao_form.html
 (function() {
-    // Procura o input de destino e aplica as classes de borda do DaisyUI
     const destinoInput = document.querySelector('input[name="destino"]');
     if (destinoInput) {
         destinoInput.classList.add('input', 'input-bordered', 'w-full', 'focus:input-primary');
     }
 })();
 
-        // --- Seu código HTMX existente ---
         const form = document.getElementById('formEdicao');
         if (!form) return;
         

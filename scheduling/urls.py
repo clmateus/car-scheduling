@@ -21,6 +21,7 @@ urlpatterns = [
     path('transporte/viagens/', views.viagens, name='viagens'),
     path('transporte/historico/', views.historico, name='historico'),
     path('transporte/checkout/<int:pk>/', views.checkout_viagem, name='checkout_viagem'),
+    path('transporte/edicao_form/<int:pk>/', views.editar_agendamento, name='editar_agendamento'),
     path('alterar_veiculo/<int:pk>/', views.alterar_veiculo, name='alterar_veiculo'),
     path('transporte/veiculos/tab/<str:aba>/<int:veiculo_id>/', views.carregar_aba, name='carregar_aba'),
     path('transporte/veiculos/salvar-aba-identificacao/<int:veiculo_id>/', views.salvar_aba_identificacao, name='salvar_aba_identificacao'),

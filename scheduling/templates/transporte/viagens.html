@@ -105,7 +105,7 @@
 
                                 {% if user|has_group:'Gestores' or viagem.usuario == user or user|has_group:'RH' or user|has_group:'Expedicao' %}
                                     <button type="button" class="btn btn-sm btn-ghost text-primary hover:bg-primary/10"
-                                     onclick="document.getElementById('modalEdicao').showModal()" hx-get="{% url 'editar_agendamento' viagem.id %}"
+                                     onclick="document.getElementById('modalEdicaoBody').innerHTML = '<div class=\'flex justify-center p-8\'><span class=\'loading loading-spinner text-primary loading-lg\'></span></div>'; document.getElementById('modalEdicao').showModal()" hx-get="{% url 'editar_agendamento' viagem.id %}"
                                      hx-target="#modalEdicaoBody" hx-swap="innerHTML" title="Editar">
                                         <i class="bi bi-pen text-base"></i>
                                     </button>
@@ -180,27 +180,27 @@
     
     <!-- Modal de Edição -->
 
-<dialog id="modalEdicao" class="modal">
-    <div class="modal-box backdrop-blur-sm bg-base-100/95 w-11/12 max-w-lg rounded-xl p-0 overflow-hidden border border-primary/30 shadow-2xl">
-        <div class="sticky top-0 bg-base-100/95 backdrop-blur-sm z-10 px-6 pt-4 pb-4 border-b border-base-200">
-            <div class="flex justify-between items-center">
-                <h3 class="font-bold text-xl flex items-center gap-2" id="modalEdicaoLabel">
-                    <i class="bi bi-pencil-square text-primary"></i>
-                    Editar Agendamento
-                </h3>
-                <form method="dialog">
-                    <button class="btn btn-sm btn-circle btn-ghost text-error">✕</button>
-                </form>
+    <dialog id="modalEdicao" class="modal">
+        <div class="modal-box backdrop-blur-sm bg-base-100/95 w-11/12 max-w-lg rounded-xl p-0 overflow-hidden border border-primary/30 shadow-2xl">
+            <div class="sticky top-0 bg-base-100/95 backdrop-blur-sm z-10 px-6 pt-4 pb-4 border-b border-base-200">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-xl flex items-center gap-2" id="modalEdicaoLabel">
+                        <i class="bi bi-pencil-square text-primary"></i>
+                        Editar Agendamento
+                    </h3>
+                    <form method="dialog">
+                        <button class="btn btn-sm btn-circle btn-ghost text-error">✕</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div id="modalEdicaoBody" class="p-6">
             </div>
         </div>
-        
-        <div id="modalEdicaoBody" class="p-6">
-            </div>
-    </div>
-    <form method="dialog" class="modal-backdrop bg-black/60">
-        <button>fechar</button>
-    </form>
-</dialog>
+        <form method="dialog" class="modal-backdrop bg-black/60">
+            <button>fechar</button>
+        </form>
+    </dialog>
 </div>
 
 <style>

@@ -219,7 +219,7 @@ def editar_agendamento(request, pk):
 
             if dataPartida >= dataChegada:
                 form.add_error(None, 'A data de partida deve ser menor que a data de chegada.')
-                return render(request, 'ativos/edicao_form.html', {'form': form, 'agendamento_id': pk})
+                return render(request, 'transporte/edicao_form.html', {'form': form, 'agendamento_id': pk})
 
             if agendamento.veiculo:
                 conflito = Agendamento.objects.filter(
@@ -230,7 +230,7 @@ def editar_agendamento(request, pk):
 
                 if conflito:
                     form.add_error(None, 'O veículo já possui agendamento neste horário.')
-                    return render(request, 'ativos/edicao_form.html', {'form': form, 'agendamento_id': pk})
+                    return render(request, 'transporte/edicao_form.html', {'form': form, 'agendamento_id': pk})
 
             form.save()
             response = HttpResponse()
@@ -252,10 +252,10 @@ def editar_agendamento(request, pk):
 
             return response
 
-        return render(request, 'ativos/edicao_form.html', {'form': form, 'agendamento_id': pk})
+        return render(request, 'transporte/edicao_form.html', {'form': form, 'agendamento_id': pk})
 
     form = EdicaoForm(instance=agendamento)
-    return render(request, 'ativos/edicao_form.html', {'form': form, 'agendamento_id': pk})
+    return render(request, 'transporte/edicao_form.html', {'form': form, 'agendamento_id': pk})
 
 @login_required
 @user_passes_test(is_gestor, login_url='/')

@@ -312,17 +312,21 @@ def viagens(request):
     q = request.GET.get('q', '').strip()
     proximas_viagens = (
         Agendamento.objects.filter(id=q) if q
-        else Agendamento.objects.filter(dataPartida__gt=timezone.now()).order_by('dataPartida')
+        else Agendamento.objects.filter(dataChegada__gt=timezone.now()).order_by('dataPartida')
     )
     # Regras de rodízio de São Paulo (dígitos proibidos por dia da semana)
     RODIZIO_SP = {0: ['1', '2'], 1: ['3', '4'], 2: ['5', '6'], 3: ['7', '8'], 4: ['9', '0']}
 
     for viagem in proximas_viagens:
-        email_criador_do_evento = viagem.usuario.email if viagem.usuario else "notfound@gmail.com"
+        viagem.email_criador_do_evento = viagem.usuario.email if viagem.usuario else "notfound@gmail.com"
         if viagem.veiculo and viagem.veiculo.placa and viagem.dataPartida:
             placa_final = str(viagem.veiculo.placa)[-1]
             viagem.em_rodizio = placa_final in RODIZIO_SP.get(viagem.dataPartida.weekday(), [])
-            hora_viagem = viagem.dataPartida.timestamp()
+            
+        viagem.hora_partida_ts = viagem.dataPartida.timestamp() if viagem.dataPartida else 0
+        viagem.hora_chegada_ts = viagem.dataChegada.timestamp() if viagem.dataChegada else 0
+        hora_viagem = viagem.hora_partida_ts
+        email_criador_do_evento = viagem.email_criador_do_evento
 
     return render(request, 'transporte/viagens.html', {
         'proximas_viagens': proximas_viagens,
@@ -331,6 +335,29 @@ def viagens(request):
         'hora_viagem': hora_viagem,
         'email_criador_do_evento': email_criador_do_evento,
     })
+
+@login_required
+@require_POST
+def retirar_chave(request, pk):
+    agendamento = get_object_or_404(Agendamento, pk=pk)
+
+    if not is_gestor(request.user):
+        return HttpResponse('Você não tem permissão para retirar a chave.', status=403)
+
+    if not agendamento.data_partida_real:
+        agendamento.data_partida_real = timezone.now()
+
+        quilometragem = request.POST.get('quilometragem')
+        if quilometragem and quilometragem.isdigit():
+            if agendamento.veiculo:
+                agendamento.veiculo.quilometragem = int(quilometragem)
+                agendamento.veiculo.save()
+
+        agendamento.save()
+
+    resposta = HttpResponse()
+    resposta['HX-Refresh'] = 'true'
+    return resposta
 
 @login_required
 @user_passes_test(is_gestor, login_url='/')

@@ -31,6 +31,7 @@ class Agendamento(models.Model):
     destino = models.TextField(blank=True)
     passageiros = models.IntegerField(default=1)
     
+    data_partida_real = models.DateTimeField(null=True, blank=True)
     checkout_realizado = models.BooleanField(default=False)
     quilometragem_checkout = models.IntegerField(null=True, blank=True)
     observacao_checkout = models.TextField(blank=True, null=True)

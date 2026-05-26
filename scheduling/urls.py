@@ -19,6 +19,7 @@ urlpatterns = [
     path('transporte/editar_veiculo/<int:pk>/', views.editar_veiculo, name='editar_veiculo'),
     path('transporte/editar_agendamento/<int:pk>/', views.editar_agendamento, name='editar_agendamento'),
     path('transporte/viagens/', views.viagens, name='viagens'),
+    path('transporte/retirar_chave/<int:pk>/', views.retirar_chave, name='retirar_chave'),
     path('transporte/historico/', views.historico, name='historico'),
     path('transporte/checkout/<int:pk>/', views.checkout_viagem, name='checkout_viagem'),
     path('transporte/edicao_form/<int:pk>/', views.editar_agendamento, name='editar_agendamento'),

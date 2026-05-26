@@ -37,7 +37,15 @@
                         <!-- Cabeçalho do Card (Status) -->
                         <div class="flex justify-between items-start mb-2">
                             <h3 class="card-title text-xl mb-0">{{ viagem.destino }}</h3>
-                            {% if hora_atual > hora_viagem %}
+                            {% if viagem.checkout_realizado %}
+                                <div class="badge badge-error badge-sm gap-2 text-white py-3 px-3 shadow-sm font-semibold">
+                                    <span class="status-dot bg-white rounded-full"></span> Encerrado
+                                </div>
+                            {% elif viagem.data_partida_real %}
+                                <div class="badge badge-info badge-sm gap-2 text-white py-3 px-3 shadow-sm font-semibold">
+                                    <span class="status-dot bg-white rounded-full"></span> Em viagem
+                                </div>
+                            {% elif hora_atual > viagem.hora_chegada_ts %}
                                 <div class="badge badge-error badge-sm gap-2 text-white py-3 px-3 shadow-sm font-semibold">
                                     <span class="status-dot bg-white rounded-full"></span> Encerrado
                                 </div>
@@ -76,7 +84,7 @@
                         </div>
                         
                         <div class="mt-4 pt-4 border-t border-base-200 flex justify-between items-center">
-                            {% if hora_atual < hora_viagem %}
+                            {% if hora_atual < viagem.hora_partida_ts %}
                                 <p class="text-sm font-medium {% if viagem.passageiros == 5 %}text-error{% endif %}">
                                     Vagas disponíveis: <span class="font-bold text-lg">{{ viagem.vagas_restantes }}</span>
                                 </p>
@@ -89,12 +97,15 @@
 
                         <!-- Ações -->
                         <div class="card-actions justify-end mt-4 pt-4 border-t border-base-200">
-                            {% if hora_atual < hora_viagem %}
+                            {% if hora_atual < viagem.hora_partida_ts %}
                                 {% if viagem.passageiros < 5 %}
-                                    <a href="https://teams.microsoft.com/l/chat/0/0?users={{ email_criador_do_evento }}" target="_blank" class="btn btn-sm btn-primary text-white" title="Entrar em contato">
+                                    <a href="https://teams.microsoft.com/l/chat/0/0?users={{ viagem.email_criador_do_evento }}" target="_blank" class="btn btn-sm btn-primary text-white" title="Entrar em contato">
                                         <i class="bi bi-chat-dots"></i> Contato
                                     </a>
                                 {% endif %}
+                            {% endif %}
+
+                            {% if not viagem.checkout_realizado %}
 
                                 {% if user|has_group:'Gestores' or user|has_group:'RH' or user|has_group:'Expedicao' %}
                                     <button class="btn btn-sm btn-ghost text-primary hover:bg-primary/10"
@@ -116,19 +127,26 @@
                                             <i class="bi bi-trash3 text-base"></i>
                                         </button>
                                     </form>
-
+                                {% endif %}
                             {% endif %}
-                        {% else %}
-                            {% if not viagem.checkout_realizado %}
+
+                            {% if not viagem.data_partida_real %}
                                 {% if user|has_group:'Gestores' or user|has_group:'RH' or user|has_group:'Expedicao' %}
-                                    <a href="{% url 'checkout_viagem' viagem.id %}" class="btn btn-primary btn-sm text-white shadow-sm">
-                                        <i class="bi bi-clipboard-check"></i> Realizar Checkout
-                                    </a>
+                                    <button type="button" onclick="document.getElementById('modalRetirarChave{{ viagem.id }}').showModal()" class="btn btn-sm btn-accent text-white shadow-sm tooltip" data-tip="Registra o horário exato da saída">
+                                        <i class="bi bi-key"></i> Retirar Chave
+                                    </button>
                                 {% endif %}
                             {% else %}
-                                <span class="badge badge-success gap-1 text-white py-3 px-3 font-semibold"><i class="bi bi-check-circle"></i> Checkout Concluído</span>
+                                {% if not viagem.checkout_realizado %}
+                                    {% if user|has_group:'Gestores' or user|has_group:'RH' or user|has_group:'Expedicao' %}
+                                        <a href="{% url 'checkout_viagem' viagem.id %}" class="btn btn-primary btn-sm text-white shadow-sm">
+                                            <i class="bi bi-clipboard-check"></i> Realizar Checkout
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge badge-success gap-1 text-white py-3 px-3 font-semibold"><i class="bi bi-check-circle"></i> Checkout Concluído</span>
+                                {% endif %}
                             {% endif %}
-                        {% endif %}
                         </div>
                     </div>
                 </div>
@@ -165,6 +183,36 @@
                 <form method="dialog" class="modal-backdrop bg-black/60">
                     <button>fechar</button>
                 </form>
+            </dialog>
+
+            <!-- Modal Retirar Chave e Quilometragem -->
+            <dialog id="modalRetirarChave{{ viagem.id }}" class="modal">
+                <div class="modal-box backdrop-blur-sm bg-base-100/95">
+                    <form method="dialog">
+                        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-error">✕</button>
+                    </form>
+                    <h3 class="font-bold text-lg flex items-center mb-4 gap-2">
+                        <i class="bi bi-speedometer text-accent"></i> Confirmar quilometragem de partida?
+                    </h3>
+                    <form hx-post="{% url 'retirar_chave' viagem.id %}" hx-swap="none" class="space-y-4">
+                        <!-- O csrf_token aqui corrige o Erro 403 -->
+                        {% csrf_token %}
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text font-medium text-base-content/70">Quilometragem atual do veículo</span>
+                            </label>
+                            <input type="number" name="quilometragem" class="input input-bordered w-full focus:input-accent font-semibold" 
+                                   value="{{ viagem.veiculo.quilometragem|default_if_none:0 }}" min="{{ viagem.veiculo.quilometragem|default_if_none:0 }}" required>
+                        </div>
+                        <div class="modal-action mt-6">
+                            <button type="button" class="btn btn-outline" onclick="this.closest('dialog').close()">Cancelar</button>
+                            <button type="submit" class="btn btn-accent text-white">
+                                <i class="bi bi-check-lg"></i> Confirmar e Retirar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <form method="dialog" class="modal-backdrop bg-black/60"><button>fechar</button></form>
             </dialog>
             {% endfor %}
         </div>

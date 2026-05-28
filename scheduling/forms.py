@@ -10,7 +10,7 @@ class CadastroVeiculo(forms.ModelForm):
             'modelo': forms.TextInput(attrs={'class': 'form-control'}),
             'marca': forms.TextInput(attrs={'class': 'form-control'}),
             'placa': forms.TextInput(attrs={'class': 'form-control'}),
-            'foto': forms.FileInput(attrs={'class': 'form-control'}),
+            'foto': forms.FileInput(attrs={'class': 'file-input file-input-bordered w-full'}),
             'ano': forms.NumberInput(attrs={'class': 'form-control'}),
             'cor': forms.TextInput(attrs={'class': 'form-control'}),
             'chassi': forms.TextInput(attrs={'class': 'form-control'}),

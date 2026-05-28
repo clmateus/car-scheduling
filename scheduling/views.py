@@ -271,10 +271,10 @@ def veiculos(request):
             if foto_enviada:
                 img = Image.open(foto_enviada).convert('RGB').resize((250, 200), Image.LANCZOS)
                 temp_thumb = io.BytesIO()
-                img.save(temp_thumb, format='JPEG', quality=85)
+                img.save(temp_thumb, format='JPEG', quality=75)
                 encoded_string = base64.b64encode(temp_thumb.getvalue()).decode('utf-8')
                 novo_veiculo.foto = f"data:image/jpeg;base64,{encoded_string}"
-
+            
             novo_veiculo.save()
             return redirect('veiculos')
     else:
@@ -303,9 +303,13 @@ def editar_veiculo(request, pk):
         if foto_enviada:
             img = Image.open(foto_enviada).convert('RGB').resize((250, 200), Image.LANCZOS)
             temp_thumb = io.BytesIO()
-            img.save(temp_thumb, format='JPEG', quality=85)
+            img.save(temp_thumb, format='JPEG', quality=75)
             encoded_string = base64.b64encode(temp_thumb.getvalue()).decode('utf-8')
             veiculo_editado.foto = f"data:image/jpeg;base64,{encoded_string}"
+        else:
+            # Mantém a foto atual se nenhuma nova for enviada
+            veiculo_original = Veiculo.objects.get(pk=pk)
+            veiculo_editado.foto = veiculo_original.foto
         
         veiculo_editado.save()
         resposta = HttpResponse()

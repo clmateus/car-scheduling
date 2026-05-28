@@ -11,7 +11,7 @@ class Veiculo(models.Model):
     modelo = models.CharField(max_length=100)
     marca = models.CharField(max_length=100)
     placa = models.CharField(max_length=20, unique=True)
-    foto = models.ImageField(upload_to='veiculos/%Y/%m/%d/', blank=True, null=True)
+    foto = models.TextField(blank=True, null=True)
     ano = models.IntegerField(default=2000)
     cor = models.CharField(max_length=100, null=True, blank=True)
     chassi = models.CharField(max_length=50, null=True, blank=True)

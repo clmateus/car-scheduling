@@ -25,10 +25,10 @@
                     
                     <!-- Área Clicável da Foto -->
                     <figure class="cursor-pointer bg-base-200 h-52 relative group" onclick="document.getElementById('modal_carro').showModal(); abrirModalCarro({{ veiculo.id }})">
-                        {% if veiculo.foto %}
+                        {% if veiculo.foto and veiculo.foto != "None" %}
                             <img src="{{ veiculo.foto }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ veiculo.modelo }}">
                         {% else %}
-                            <img src="https://placehold.co/600x400/e2e8f0/475569?text=Sem+Foto" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Sem Imagem">
+                            <img src="https://placehold.co/600x400/f1f5f9/64748b?text=Sem+Foto" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Sem Imagem">
                         {% endif %}
                         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
                     </figure>
@@ -63,8 +63,8 @@
                 
                 <dialog id="modal_editar_{{ veiculo.id }}" class="modal">
                     <div class="modal-box w-11/12 max-w-2xl">
-                        <form method="dialog">
-                            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                        <form method="dialog" class="m-0">
+                            <button type="button" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="this.closest('dialog').close()">✕</button>
                         </form>
                         <h3 class="font-bold text-xl mb-6">Editar {{ veiculo.modelo }}</h3>
                         

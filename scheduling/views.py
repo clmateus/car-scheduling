@@ -373,8 +373,17 @@ def alterar_veiculo(request, pk):
 @login_required
 @user_passes_test(is_gestor, login_url='/')
 def historico(request):
-    todas_as_viagens = Agendamento.objects.order_by('-dataPartida')
-    return render(request, 'transporte/historico_veiculos.html', {'todas_as_viagens': todas_as_viagens})
+    mostrar_concluidos = request.GET.get('concluidos') == 'true'
+    
+    if mostrar_concluidos:
+        todas_as_viagens = Agendamento.objects.all().order_by('-dataPartida')
+    else:
+        todas_as_viagens = Agendamento.objects.filter(checkout_realizado=False).order_by('-dataPartida')
+        
+    return render(request, 'transporte/historico_veiculos.html', {
+        'todas_as_viagens': todas_as_viagens,
+        'mostrar_concluidos': mostrar_concluidos
+    })
 
 @login_required
 def checkout_viagem(request, pk):

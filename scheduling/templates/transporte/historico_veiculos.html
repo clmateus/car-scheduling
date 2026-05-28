@@ -40,10 +40,20 @@
 
     <!-- Filtros e Busca -->
     <div class="flex flex-col lg:flex-row justify-between items-center gap-4 mb-6 bg-base-100 p-4 rounded-2xl shadow-sm border border-base-200">
-        <label class="input input-bordered flex items-center gap-2 w-full">
+        <label class="input input-bordered flex items-center gap-2 w-full lg:w-auto grow">
             <i class="bi bi-search text-base-content/50"></i>
             <input type="text" id="searchInput" class="grow" placeholder="Filtrar por destino, data, horário, motorista...">
         </label>
+
+        <div class="form-control w-full lg:w-auto shrink-0 border border-base-200 lg:border-none rounded-xl p-1 lg:p-0">
+            <label class="cursor-pointer label gap-3 justify-center py-2 px-4 rounded-lg hover:bg-base-200/50 transition-all">
+                <i class="bi bi-ui-checks text-lg {% if mostrar_concluidos %}text-primary{% else %}text-base-content/40{% endif %}"></i>
+                <span class="label-text whitespace-nowrap font-medium text-base-content/80 select-none">Ver checkouts concluídos</span> 
+                <input type="checkbox" id="filtroConcluidos" class="toggle toggle-primary toggle-sm sm:toggle-md" 
+                       {% if mostrar_concluidos %}checked{% endif %} 
+                       onchange="window.location.href='?concluidos=' + this.checked">
+            </label>
+        </div>
     </div>
 
     <!-- Grid de Viagens -->

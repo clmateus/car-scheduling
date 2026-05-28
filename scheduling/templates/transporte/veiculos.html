@@ -26,12 +26,9 @@
                     <!-- Área Clicável da Foto -->
                     <figure class="cursor-pointer bg-base-200 h-52 relative group" onclick="document.getElementById('modal_carro').showModal(); abrirModalCarro({{ veiculo.id }})">
                         {% if veiculo.foto %}
-                            <img src="{{ veiculo.foto.url }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ veiculo.modelo }}">
+                            <img src="{{ veiculo.foto }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ veiculo.modelo }}">
                         {% else %}
-                            <div class="w-full h-full flex flex-col items-center justify-center text-base-content/30 group-hover:scale-105 transition-transform duration-500">
-                                <i class="bi bi-car-front text-6xl mb-2"></i>
-                                <span class="text-sm font-medium">Sem Imagem</span>
-                            </div>
+                            <img src="https://placehold.co/600x400/e2e8f0/475569?text=Sem+Foto" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Sem Imagem">
                         {% endif %}
                         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
                     </figure>

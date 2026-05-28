@@ -10,6 +10,7 @@ from django.core.mail import send_mail
 from django_q.tasks import async_task
 from django.contrib import messages
 from django.contrib.auth.models import User
+import base64
 from .models import (
     Agendamento, Veiculo, Seguro, Info, Ativo, SolicitacaoAtivo
 )
@@ -270,9 +271,9 @@ def veiculos(request):
             if foto_enviada:
                 img = Image.open(foto_enviada).convert('RGB').resize((250, 200), Image.LANCZOS)
                 temp_thumb = io.BytesIO()
-                img.save(temp_thumb, format='JPEG', quality=90)
-                temp_thumb.seek(0)
-                novo_veiculo.foto.save(foto_enviada.name, ContentFile(temp_thumb.read()), save=False)
+                img.save(temp_thumb, format='JPEG', quality=85)
+                encoded_string = base64.b64encode(temp_thumb.getvalue()).decode('utf-8')
+                novo_veiculo.foto = f"data:image/jpeg;base64,{encoded_string}"
 
             novo_veiculo.save()
             return redirect('veiculos')
@@ -296,7 +297,17 @@ def editar_veiculo(request, pk):
     form = CadastroVeiculo(request.POST, request.FILES, instance=veiculo)
 
     if form.is_valid():
-        form.save()
+        veiculo_editado = form.save(commit=False)
+        foto_enviada = request.FILES.get('foto')
+
+        if foto_enviada:
+            img = Image.open(foto_enviada).convert('RGB').resize((250, 200), Image.LANCZOS)
+            temp_thumb = io.BytesIO()
+            img.save(temp_thumb, format='JPEG', quality=85)
+            encoded_string = base64.b64encode(temp_thumb.getvalue()).decode('utf-8')
+            veiculo_editado.foto = f"data:image/jpeg;base64,{encoded_string}"
+        
+        veiculo_editado.save()
         resposta = HttpResponse()
         resposta['HX-Refresh'] = 'true'
         return resposta

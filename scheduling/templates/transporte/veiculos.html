@@ -44,6 +44,15 @@
                             <span class="text-xs text-primary font-semibold hover:underline">Detalhes <i class="bi bi-arrow-right"></i></span>
                         </div>
 
+                        <!-- Progresso de Revisão -->
+                        <div class="mt-4 px-1 cursor-pointer" onclick="document.getElementById('modal_carro').showModal(); abrirModalCarro({{ veiculo.id }})">
+                            <div class="flex justify-between items-end mb-2">
+                                <span class="text-xs text-base-content/70 font-semibold uppercase tracking-wider"><i class="bi bi-tools mr-1"></i> Revisão</span>
+                                <span class="text-xs font-bold text-base-content/90">Faltam {{ veiculo.km_para_revisao }} km</span>
+                            </div>
+                            <progress class="progress progress-warning w-full" value="{{ veiculo.porcentagem_revisao }}" max="100"></progress>
+                        </div>
+
                         <!-- Botões de Ação (Apenas Gestores) -->
                         {% if user|has_group:'Gestores' %}
                         <div class="card-actions justify-end mt-4 pt-4 border-t border-base-200">

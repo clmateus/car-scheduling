@@ -25,6 +25,18 @@
             </h3>
         </div>
 
+        <!-- Quilometragem em Destaque -->
+        <div class="stats shadow-sm border border-base-200 w-full mb-6 bg-primary/5">
+            <div class="stat">
+                <div class="stat-figure text-primary">
+                    <i class="bi bi-speedometer2 text-4xl"></i>
+                </div>
+                <div class="stat-title font-semibold text-base-content/70">Quilometragem Atual</div>
+                <div class="stat-value text-primary text-3xl">{{ veiculo.quilometragem|default:"0" }} <span class="text-lg text-primary/70">km</span></div>
+                <div class="stat-desc font-medium mt-1">Registrada no último uso do veículo</div>
+            </div>
+        </div>
+
         <!-- Informações Básicas -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
             <!-- Modelo -->

@@ -280,7 +280,14 @@ def veiculos(request):
     else:
         form = CadastroVeiculo()
 
-    return render(request, 'transporte/veiculos.html', {'veiculos': Veiculo.objects.all(), 'form': form})
+    veiculos_lista = Veiculo.objects.all()
+    for v in veiculos_lista:
+        km = v.quilometragem or 0
+        km_modulo = km % 10000
+        v.km_para_revisao = 10000 - km_modulo
+        v.porcentagem_revisao = int((km_modulo / 10000) * 100)
+
+    return render(request, 'transporte/veiculos.html', {'veiculos': veiculos_lista, 'form': form})
 
 @login_required
 @require_POST

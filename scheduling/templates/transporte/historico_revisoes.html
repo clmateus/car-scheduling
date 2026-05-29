@@ -1,0 +1,108 @@
+{% extends '_base.html' %}
+{% block content %}
+{% load authenticate_user %}
+
+<div class="breadcrumbs text-sm mb-6">
+    <ul>
+        <li>
+            <a href="{% url 'index' %}" class="inline-flex items-center gap-2 hover:text-primary transition-colors">
+                <i class="bi bi-house-door text-lg"></i> Início
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'veiculos' %}" class="inline-flex items-center gap-2 hover:text-primary transition-colors">
+                <i class="fas fa-car text-base"></i> Veículos
+            </a>
+        </li>
+        <li class="inline-flex items-center gap-2 font-semibold text-base-content/70">
+            <i class="bi bi-tools text-base"></i> Histórico de Revisões
+        </li>
+    </ul>
+</div>
+
+<div class="w-full">
+    <div class="flex justify-between items-center mt-4 mb-8">
+        <h2 class="text-3xl font-bold">Histórico de Revisões</h2>
+    </div>
+
+    <!-- Estatísticas (DaisyUI Stats) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="stat bg-base-100 shadow-sm border border-base-200 rounded-2xl">
+            <div class="stat-figure text-primary opacity-20">
+                <i class="bi bi-wrench-adjustable text-5xl"></i>
+            </div>
+            <div class="stat-title font-semibold">Total de Revisões</div>
+            <div class="stat-value text-3xl text-primary">{{ revisoes.count }}</div>
+            <div class="stat-desc mt-2">Manutenções registradas no sistema</div>
+        </div>
+    </div>
+
+    <!-- Tabela Elegante -->
+    <div class="bg-base-100 rounded-2xl shadow-sm border border-base-200 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="table w-full">
+                <!-- head -->
+                <thead class="bg-base-200/50 text-base-content/80 text-sm">
+                    <tr>
+                        <th class="rounded-tl-2xl pl-6">Data</th>
+                        <th>Veículo</th>
+                        <th>Quilometragem</th>
+                        <th>Responsável</th>
+                        <th class="rounded-tr-2xl">Local</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for revisao in revisoes %}
+                    <tr class="hover:bg-base-200/30 transition-colors">
+                        <td class="font-medium whitespace-nowrap pl-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                                    <i class="bi bi-calendar-event text-primary"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold">{{ revisao.data|date:"d/m/Y" }}</div>
+                                    <div class="text-xs opacity-70">{{ revisao.data|date:"H:i" }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex flex-col">
+                                <span class="font-bold text-base-content/90">{{ revisao.veiculo.modelo }}</span>
+                                <span class="text-xs badge badge-ghost badge-sm mt-1 font-mono tracking-wider">{{ revisao.veiculo.placa }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="badge badge-primary badge-outline gap-1 font-semibold p-3">
+                                <i class="bi bi-speedometer2"></i> {{ revisao.quilometragem }} km
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <i class="bi bi-person-badge text-base-content/50"></i>
+                                <span class="font-medium">{{ revisao.responsavel }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <i class="bi bi-geo-alt text-error/70"></i>
+                                <span>{{ revisao.local }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-12">
+                            <div class="flex flex-col items-center justify-center text-base-content/50">
+                                <i class="bi bi-tools text-5xl mb-4 opacity-30"></i>
+                                <p class="text-lg font-medium">Nenhuma revisão registrada ainda.</p>
+                                <p class="text-sm mt-1">Quando os veículos atingirem os 10.000km, as revisões aparecerão aqui.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

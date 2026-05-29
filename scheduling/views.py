@@ -12,7 +12,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 import base64
 from .models import (
-    Agendamento, Veiculo, Seguro, Info, Ativo, SolicitacaoAtivo
+    Agendamento, Veiculo, Seguro, Info, Ativo, SolicitacaoAtivo, Revisao
 )
 from .forms import (
     EdicaoForm, CadastroVeiculo, SeguroForm, DocumentoForm,
@@ -280,14 +280,43 @@ def veiculos(request):
     else:
         form = CadastroVeiculo()
 
-    veiculos_lista = Veiculo.objects.all()
+    veiculos_lista = Veiculo.objects.prefetch_related('revisoes').all()
     for v in veiculos_lista:
         km = v.quilometragem or 0
-        km_modulo = km % 10000
-        v.km_para_revisao = 10000 - km_modulo
-        v.porcentagem_revisao = int((km_modulo / 10000) * 100)
+        revisoes = list(v.revisoes.all())
+        km_ultima_revisao = max([r.quilometragem for r in revisoes]) if revisoes else 0
+        
+        if (km // 10000) > (km_ultima_revisao // 10000) and km >= 10000:
+            v.revisao_pendente = True
+            v.km_para_revisao = 0
+            v.porcentagem_revisao = 100
+        else:
+            v.revisao_pendente = False
+            km_modulo = km % 10000
+            v.km_para_revisao = 10000 - km_modulo
+            v.porcentagem_revisao = int((km_modulo / 10000) * 100)
 
     return render(request, 'transporte/veiculos.html', {'veiculos': veiculos_lista, 'form': form})
+
+@login_required
+@require_POST
+@user_passes_test(is_gestor, login_url='/')
+def registrar_revisao(request, pk):
+    veiculo = get_object_or_404(Veiculo, pk=pk)
+    responsavel = request.POST.get('responsavel')
+    local = request.POST.get('local')
+    
+    if responsavel and local:
+        Revisao.objects.create(
+            veiculo=veiculo,
+            responsavel=responsavel,
+            local=local,
+            quilometragem=veiculo.quilometragem or 0
+        )
+    
+    resposta = HttpResponse()
+    resposta['HX-Refresh'] = 'true'
+    return resposta
 
 @login_required
 @require_POST
@@ -405,6 +434,14 @@ def historico(request):
     return render(request, 'transporte/historico_veiculos.html', {
         'todas_as_viagens': todas_as_viagens,
         'mostrar_concluidos': mostrar_concluidos
+    })
+
+@login_required
+@user_passes_test(is_gestor, login_url='/')
+def historico_revisoes(request):
+    revisoes = Revisao.objects.select_related('veiculo').order_by('-data')
+    return render(request, 'transporte/historico_revisoes.html', {
+        'revisoes': revisoes
     })
 
 @login_required

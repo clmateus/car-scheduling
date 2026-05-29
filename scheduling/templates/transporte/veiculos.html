@@ -45,12 +45,27 @@
                         </div>
 
                         <!-- Progresso de Revisão -->
-                        <div class="mt-4 px-1 cursor-pointer" onclick="document.getElementById('modal_carro').showModal(); abrirModalCarro({{ veiculo.id }})">
-                            <div class="flex justify-between items-end mb-2">
+                        <div class="mt-4 px-1">
+                            <div class="flex justify-between items-end mb-2 cursor-pointer" onclick="document.getElementById('modal_carro').showModal(); abrirModalCarro({{ veiculo.id }})">
                                 <span class="text-xs text-base-content/70 font-semibold uppercase tracking-wider"><i class="bi bi-tools mr-1"></i> Revisão</span>
-                                <span class="text-xs font-bold text-base-content/90">Faltam {{ veiculo.km_para_revisao }} km</span>
+                                {% if veiculo.revisao_pendente %}
+                                    <span class="text-xs font-bold text-error">Revisão Necessária</span>
+                                {% else %}
+                                    <span class="text-xs font-bold {% if veiculo.porcentagem_revisao >= 90 %}text-error{% elif veiculo.porcentagem_revisao >= 75 %}text-warning{% else %}text-success{% endif %}">Faltam {{ veiculo.km_para_revisao }} km</span>
+                                {% endif %}
                             </div>
-                            <progress class="progress progress-warning w-full" value="{{ veiculo.porcentagem_revisao }}" max="100"></progress>
+                            
+                            {% if veiculo.revisao_pendente %}
+                                {% if user|has_group:'Gestores' %}
+                                    <button type="button" onclick="document.getElementById('modal_revisao_{{ veiculo.id }}').showModal()" class="btn btn-error btn-sm w-full text-white mt-1 shadow-sm hover:scale-[1.02] transition-transform">
+                                        <i class="bi bi-exclamation-triangle"></i> Registrar Revisão
+                                    </button>
+                                {% else %}
+                                    <progress class="progress progress-error w-full cursor-pointer" onclick="document.getElementById('modal_carro').showModal(); abrirModalCarro({{ veiculo.id }})" value="100" max="100"></progress>
+                                {% endif %}
+                            {% else %}
+                                <progress class="progress {% if veiculo.porcentagem_revisao >= 90 %}progress-error{% elif veiculo.porcentagem_revisao >= 75 %}progress-warning{% else %}progress-success{% endif %} w-full cursor-pointer" onclick="document.getElementById('modal_carro').showModal(); abrirModalCarro({{ veiculo.id }})" value="{{ veiculo.porcentagem_revisao }}" max="100"></progress>
+                            {% endif %}
                         </div>
 
                         <!-- Botões de Ação (Apenas Gestores) -->
@@ -121,6 +136,34 @@
                             <div class="modal-action mt-8">
                                 <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal_editar_{{ veiculo.id }}').close()">Cancelar</button>
                                 <button type="submit" class="btn btn-success text-white px-6">Salvar Alterações</button>
+                            </div>
+                        </form>
+                    </div>
+                    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+                </dialog>
+
+                <!-- Modal Registrar Revisão -->
+                <dialog id="modal_revisao_{{ veiculo.id }}" class="modal">
+                    <div class="modal-box w-11/12 max-w-md">
+                        <form method="dialog" class="m-0">
+                            <button type="button" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="this.closest('dialog').close()">✕</button>
+                        </form>
+                        <h3 class="font-bold text-xl mb-2 flex items-center gap-2"><i class="bi bi-tools text-primary"></i> Registrar Revisão</h3>
+                        <p class="text-sm text-base-content/70 mb-6">Veículo: <strong>{{ veiculo.marca }} {{ veiculo.modelo }} ({{ veiculo.placa }})</strong></p>
+                        
+                        <form hx-post="{% url 'registrar_revisao' veiculo.id %}" class="space-y-4">
+                            {% csrf_token %}
+                            <div class="form-control w-full">
+                                <label class="label"><span class="label-text font-medium">Quem levou o veículo?</span></label>
+                                <input type="text" name="responsavel" class="input input-bordered w-full" placeholder="Ex: João Silva" required>
+                            </div>
+                            <div class="form-control w-full">
+                                <label class="label"><span class="label-text font-medium">Local da Revisão</span></label>
+                                <input type="text" name="local" class="input input-bordered w-full" placeholder="Ex: Oficina Mecânica X" required>
+                            </div>
+                            <div class="modal-action mt-8">
+                                <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal_revisao_{{ veiculo.id }}').close()">Cancelar</button>
+                                <button type="submit" class="btn btn-primary text-white px-6 shadow-sm">Confirmar Revisão</button>
                             </div>
                         </form>
                     </div>

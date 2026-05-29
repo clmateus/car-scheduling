@@ -124,3 +124,13 @@ class SolicitacaoAtivo(models.Model):
     
     def __str__(self):
         return f'{self.id} - {self.categoria} - {self.usuario}'
+
+class Revisao(models.Model):
+    veiculo = models.ForeignKey('Veiculo', on_delete=models.CASCADE, related_name='revisoes')
+    data = models.DateTimeField(auto_now_add=True)
+    responsavel = models.CharField(max_length=150)
+    local = models.CharField(max_length=150)
+    quilometragem = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.veiculo.modelo} - {self.quilometragem}km'

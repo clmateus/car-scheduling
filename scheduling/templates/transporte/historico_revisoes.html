@@ -48,7 +48,8 @@
                         <th>Veículo</th>
                         <th>Quilometragem</th>
                         <th>Responsável</th>
-                        <th class="rounded-tr-2xl">Local</th>
+                        <th>Local</th>
+                        <th class="rounded-tr-2xl text-right pr-6">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -88,10 +89,69 @@
                                 <span>{{ revisao.local }}</span>
                             </div>
                         </td>
+                        <td class="text-right pr-6">
+                            <button type="button" class="btn btn-primary btn-sm text-white shadow-sm" onclick="document.getElementById('modal_detalhes_revisao_{{ revisao.id }}').showModal()">
+                                Ver detalhes
+                            </button>
+                            
+                            <!-- Modal Detalhes da Revisão -->
+                            <dialog id="modal_detalhes_revisao_{{ revisao.id }}" class="modal text-left">
+                                <div class="modal-box w-11/12 max-w-lg bg-base-100 p-6 rounded-2xl">
+                                    <form method="dialog" class="m-0">
+                                        <button type="button" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="this.closest('dialog').close()">✕</button>
+                                    </form>
+                                    <h3 class="font-bold text-2xl mb-4 flex items-center gap-2">
+                                        <i class="bi bi-tools text-primary"></i> Detalhes da Revisão
+                                    </h3>
+                                    
+                                    <div class="divider mt-0 mb-4 opacity-50"></div>
+                                    
+                                    <div class="space-y-4 text-sm">
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <span class="font-semibold text-base-content/60 block">Veículo:</span>
+                                                <span class="font-medium text-base text-base-content/90">{{ revisao.veiculo.marca }} {{ revisao.veiculo.modelo }}</span>
+                                                <span class="badge badge-ghost badge-sm font-mono block mt-1 w-max">{{ revisao.veiculo.placa }}</span>
+                                            </div>
+                                            <div>
+                                                <span class="font-semibold text-base-content/60 block">Data e Hora:</span>
+                                                <span class="font-medium text-base text-base-content/90">{{ revisao.data|date:"d/m/Y H:i" }}</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <span class="font-semibold text-base-content/60 block">Quilometragem:</span>
+                                                <span class="font-medium text-base text-base-content/90">{{ revisao.quilometragem }} km</span>
+                                            </div>
+                                            <div>
+                                                <span class="font-semibold text-base-content/60 block">Responsável:</span>
+                                                <span class="font-medium text-base text-base-content/90">{{ revisao.responsavel }}</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <span class="font-semibold text-base-content/60 block">Local da Revisão:</span>
+                                            <span class="font-medium text-base text-base-content/90">{{ revisao.local }}</span>
+                                        </div>
+                                        
+                                        <div class="bg-base-200 p-4 rounded-xl border border-base-300">
+                                            <span class="font-semibold text-base-content/70 block mb-2"><i class="bi bi-card-text text-primary"></i> Descrição da Manutenção:</span>
+                                            <p class="text-base-content/90 whitespace-pre-wrap leading-relaxed">{{ revisao.descricao|default:"Nenhuma descrição informada." }}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="modal-action mt-6">
+                                        <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal_detalhes_revisao_{{ revisao.id }}').close()">Fechar</button>
+                                    </div>
+                                </div>
+                                <form method="dialog" class="modal-backdrop"><button>close</button></form>
+                            </dialog>
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="text-center py-12">
+                        <td colspan="6" class="text-center py-12">
                             <div class="flex flex-col items-center justify-center text-base-content/50">
                                 <i class="bi bi-tools text-5xl mb-4 opacity-30"></i>
                                 <p class="text-lg font-medium">Nenhuma revisão registrada ainda.</p>

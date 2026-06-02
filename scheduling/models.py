@@ -132,6 +132,7 @@ class Revisao(models.Model):
     responsavel = models.CharField(max_length=150)
     local = models.CharField(max_length=150)
     quilometragem = models.IntegerField()
+    descricao = models.TextField(default='')
 
     def __str__(self):
         return f'{self.veiculo.modelo} - {self.quilometragem}km'

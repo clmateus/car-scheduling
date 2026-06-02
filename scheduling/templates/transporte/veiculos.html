@@ -161,6 +161,10 @@
                                 <label class="label"><span class="label-text font-medium">Local da Revisão</span></label>
                                 <input type="text" name="local" class="input input-bordered w-full" placeholder="Ex: Oficina Mecânica X" required>
                             </div>
+                            <div class="form-control w-full">
+                                <label class="label"><span class="label-text font-medium">O que foi feito na revisão?</span></label>
+                                <textarea name="descricao" class="textarea textarea-bordered w-full" rows="3" placeholder="Descreva os serviços realizados (ex: troca de óleo, pastilhas de freio...)" required></textarea>
+                            </div>
                             <div class="modal-action mt-8">
                                 <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal_revisao_{{ veiculo.id }}').close()">Cancelar</button>
                                 <button type="submit" class="btn btn-primary text-white px-6 shadow-sm">Confirmar Revisão</button>

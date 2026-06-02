@@ -305,12 +305,14 @@ def registrar_revisao(request, pk):
     veiculo = get_object_or_404(Veiculo, pk=pk)
     responsavel = request.POST.get('responsavel')
     local = request.POST.get('local')
+    descricao = request.POST.get('descricao')
     
-    if responsavel and local:
+    if responsavel and local and descricao:
         Revisao.objects.create(
             veiculo=veiculo,
             responsavel=responsavel,
             local=local,
+            descricao=descricao,
             quilometragem=veiculo.quilometragem or 0
         )
     

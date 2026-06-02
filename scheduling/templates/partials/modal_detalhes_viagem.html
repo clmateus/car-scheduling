@@ -31,6 +31,12 @@
 
     {% if viagem.checkout_realizado %}
         <div class="space-y-4">
+            {% if viagem.usuario_checkout %}
+            <div>
+                <span class="font-semibold text-base-content/60">Responsável pelo Checkout:</span>
+                <p class="font-medium text-base mt-1">{{ viagem.usuario_checkout.get_full_name|default:viagem.usuario_checkout.username }}</p>
+            </div>
+            {% endif %}
             <div>
                 <span class="font-semibold text-base-content/60">Quilometragem Informada no Retorno:</span>
                 <p class="font-medium text-base badge badge-neutral badge-lg mt-1 py-4">{{ viagem.quilometragem_checkout|default:"Não informada" }} km</p>

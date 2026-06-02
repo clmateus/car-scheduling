@@ -37,6 +37,7 @@ class Agendamento(models.Model):
     observacao_checkout = models.TextField(blank=True, null=True)
     foto_checkout = models.TextField(blank=True, null=True)
     assinatura_checkout = models.TextField(blank=True, null=True)
+    usuario_checkout = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='checkouts_realizados')
 
     def __str__(self):
         return f'{self.destino} - {self.motorista} - {self.dataPartida} - {self.dataChegada}'

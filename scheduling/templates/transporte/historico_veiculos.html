@@ -102,6 +102,14 @@
                         </div>
                         <span class="text-base-content/80 font-medium">{{ viagem.dataPartida|date:"H:i" }} <span class="mx-1 text-xs opacity-60">&rarr;</span> {{ viagem.dataChegada|date:"H:i" }}</span>
                     </div>
+                    {% if viagem.checkout_realizado and viagem.usuario_checkout %}
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center shrink-0">
+                            <i class="bi bi-person-check text-success text-sm"></i>
+                        </div>
+                        <span class="text-base-content/80 font-medium">Checkout por: <span class="text-base-content/90 font-semibold">{{ viagem.usuario_checkout.get_full_name|default:viagem.usuario_checkout.username }}</span></span>
+                    </div>
+                    {% endif %}
                 </div>
 
                 <!-- Ações do Card -->

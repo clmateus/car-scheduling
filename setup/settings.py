@@ -182,6 +182,8 @@ DJANGO_ENDESIVE = {
     'PDF_CERTIFICATE_PATH': 'required: /signed_documents/',
 }
 
+SESSION_COOKIE_NAME = 'scheduling_session_id'
+SESSION_COOKIE_AGE = 2592000  # 30 dias em segundos
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_SECURE = False

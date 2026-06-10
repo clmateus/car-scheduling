@@ -53,6 +53,7 @@ def agendar(request):
         dataHoraChegada = request.POST.get('dataHoraChegada')
         destino = request.POST.get('destino')
         passageiros = request.POST.get('passageiros')
+        is_manutencao = request.POST.get('is_manutencao') == 'true'
 
         if not all([motorista, dataHoraPartida, dataHoraChegada, destino, passageiros]):
             erro = 'Por favor, preencha corretamente todos os campos.'
@@ -93,23 +94,34 @@ def agendar(request):
                 dataChegada=chegada_dt,
                 destino=destino,
                 passageiros=passageiros,
-                usuario=request.user
+                usuario=request.user,
+                is_manutencao=is_manutencao
             )
 
         resposta = render(request, 'partials/success.html', {'agendamento': agendamento})
         resposta['HX-Trigger'] = 'atualizarCalendario'
 
+        if agendamento.is_manutencao:
+            assunto = "Reserva de Manutenção de Veículo"
+            corpo = (
+                f"A reserva de manutenção do veículo {agendamento.veiculo.modelo} ({agendamento.veiculo.placa}) foi realizada com sucesso.\n"
+                f"Período: {agendamento.dataPartida.strftime('%d/%m/%Y %H:%M') if agendamento.dataPartida else ''} até {agendamento.dataChegada.strftime('%d/%m/%Y %H:%M') if agendamento.dataChegada else ''}.\n"
+            )
+        else:
+            assunto = "Agendamento de Viagem"
+            corpo = (
+                f"O seu agendamento com destino a {agendamento.destino} foi realizado com sucesso.\n"
+                f"Data e hora de partida: {agendamento.dataPartida.strftime('%d/%m/%Y %H:%M:%S') if agendamento.dataPartida else ''}\n"
+                f"Data e hora de chegada: {agendamento.dataChegada.strftime('%d/%m/%Y %H:%M:%S') if agendamento.dataChegada else ''}\n"
+                "Chegue na expedição com 10 minutos de antecedência.\nDirija com responsabilidade."
+            )
+
         async_task(
             send_mail,
-            "Agendamento de Viagem",
-            (
-                f"O seu agendamento com destino a {agendamento.destino} foi realizado com sucesso.\n"
-                f"Data e hora de partida: {agendamento.dataPartida.strftime('%d/%m/%Y %H:%M:%S')}\n"
-                f"Data e hora de chegada: {agendamento.dataChegada.strftime('%d/%m/%Y %H:%M:%S')}\n"
-                "Chegue na expedição com 10 minutos de antecedência.\nDirija com responsabilidade."
-            ),
+            assunto,
+            corpo,
             "lanmax.carscheduling@gmail.com",
-            [agendamento.usuario.email],
+            [agendamento.usuario.email] if agendamento.usuario and agendamento.usuario.email else [],
             fail_silently=False
         )
 
@@ -166,19 +178,28 @@ def mudar_dia_agendamento(request):
 
 @login_required
 def listar_agendamentos(request):
-    agendamentos = Agendamento.objects.all()
-    eventos = [
-        {
+    agendamentos = Agendamento.objects.select_related('veiculo').all()
+    eventos = []
+    for ag in agendamentos:
+        if ag.is_manutencao:
+            titulo = f'Manutenção: {ag.veiculo.modelo} ({ag.veiculo.placa})' if ag.veiculo else 'Manutenção'
+            cor = '#ef4444'
+        else:
+            titulo = f'{ag.motorista} -> {ag.destino}'
+            cor = '#3a86ad'
+
+        eventos.append({
             'id': ag.id,
-            'title': f'{ag.motorista} -> {ag.destino}',
+            'title': titulo,
             'start': ag.dataPartida.isoformat() if ag.dataPartida else None,
             'end': ag.dataChegada.isoformat() if ag.dataChegada else None,
+            'color': cor,
             'extendedProps': {
-                'pode_editar': is_gestor(request.user) or ag.usuario == request.user
+                'pode_editar': is_gestor(request.user) or ag.usuario == request.user,
+                'is_manutencao': ag.is_manutencao,
+                'veiculo_id': ag.veiculo_id
             }
-        }
-        for ag in agendamentos
-    ]
+        })
     return JsonResponse(eventos, safe=False)
 
 
@@ -364,8 +385,8 @@ def viagens(request):
 
     q = request.GET.get('q', '').strip()
     proximas_viagens = (
-        Agendamento.objects.filter(id=q) if q
-        else Agendamento.objects.filter(dataChegada__gt=timezone.now()).order_by('dataPartida')
+        Agendamento.objects.filter(id=q, is_manutencao=False) if q
+        else Agendamento.objects.filter(dataChegada__gt=timezone.now(), is_manutencao=False).order_by('dataPartida')
     )
     # Regras de rodízio de São Paulo (dígitos proibidos por dia da semana)
     RODIZIO_SP = {0: ['1', '2'], 1: ['3', '4'], 2: ['5', '6'], 3: ['7', '8'], 4: ['9', '0']}
@@ -429,9 +450,9 @@ def historico(request):
     mostrar_concluidos = request.GET.get('concluidos') == 'true'
     
     if mostrar_concluidos:
-        todas_as_viagens = Agendamento.objects.all().order_by('-dataPartida')
+        todas_as_viagens = Agendamento.objects.filter(is_manutencao=False).order_by('-dataPartida')
     else:
-        todas_as_viagens = Agendamento.objects.filter(checkout_realizado=False).order_by('-dataPartida')
+        todas_as_viagens = Agendamento.objects.filter(checkout_realizado=False, is_manutencao=False).order_by('-dataPartida')
         
     return render(request, 'transporte/historico_veiculos.html', {
         'todas_as_viagens': todas_as_viagens,
@@ -916,3 +937,26 @@ def deletar_observacao(request, pk):
         observacao.delete()
         return HttpResponse("")
     return JsonResponse({"erro": "Método inválido"}, status=405)
+
+@login_required
+def manutencoes(request):
+    veiculo_id = request.GET.get('veiculo_id', '').strip()
+    
+    manutencoes_list = Agendamento.objects.filter(is_manutencao=True).select_related('veiculo').order_by('dataPartida')
+    
+    if veiculo_id and veiculo_id.isdigit():
+        manutencoes_list = manutencoes_list.filter(veiculo_id=int(veiculo_id))
+        
+    veiculos = Veiculo.objects.all().order_by('modelo')
+    hora_atual = timezone.now().timestamp()
+    
+    for m in manutencoes_list:
+        m.hora_partida_ts = m.dataPartida.timestamp() if m.dataPartida else 0
+        m.hora_chegada_ts = m.dataChegada.timestamp() if m.dataChegada else 0
+        
+    return render(request, 'transporte/manutencoes.html', {
+        'manutencoes': manutencoes_list,
+        'veiculos': veiculos,
+        'veiculo_selecionado': int(veiculo_id) if veiculo_id.isdigit() else None,
+        'hora_atual': hora_atual
+    })

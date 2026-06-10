@@ -70,7 +70,15 @@ if (titulo) {
         document.getElementById('modal_insercao').showModal();
       },
       eventClick: function(info){
-        window.location.href = '/transporte/viagens/?q=' + info.event.id;
+        if (info.event.extendedProps.is_manutencao) {
+          let url = '/transporte/manutencoes/';
+          if (info.event.extendedProps.veiculo_id) {
+            url += '?veiculo_id=' + info.event.extendedProps.veiculo_id;
+          }
+          window.location.href = url;
+        } else {
+          window.location.href = '/transporte/viagens/?q=' + info.event.id;
+        }
       },
       eventDrop: function(info) {
         let dados = {

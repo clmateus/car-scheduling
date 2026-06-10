@@ -1,0 +1,134 @@
+{% extends '_base.html' %}
+{% block content %}
+{% load authenticate_user %}
+
+<div class="breadcrumbs text-sm mb-6">
+    <ul>
+        <li>
+            <a href="{% url 'index' %}" class="inline-flex items-center gap-2 hover:text-primary transition-colors">
+                <i class="bi bi-house-door text-lg"></i> Início
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'veiculos' %}" class="inline-flex items-center gap-2 hover:text-primary transition-colors">
+                <i class="fas fa-car text-base"></i> Veículos
+            </a>
+        </li>
+        <li class="inline-flex items-center gap-2 font-semibold text-base-content/70">
+            <i class="bi bi-tools text-base"></i> Manutenções
+        </li>
+    </ul>
+</div>
+
+<div class="w-full">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mt-4 mb-8 gap-4">
+        <h2 class="text-3xl font-bold">Manutenções</h2>
+        
+        <!-- Filtro por veículo -->
+        <form method="GET" action="{% url 'manutencoes' %}" class="flex items-center gap-2 w-full md:w-auto">
+            <label for="veiculo_id" class="label shrink-0"><span class="label-text font-medium text-base-content/70">Filtrar por Carro:</span></label>
+            <select name="veiculo_id" id="veiculo_id" onchange="this.form.submit()" class="select select-bordered w-full md:w-64 focus:select-primary">
+                <option value="">Todos os Veículos</option>
+                {% for veiculo in veiculos %}
+                    <option value="{{ veiculo.id }}" {% if veiculo_selecionado == veiculo.id %}selected{% endif %}>
+                        {{ veiculo.modelo }} ({{ veiculo.placa }})
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+    <!-- Estatísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="stat bg-base-100 shadow-sm border border-base-200 rounded-2xl">
+            <div class="stat-figure text-error opacity-20">
+                <i class="bi bi-tools text-5xl"></i>
+            </div>
+            <div class="stat-title font-semibold">Total Reservado</div>
+            <div class="stat-value text-3xl text-error">{{ manutencoes.count }}</div>
+            <div class="stat-desc mt-2">Reservas de manutenção registradas</div>
+        </div>
+    </div>
+
+    <!-- Tabela -->
+    <div class="bg-base-100 rounded-2xl shadow-sm border border-base-200 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="table w-full">
+                <thead class="bg-base-200/50 text-base-content/80 text-sm">
+                    <tr>
+                        <th class="rounded-tl-2xl pl-6">Período</th>
+                        <th>Veículo</th>
+                        <th>Responsável</th>
+                        <th>Destino/Oficina</th>
+                        <th>Status</th>
+                        <th class="rounded-tr-2xl text-right pr-6">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for manutencao in manutencoes %}
+                    <tr class="hover:bg-base-200/30 transition-colors" id="rowManutencao{{ manutencao.id }}">
+                        <td class="font-medium whitespace-nowrap pl-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full bg-error/10 flex items-center justify-center shrink-0">
+                                    <i class="bi bi-calendar-range text-error"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold">{{ manutencao.dataPartida|date:"d/m/Y H:i" }}</div>
+                                    <div class="text-xs opacity-70">Até {{ manutencao.dataChegada|date:"d/m/Y H:i" }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex flex-col">
+                                <span class="font-bold text-base-content/90">{{ manutencao.veiculo.modelo }}</span>
+                                <span class="text-xs badge badge-ghost badge-sm mt-1 font-mono tracking-wider">{{ manutencao.veiculo.placa }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <i class="bi bi-person-badge text-base-content/50"></i>
+                                <span class="font-medium">{{ manutencao.motorista }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span>{{ manutencao.destino }}</span>
+                        </td>
+                        <td>
+                            {% if hora_atual > manutencao.hora_chegada_ts %}
+                                <div class="badge badge-error badge-sm gap-2 text-white py-3 px-3 shadow-sm font-semibold">Concluída</div>
+                            {% elif hora_atual >= manutencao.hora_partida_ts and hora_atual <= manutencao.hora_chegada_ts %}
+                                <div class="badge badge-info badge-sm gap-2 text-white py-3 px-3 shadow-sm font-semibold">Em Manutenção</div>
+                            {% else %}
+                                <div class="badge badge-success badge-sm gap-2 text-white py-3 px-3 shadow-sm font-semibold">Agendada</div>
+                            {% endif %}
+                        </td>
+                        <td class="text-right pr-6">
+                            {% if user|has_group:'Gestores' or manutencao.usuario == user or user|has_group:'RH' or user|has_group:'Expedicao' %}
+                                <form hx-post="{% url 'remover_agendamento' manutencao.id %}" hx-confirm="Tem certeza que deseja remover esta reserva de manutenção?" hx-target="#rowManutencao{{ manutencao.id }}" hx-swap="outerHTML" class="inline-block m-0">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-ghost text-error hover:bg-error/10" title="Excluir">
+                                        <i class="bi bi-trash3 text-base"></i> Cancelar
+                                    </button>
+                                </form>
+                            {% else %}
+                                <span class="text-xs opacity-50">Sem permissão</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-12">
+                            <div class="flex flex-col items-center justify-center text-base-content/50">
+                                <i class="bi bi-tools text-5xl mb-4 opacity-30"></i>
+                                <p class="text-lg font-medium">Nenhuma manutenção registrada.</p>
+                                <p class="text-sm mt-1">Use a tela de Agendar Viagem e selecione "Reservar Manutenção" para criar uma.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

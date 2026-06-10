@@ -104,9 +104,13 @@
           <input type="number" class="input input-bordered w-full" name="passageiros" id="passageiros" min="1" max="5" value="1" required>
         </div>
         <div id="resultadoModal" class="mt-2"></div>
-        <div class="modal-action mt-6">
+        <input type="hidden" name="is_manutencao" id="is_manutencao" value="false">
+        <div class="modal-action mt-6 flex flex-wrap gap-2">
           <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal_insercao').close()">Cancelar</button>
-          <button type="submit" class="btn btn-success text-white px-8">Agendar</button>
+          <button type="submit" class="btn btn-success text-white px-6" onclick="document.getElementById('is_manutencao').value='false'">Agendar</button>
+          {% if is_gestor %}
+            <button type="submit" class="btn btn-error text-white px-6" onclick="document.getElementById('is_manutencao').value='true'; if(!document.getElementById('destino').value) { document.getElementById('destino').value='Manutenção'; }">Reservar Manutenção</button>
+          {% endif %}
         </div>
       </form>
     </div>

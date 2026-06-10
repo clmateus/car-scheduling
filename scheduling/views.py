@@ -40,9 +40,11 @@ def index(request):
 @login_required
 def agendamento(request):
     usuarios = User.objects.filter(is_active=True).order_by('first_name')
+    veiculos = Veiculo.objects.all().order_by('modelo')
     return render(request, 'transporte/agendamento.html', {
         'usuarios': usuarios,
-        'is_gestor': is_gestor(request.user)
+        'is_gestor': is_gestor(request.user),
+        'veiculos': veiculos
     })
 
 @login_required
@@ -72,6 +74,8 @@ def agendar(request):
             erro = 'A data da volta deve ser posterior à data de partida.'
             return render(request, 'partials/error.html', {'erro': erro})
 
+        veiculo_id = request.POST.get('veiculo_id')
+
         with transaction.atomic():
             # Busca veículos ocupados no intervalo e exclui da seleção
             ids_ocupados = list(
@@ -81,14 +85,33 @@ def agendar(request):
                     veiculo__isnull=False
                 ).values_list('veiculo_id', flat=True)
             )
-            veiculos_livres = list(Veiculo.objects.exclude(id__in=ids_ocupados))
+            
+            if is_manutencao:
+                if not veiculo_id:
+                    erro = 'Por favor, selecione o veículo para a manutenção.'
+                    return render(request, 'partials/error.html', {'erro': erro})
+                try:
+                    veiculo_especifico = Veiculo.objects.get(id=veiculo_id)
+                except Veiculo.DoesNotExist:
+                    erro = 'O veículo selecionado não existe.'
+                    return render(request, 'partials/error.html', {'erro': erro})
+                
+                if veiculo_especifico.id in ids_ocupados:
+                    erro = f'O veículo {veiculo_especifico.modelo} ({veiculo_especifico.placa}) já está ocupado no período selecionado.'
+                    return render(request, 'partials/error.html', {'erro': erro})
+                
+                veiculo_final = veiculo_especifico
+            else:
+                veiculos_livres = list(Veiculo.objects.exclude(id__in=ids_ocupados))
 
-            if not veiculos_livres:
-                erro = 'Não há veículos disponíveis para o horário selecionado.'
-                return render(request, 'partials/error.html', {'erro': erro})
+                if not veiculos_livres:
+                    erro = 'Não há veículos disponíveis para o horário selecionado.'
+                    return render(request, 'partials/error.html', {'erro': erro})
+                
+                veiculo_final = random.choice(veiculos_livres)
 
             agendamento = Agendamento.objects.create(
-                veiculo=random.choice(veiculos_livres),
+                veiculo=veiculo_final,
                 motorista=motorista,
                 dataPartida=partida_dt,
                 dataChegada=chegada_dt,
@@ -128,9 +151,11 @@ def agendar(request):
         return resposta
 
     usuarios = User.objects.filter(is_active=True).order_by('first_name')
+    veiculos = Veiculo.objects.all().order_by('modelo')
     return render(request, 'transporte/agendamento.html', {
         'usuarios': usuarios,
-        'is_gestor': is_gestor(request.user)
+        'is_gestor': is_gestor(request.user),
+        'veiculos': veiculos
     })
 
 @login_required

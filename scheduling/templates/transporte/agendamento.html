@@ -103,13 +103,23 @@
           <label for="passageiros" class="label"><span class="label-text font-medium">Qtd. Passageiros</span></label>
           <input type="number" class="input input-bordered w-full" name="passageiros" id="passageiros" min="1" max="5" value="1" required>
         </div>
+        <!-- Seleção de Veículo para Manutenção -->
+        <div id="veiculo_selecao_container" class="form-control w-full hidden transition-all duration-300">
+          <label for="veiculo_manutencao" class="label"><span class="label-text font-medium text-error font-semibold">Veículo para Manutenção</span></label>
+          <select class="select select-error select-bordered w-full" name="veiculo_id" id="veiculo_manutencao">
+            <option value="" disabled selected>Selecione o veículo...</option>
+            {% for veiculo in veiculos %}
+              <option value="{{ veiculo.id }}">{{ veiculo.modelo }} - {{ veiculo.marca }} ({{ veiculo.placa }})</option>
+            {% endfor %}
+          </select>
+        </div>
         <div id="resultadoModal" class="mt-2"></div>
         <input type="hidden" name="is_manutencao" id="is_manutencao" value="false">
         <div class="modal-action mt-6 flex flex-wrap gap-2">
           <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal_insercao').close()">Cancelar</button>
-          <button type="submit" class="btn btn-success text-white px-6" onclick="document.getElementById('is_manutencao').value='false'">Agendar</button>
+          <button type="submit" class="btn btn-success text-white px-6" onclick="handleAgendar(event)">Agendar</button>
           {% if is_gestor %}
-            <button type="submit" class="btn btn-error text-white px-6" onclick="document.getElementById('is_manutencao').value='true'; if(!document.getElementById('destino').value) { document.getElementById('destino').value='Manutenção'; }">Reservar Manutenção</button>
+            <button type="submit" id="btn_reservar_manutencao" class="btn btn-error text-white px-6" onclick="handleReservarManutencao(event)">Reservar Manutenção</button>
           {% endif %}
         </div>
       </form>
@@ -146,6 +156,78 @@
 <script>
     document.body.addEventListener('htmx:configRequest', function(event) {
         event.detail.headers['X-CSRFToken'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    });
+
+    function handleReservarManutencao(event) {
+        const container = document.getElementById('veiculo_selecao_container');
+        const selectVeiculo = document.getElementById('veiculo_manutencao');
+        const inputIsManutencao = document.getElementById('is_manutencao');
+        const inputDestino = document.getElementById('destino');
+        const btnReservar = document.getElementById('btn_reservar_manutencao');
+        
+        // Atribui is_manutencao como true
+        inputIsManutencao.value = 'true';
+        
+        // Define o destino padrão como "Manutenção" se estiver vazio
+        if (!inputDestino.value) {
+            inputDestino.value = 'Manutenção';
+        }
+        
+        // Se o contêiner de seleção estiver oculto, exibe e previne envio imediato
+        if (container.classList.contains('hidden')) {
+            event.preventDefault();
+            container.classList.remove('hidden');
+            selectVeiculo.setAttribute('required', 'required');
+            selectVeiculo.focus();
+            
+            // Altera o texto e o estilo do botão para indicar confirmação
+            btnReservar.innerText = 'Confirmar Manutenção';
+            btnReservar.classList.remove('btn-error');
+            btnReservar.classList.add('btn-warning');
+            return false;
+        }
+        
+        // Se já estiver visível, valida se um veículo foi selecionado
+        if (!selectVeiculo.value) {
+            event.preventDefault();
+            selectVeiculo.reportValidity();
+            return false;
+        }
+    }
+
+    function handleAgendar(event) {
+        const container = document.getElementById('veiculo_selecao_container');
+        const selectVeiculo = document.getElementById('veiculo_manutencao');
+        const inputIsManutencao = document.getElementById('is_manutencao');
+        const btnReservar = document.getElementById('btn_reservar_manutencao');
+        
+        if (inputIsManutencao) {
+            inputIsManutencao.value = 'false';
+        }
+        if (container) {
+            container.classList.add('hidden');
+        }
+        if (selectVeiculo) {
+            selectVeiculo.removeAttribute('required');
+            selectVeiculo.value = '';
+        }
+        
+        // Restaura texto e estilo originais do botão se existirem
+        if (btnReservar) {
+            btnReservar.innerText = 'Reservar Manutenção';
+            btnReservar.classList.remove('btn-warning');
+            btnReservar.classList.add('btn-error');
+        }
+    }
+
+    // Adiciona listener para redefinir o estado quando o modal de inserção for fechado
+    document.addEventListener('DOMContentLoaded', function() {
+        const modalInsercao = document.getElementById('modal_insercao');
+        if (modalInsercao) {
+            modalInsercao.addEventListener('close', function() {
+                handleAgendar();
+            });
+        }
     });
 </script>
 {% endblock content %}

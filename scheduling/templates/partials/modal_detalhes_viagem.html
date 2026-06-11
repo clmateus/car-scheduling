@@ -21,6 +21,18 @@
             <span class="font-semibold text-base-content/60">Chegada:</span>
             <p class="font-medium text-base">{{ viagem.dataChegada|date:"d/m/Y H:i" }}</p>
         </div>
+        {% if viagem.data_partida_real %}
+        <div>
+            <span class="font-semibold text-base-content/60">Chave Retirada em:</span>
+            <p class="font-medium text-base text-accent font-semibold">{{ viagem.data_partida_real|date:"d/m/Y H:i:s" }}</p>
+        </div>
+        {% endif %}
+        {% if viagem.data_checkout_real %}
+        <div>
+            <span class="font-semibold text-base-content/60">Checkout Realizado em:</span>
+            <p class="font-medium text-base text-success font-semibold">{{ viagem.data_checkout_real|date:"d/m/Y H:i:s" }}</p>
+        </div>
+        {% endif %}
         <div class="md:col-span-2">
             <span class="font-semibold text-base-content/60">Destino:</span>
             <p class="font-medium text-base">{{ viagem.destino }}</p>

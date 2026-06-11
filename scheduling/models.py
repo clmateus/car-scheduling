@@ -33,6 +33,7 @@ class Agendamento(models.Model):
     is_manutencao = models.BooleanField(default=False)
     
     data_partida_real = models.DateTimeField(null=True, blank=True)
+    data_checkout_real = models.DateTimeField(null=True, blank=True)
     checkout_realizado = models.BooleanField(default=False)
     quilometragem_checkout = models.IntegerField(null=True, blank=True)
     observacao_checkout = models.TextField(blank=True, null=True)

@@ -4,7 +4,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 
 class ListarAgendamentos(admin.ModelAdmin):
-    list_display = ("id", "motorista", "dataPartida", "dataChegada", "destino")
+    list_display = ("id", "motorista", "dataPartida", "data_partida_real", "dataChegada", "data_checkout_real", "destino")
     list_display_links = ("id", "motorista")
     search_fields = ("motorista",)
 

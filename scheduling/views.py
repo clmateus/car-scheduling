@@ -530,6 +530,7 @@ def checkout_viagem(request, pk):
                 agendamento.foto_checkout = foto
             agendamento.assinatura_checkout = assinatura
             agendamento.checkout_realizado = True
+            agendamento.data_checkout_real = timezone.now()
             agendamento.usuario_checkout = request.user
             agendamento.save()
 

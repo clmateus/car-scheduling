@@ -332,15 +332,15 @@ def veiculos(request):
         revisoes = list(v.revisoes.all())
         km_ultima_revisao = max([r.quilometragem for r in revisoes]) if revisoes else 0
         
-        if (km // 10000) > (km_ultima_revisao // 10000) and km >= 10000:
+        if (km // 12000) > (km_ultima_revisao // 12000) and km >= 12000:
             v.revisao_pendente = True
             v.km_para_revisao = 0
             v.porcentagem_revisao = 100
         else:
             v.revisao_pendente = False
-            km_modulo = km % 10000
-            v.km_para_revisao = 10000 - km_modulo
-            v.porcentagem_revisao = int((km_modulo / 10000) * 100)
+            km_modulo = km % 12000
+            v.km_para_revisao = 12000 - km_modulo
+            v.porcentagem_revisao = int((km_modulo / 12000) * 100)
 
     return render(request, 'transporte/veiculos.html', {'veiculos': veiculos_lista, 'form': form})
 

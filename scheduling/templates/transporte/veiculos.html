@@ -56,7 +56,7 @@
                             </div>
                             
                             {% if veiculo.revisao_pendente %}
-                                {% if user|has_group:'Gestores' %}
+                                {% if user|has_group:'Gestores' or user|has_group:'Expedicao' %}
                                     <button type="button" onclick="document.getElementById('modal_revisao_{{ veiculo.id }}').showModal()" class="btn btn-error btn-sm w-full text-white mt-1 shadow-sm hover:scale-[1.02] transition-transform">
                                         <i class="bi bi-exclamation-triangle"></i> Registrar Revisão
                                     </button>
@@ -65,7 +65,7 @@
                                 {% endif %}
                             {% else %}
                                 <progress class="progress {% if veiculo.porcentagem_revisao >= 90 %}progress-error{% elif veiculo.porcentagem_revisao >= 75 %}progress-warning{% else %}progress-success{% endif %} w-full cursor-pointer" onclick="document.getElementById('modal_carro').showModal(); abrirModalCarro({{ veiculo.id }})" value="{{ veiculo.porcentagem_revisao }}" max="100"></progress>
-                                {% if user|has_group:'Gestores' %}
+                                {% if user|has_group:'Gestores' or user|has_group:'Expedicao' %}
                                     <button type="button" onclick="document.getElementById('modal_revisao_{{ veiculo.id }}').showModal()" class="btn btn-outline btn-primary btn-sm w-full mt-3 shadow-sm hover:scale-[1.02] transition-transform">
                                         <i class="bi bi-arrow-counterclockwise"></i> Resetar contagem da revis&atilde;o
                                     </button>

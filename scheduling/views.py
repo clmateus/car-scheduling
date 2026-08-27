@@ -330,17 +330,22 @@ def veiculos(request):
     for v in veiculos_lista:
         km = v.quilometragem or 0
         revisoes = list(v.revisoes.all())
-        km_ultima_revisao = max([r.quilometragem for r in revisoes]) if revisoes else 0
-        
-        if (km // 12000) > (km_ultima_revisao // 12000) and km >= 12000:
+        ultima_revisao = max(revisoes, key=lambda revisao: (revisao.data, revisao.pk)) if revisoes else None
+
+        # A revisao mais recente reinicia a contagem, inclusive quando ela e
+        # realizada antes dos 12.000 km. Para veiculos sem revisao registrada,
+        # a contagem comeca no hodometro zero.
+        km_base_revisao = ultima_revisao.quilometragem if ultima_revisao else 0
+        km_desde_revisao = max(km - km_base_revisao, 0)
+
+        if km_desde_revisao >= 12000:
             v.revisao_pendente = True
             v.km_para_revisao = 0
             v.porcentagem_revisao = 100
         else:
             v.revisao_pendente = False
-            km_modulo = km % 12000
-            v.km_para_revisao = 12000 - km_modulo
-            v.porcentagem_revisao = int((km_modulo / 12000) * 100)
+            v.km_para_revisao = 12000 - km_desde_revisao
+            v.porcentagem_revisao = int((km_desde_revisao / 12000) * 100)
 
     return render(request, 'transporte/veiculos.html', {'veiculos': veiculos_lista, 'form': form})
 

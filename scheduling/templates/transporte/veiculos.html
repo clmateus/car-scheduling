@@ -65,6 +65,11 @@
                                 {% endif %}
                             {% else %}
                                 <progress class="progress {% if veiculo.porcentagem_revisao >= 90 %}progress-error{% elif veiculo.porcentagem_revisao >= 75 %}progress-warning{% else %}progress-success{% endif %} w-full cursor-pointer" onclick="document.getElementById('modal_carro').showModal(); abrirModalCarro({{ veiculo.id }})" value="{{ veiculo.porcentagem_revisao }}" max="100"></progress>
+                                {% if user|has_group:'Gestores' %}
+                                    <button type="button" onclick="document.getElementById('modal_revisao_{{ veiculo.id }}').showModal()" class="btn btn-outline btn-primary btn-sm w-full mt-3 shadow-sm hover:scale-[1.02] transition-transform">
+                                        <i class="bi bi-arrow-counterclockwise"></i> Resetar contagem da revis&atilde;o
+                                    </button>
+                                {% endif %}
                             {% endif %}
                         </div>
 
@@ -151,6 +156,11 @@
                         <h3 class="font-bold text-xl mb-2 flex items-center gap-2"><i class="bi bi-tools text-primary"></i> Registrar Revisão</h3>
                         <p class="text-sm text-base-content/70 mb-6">Veículo: <strong>{{ veiculo.marca }} {{ veiculo.modelo }} ({{ veiculo.placa }})</strong></p>
                         
+                        <div class="alert alert-info text-sm mb-6">
+                            <i class="bi bi-info-circle"></i>
+                            <span>Ao confirmar, a contagem para a pr&oacute;xima revis&atilde;o ser&aacute; reiniciada na quilometragem atual ({{ veiculo.quilometragem|default:0 }} km).</span>
+                        </div>
+
                         <form hx-post="{% url 'registrar_revisao' veiculo.id %}" class="space-y-4">
                             {% csrf_token %}
                             <div class="form-control w-full">
